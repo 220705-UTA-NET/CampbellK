@@ -6,11 +6,11 @@ namespace database
     public class DbConnection
     {
             // static are scoped to class rather than object instance, therefore cannot declare them within DbConnect()
-            private static string Host = System.Environment.GetEnvironmentVariable("postgres_host");
-            private static string Username = System.Environment.GetEnvironmentVariable("postgres_username");
-            private static string Database = System.Environment.GetEnvironmentVariable("postgres_database");
-            private static string Port = System.Environment.GetEnvironmentVariable("postgres_port");
-            private static string Password = System.Environment.GetEnvironmentVariable("postgres_password");
+            private static string? Host = System.Environment.GetEnvironmentVariable("postgres_host");
+            private static string? Username = System.Environment.GetEnvironmentVariable("postgres_username");
+            private static string? Database = System.Environment.GetEnvironmentVariable("postgres_database");
+            private static string? Port = System.Environment.GetEnvironmentVariable("postgres_port");
+            private static string? Password = System.Environment.GetEnvironmentVariable("postgres_password");
 
         public void DbConnect()
         {
@@ -39,7 +39,7 @@ namespace database
                 // check what the user wants to do
                 // ** how to allow the user to continuously revisit? **
                 // constantly utilize Console.ReadLine() at the end of each endpoint
-                string userCommand = Console.ReadLine();
+                string? userCommand = Console.ReadLine();
 
                 // will want to set up a prepared statement
                 NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM budget", conn);
@@ -52,11 +52,11 @@ namespace database
 
                 while (reader.Read())
                 {
-                    string id = reader["id"].ToString();
-                    string description = reader["description"].ToString();
-                    string amount = reader["amount"].ToString();
-                    string category = reader["category"].ToString();
-                    string date = reader["date"].ToString();
+                    string? id = reader["id"].ToString();
+                    string? description = reader["description"].ToString();
+                    string? amount = reader["amount"].ToString();
+                    string? category = reader["category"].ToString();
+                    string? date = reader["date"].ToString();
 
                     // combine the row data into a single struct to save to listOfEntries;
                     Dictionary<string, string> budgetEntry = new Dictionary<string, string>()
