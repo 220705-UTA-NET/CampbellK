@@ -1,0 +1,18 @@
+Solo Presentation: July 20th
+
+Create simple budget CRUD app API that interfaces with CLI
+Take inputs from users for various things via Console.ReadLine();
+
+Seperate out dbConnection & API endpoints into their own directories
+    
+    1. The db connection does appear to be opening, but nothing appears to be able to occur afterwards
+
+    2. Set up endpoints to read, create, edit, delete entries
+        a. Ask user for what command they want to give
+            - Give a set of possible commands; automatically convert all responses to lower
+            - if a typo or unavailable option, rerun Console.ReadLine();
+            - if null, give another response and rerun Console.ReadLine();
+
+    3. Further functionality:
+        - Current monthly expenditure & how much we have left to spend
+        - Categories
