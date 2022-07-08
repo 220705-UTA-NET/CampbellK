@@ -3,7 +3,7 @@ Solo Presentation: July 20th
 Create simple budget CRUD app API that interfaces with CLI
 Take inputs from users for various things via Console.ReadLine();
     
-    1. Work on resolving "Possible null reference assignment"
+    1. Set up webserver, establish routes
 
     2. Set up endpoints to read, create, edit, delete entries
         a. Ask user for what command they want to give
