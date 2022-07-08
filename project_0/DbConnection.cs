@@ -1,7 +1,7 @@
 using System;
 using Npgsql;
 
-namespace database
+namespace Database
 {
     public class DbConnection
     {
@@ -12,11 +12,11 @@ namespace database
             private static string? Port = System.Environment.GetEnvironmentVariable("postgres_port");
             private static string? Password = System.Environment.GetEnvironmentVariable("postgres_password");
 
-        public void DbConnect()
+        public NpgsqlConnection DbConnect()
         {
             if (Host == null || Username == null || Database == null || Port == null || Password == null) {
-                Console.WriteLine("Error retrieving environmental variables");
-                return;
+                throw new Exception("Failed to fetch all environmental variables");
+
             } else {
         
                 Console.WriteLine("Connecting to postgresql...");
@@ -31,54 +31,12 @@ namespace database
                 );
 
                 // establishing connection to postgresql
-                NpgsqlConnection conn = new NpgsqlConnection(connectionString);
+                NpgsqlConnection dbConn = new NpgsqlConnection(connectionString);
 
                 // open connection to db, enabling execution of queries
-                conn.Open();
+                dbConn.Open();
 
-                // check what the user wants to do
-                // ** how to allow the user to continuously revisit? **
-                // constantly utilize Console.ReadLine() at the end of each endpoint
-                string? userCommand = Console.ReadLine();
-
-                // will want to set up a prepared statement
-                NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM budget", conn);
-
-                // execute query and save results 
-                NpgsqlDataReader reader = command.ExecuteReader();
-
-                // list where table data will be saved
-                List<Dictionary<string, string>> listOfEntries = new List<Dictionary<string, string>>();
-
-                while (reader.Read())
-                {
-                    string? id = reader["id"].ToString();
-                    string? description = reader["description"].ToString();
-                    string? amount = reader["amount"].ToString();
-                    string? category = reader["category"].ToString();
-                    string? date = reader["date"].ToString();
-
-                    // combine the row data into a single struct to save to listOfEntries;
-                    Dictionary<string, string> budgetEntry = new Dictionary<string, string>()
-                    {
-                        {"id", id},
-                        {"description", description},
-                        {"amount", amount},
-                        {"category", category},
-                        {"date", date}
-                    };
-
-                    listOfEntries.Add(budgetEntry);
-                }
-
-                Console.WriteLine(listOfEntries[0]["id"]);
-
-                // end the reader
-                reader.Close();
-                // discard the command
-                command.Dispose();
-                // close the db connection
-                conn.Close();
+                return dbConn;
             }
         }
     }
