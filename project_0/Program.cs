@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Npgsql;
 using Database;
@@ -26,9 +28,21 @@ namespace Budget
 
             // API routes -- https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-6.0
             BudgetApi api = new BudgetApi();
-            app.MapGet("/viewBalance", () => api.ReadBudgetEntries(dbConn));
-            app.MapGet("/expenses", () => "Expenses");
-            app.MapPost("/newExpense", () => "Add expense");
+            app.MapGet("/viewExpenseTotal", () => api.ViewExpenseTotal(dbConn));
+            app.MapGet("/viewExpenseDetails", () => api.viewExpenseDetails(dbConn));
+            // app.MapPost("/newExpense", () => api.AddExpense(dbConn));
+             app.MapPost("/newExpense", async (HttpRequest httpRequest) => {
+
+                // read request body for JSON
+                StreamReader reader = new StreamReader(httpRequest.Body);
+                string requestBody = await reader.ReadToEndAsync();
+                Console.WriteLine(requestBody);
+
+                // parse request body JSON
+
+                // once body has been parsed, can send to addExpense
+                // api.AddExpense(dbConn);
+             });
             app.MapDelete("/resetExpenses", () => "Reset");
 
             // is blocking; how to enable user to keep asking for commands in console?
