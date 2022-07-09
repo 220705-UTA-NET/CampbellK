@@ -70,13 +70,30 @@ namespace Api
             return listOfEntries;
         }
 
-        public void AddExpense(NpgsqlConnection dbConn)
+        public string AddExpense(NpgsqlConnection dbConn, Expense newExpense)
         {
-            // how to read request body
-            // HttpRequest request
-
             // need to create a prepared statement where you can imeplement the variables
-            NpgsqlBatchCommand command = new NpgsqlBatchCommand("INSERT INTO budget VALUES($1, $2, $3, $4, $5)");
+
+            NpgsqlCommand command = new NpgsqlCommand("INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)", dbConn);
+
+            NpgsqlParameter description = new NpgsqlParameter("Description", newExpense.Description);
+            NpgsqlParameter amount = new NpgsqlParameter("Amount", newExpense.Amount);
+            NpgsqlParameter category = new NpgsqlParameter("Category", newExpense.Category);
+            NpgsqlParameter date = new NpgsqlParameter("Date", newExpense.Date);
+
+            command.Parameters.Add(description);
+            command.Parameters.Add(amount);
+            command.Parameters.Add(category);
+            command.Parameters.Add(date);
+
+            NpgsqlDataReader reader = command.ExecuteReader();
+
+            // end the reader
+            reader.Close();
+            // discard the command
+            command.Dispose();
+
+            return "Entry successfully added";
         }
 
         public void resetExpenses()

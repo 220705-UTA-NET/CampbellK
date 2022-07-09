@@ -33,5 +33,7 @@ Take inputs from users for various things via Console.ReadLine();
     
     Set a savings goal; send email if go above it
 
+    Fix null reference warnings
+
 
     

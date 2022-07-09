@@ -33,10 +33,9 @@ namespace Budget
 
                 // parse request JSON into cooresponding expense class
                 Expense newExpense = JsonSerializer.Deserialize<Expense>(requestBody); 
-                Console.WriteLine(newExpense?.Amount);
 
                 // once body has been parsed, can send to addExpense
-                // api.AddExpense(dbConn);
+                api.AddExpense(dbConn, newExpense);
              });
             app.MapDelete("/resetExpenses", () => "Reset");
 
