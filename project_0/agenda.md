@@ -1,7 +1,11 @@
 Solo Presentation: July 20th
     
     3. Refactor endpoints to better utilize OOP concepts        
-        - ** combine deletes into a single class
+        - keep BudgetAPI as base class that establishes the variables, maintains
+        the view totalExpenses & viewDetail methods, and have the other two
+        classes inherit to avoid having to re-establish the variables
+
+
 
     4. Ask user for what command they want to give
         - Give a set of possible commands; automatically convert all responses to lower

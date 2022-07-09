@@ -36,7 +36,7 @@ namespace Budget
                 Expense newExpense = JsonSerializer.Deserialize<Expense>(requestBody); 
 
                 // once body has been parsed, can send to addExpense
-                PostOrPut postOrPutRoutes = new PostOrPut(dbConn, newExpense, -1);
+                PostOrPutRoutes postOrPutRoutes = new PostOrPutRoutes(dbConn, newExpense, -1);
                 postOrPutRoutes.changeExpense();
              });
             
@@ -46,13 +46,19 @@ namespace Budget
 
                 Expense updatedExpense = JsonSerializer.Deserialize<Expense>(requestBody);
 
-                PostOrPut postOrPutRoutes = new PostOrPut(dbConn, updatedExpense, id);
+                PostOrPutRoutes postOrPutRoutes = new PostOrPutRoutes(dbConn, updatedExpense, id);
                 postOrPutRoutes.changeExpense();
             });
 
-            app.MapDelete("/deleteExpense/{id}", (int id) => api.deleteExpense(dbConn, id));
+            app.MapDelete("/deleteExpense/{id}", (int id) => {
+                DeleteRoutes deleteSingleExpense = new DeleteRoutes(dbConn, id);
+                deleteSingleExpense.deleteExpenses();
+            });
 
-            app.MapDelete("/resetExpenses", () => api.resetExpenses(dbConn));
+            app.MapDelete("/resetExpenses", () => {
+                DeleteRoutes deleteAllExpenses = new DeleteRoutes(dbConn, -1);
+                deleteAllExpenses.deleteExpenses();
+            });
 
             // start web server: is blocking
             app.Run("http://localhost:3000");

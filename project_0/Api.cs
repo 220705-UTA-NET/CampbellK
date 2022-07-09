@@ -11,7 +11,7 @@ namespace Api
         public string? Category {get; set;}
         public string? Date {get; set;}
     }
-    
+
     class BudgetApi
     {
         // set up consistent variables that all methods will need
@@ -73,39 +73,16 @@ namespace Api
 
             return listOfEntries;
         }
-
-        public string deleteExpense(NpgsqlConnection dbConn, int id)
-        {
-            NpgsqlCommand command = new NpgsqlCommand("DELETE FROM budget WHERE id = @id", dbConn);
-            NpgsqlDataReader reader = command.ExecuteReader();
-
-            reader.Close();
-            command.Dispose();
-
-            return "Expense deleted";
-        }
-
-        public string resetExpenses(NpgsqlConnection dbConn)
-        {
-            NpgsqlCommand command = new NpgsqlCommand("TRUNCATE TABLE budget", dbConn);
-
-            NpgsqlDataReader reader = command.ExecuteReader();
-
-            reader.Close();
-            command.Dispose();
-
-            return "Expense sheet reset";
-        }
     }
 
-    public class PostOrPut
+    public class PostOrPutRoutes
     {
         NpgsqlConnection dbConn;
         Expense expense;
         public int id;
 
         // if Id is present, then we know it is UPDATE. If not, then we know it is POST
-        public PostOrPut(NpgsqlConnection dbConn, Expense expense, int id = -1)
+        public PostOrPutRoutes(NpgsqlConnection dbConn, Expense expense, int id = -1)
         {
             this.dbConn = dbConn;
             this.expense = expense;
@@ -124,7 +101,6 @@ namespace Api
             {
                 commandText = "UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id";
             }
-
 
             NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
 
@@ -165,5 +141,53 @@ namespace Api
                 return "Entry successfully updated";
             }
         }
+    }
+
+    public class DeleteRoutes
+    {
+        NpgsqlConnection dbConn;
+        public int id;
+
+        public DeleteRoutes(NpgsqlConnection dbConn, int id = -1)
+        {
+            this.dbConn = dbConn;
+            this.id = id;
+        }
+
+        public string deleteExpenses()
+        {
+            string commandText;
+
+            if (id != -1)
+            {
+                commandText = "DELETE FROM budget WHERE id = @id";
+            }
+            else
+            {
+                commandText = "TRUNCATE TABLE budget";
+            }
+            
+            NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
+
+            if (id != -1)
+            {
+                NpgsqlParameter expenseId = new NpgsqlParameter("Id", id);
+                command.Parameters.Add(expenseId);
+            }
+
+            NpgsqlDataReader reader = command.ExecuteReader();
+
+            reader.Close();
+            command.Dispose();
+
+            if (id != -1)
+            {
+                return "Expense deleted";
+            }
+            else
+            {
+                return "All expenses reset";
+            }
+        }  
     }
 }
