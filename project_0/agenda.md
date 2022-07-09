@@ -1,16 +1,8 @@
 Solo Presentation: July 20th
-
-Create simple budget CRUD app API that interfaces with CLI
-Take inputs from users for various things via Console.ReadLine();
-    
-    2. Create endpoints
-        - Edit expense by id
-        - Delete individual expense
     
     3. Refactor endpoints to better utilize OOP concepts        
-        ** what will the parent type look like?
-        - Can use overloading to change the route/command
-            *** use an abstract or virtual base api class ***
+        - Perhaps break up singular BudgetApi class into classes with similar
+        methods (get, delete, post, etc)
 
     4. Ask user for what command they want to give
         - Give a set of possible commands; automatically convert all responses to lower

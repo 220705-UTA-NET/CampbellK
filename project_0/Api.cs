@@ -1,7 +1,5 @@
 using System;
-using Microsoft.AspNetCore.Http;
 using Npgsql;
-using Database;
 
 namespace Api
 {
@@ -11,7 +9,9 @@ namespace Api
         
         public double ViewExpenseTotal(NpgsqlConnection dbConn)
         {
+            // sql command; use prepared statement for any user values
             NpgsqlCommand command = new NpgsqlCommand("SELECT amount FROM budget", dbConn);
+            // execute query and save results 
             NpgsqlDataReader reader = command.ExecuteReader();
 
             double expenseTotal = 0;
@@ -26,16 +26,13 @@ namespace Api
             // discard the command
             command.Dispose();
 
-            Console.WriteLine(expenseTotal);
             return expenseTotal;
         }
 
         public List<Dictionary<string, string>> viewExpenseDetails(NpgsqlConnection dbConn)
         {
-            // will want to set up a prepared statement
             NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM budget", dbConn);
 
-            // execute query and save results 
             NpgsqlDataReader reader = command.ExecuteReader();
 
             // list where table data will be saved
@@ -49,7 +46,7 @@ namespace Api
                 string? category = reader["category"].ToString();
                 string? date = reader["date"].ToString();
 
-                // combine the row data into a single struct to save to listOfEntries;
+                // combine the row data into a single dictionary to save to listOfEntries;
                 Dictionary<string, string> budgetEntry = new Dictionary<string, string>()
                 {
                     {"id", id},
@@ -70,7 +67,6 @@ namespace Api
 
         public string AddExpense(NpgsqlConnection dbConn, Expense newExpense)
         {
-            // need to create a prepared statement where you can imeplement the variables
 
             NpgsqlCommand command = new NpgsqlCommand("INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)", dbConn);
 

@@ -12,6 +12,7 @@ namespace Budget
     {
         static void Main(string[] args)
         {
+            // establish connection to database; needs to be passed in routing/api
             DbConnection connection = new DbConnection();
             NpgsqlConnection dbConn = connection.DbConnect();
 
@@ -19,7 +20,7 @@ namespace Budget
             var builder = WebApplication.CreateBuilder(args);
             var app = builder.Build();
 
-            // API routes -- https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-6.0
+            // API routes
             BudgetApi api = new BudgetApi();
             app.MapGet("/viewExpenseTotal", () => api.ViewExpenseTotal(dbConn));
 
@@ -54,7 +55,7 @@ namespace Budget
             // start web server: is blocking
             app.Run("http://localhost:3000");
 
-            // close the db connection; should this go elsewhere?
+            // close the db connection
             dbConn.Close();
         }
     }
