@@ -3,6 +3,15 @@ using Npgsql;
 
 namespace Api
 {
+    public class Expense
+    {
+        public int? Id {get; set;}
+        public string? Description {get; set;}
+        public double Amount {get; set;}
+        public string? Category {get; set;}
+        public string? Date {get; set;}
+    }
+    
     class BudgetApi
     {
         // set up consistent variables that all methods will need
@@ -65,53 +74,6 @@ namespace Api
             return listOfEntries;
         }
 
-        public string AddExpense(NpgsqlConnection dbConn, Expense newExpense)
-        {
-
-            NpgsqlCommand command = new NpgsqlCommand("INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)", dbConn);
-
-            NpgsqlParameter description = new NpgsqlParameter("Description", newExpense.Description);
-            NpgsqlParameter amount = new NpgsqlParameter("Amount", newExpense.Amount);
-            NpgsqlParameter category = new NpgsqlParameter("Category", newExpense.Category);
-            NpgsqlParameter date = new NpgsqlParameter("Date", newExpense.Date);
-
-            command.Parameters.Add(description);
-            command.Parameters.Add(amount);
-            command.Parameters.Add(category);
-            command.Parameters.Add(date);
-
-            NpgsqlDataReader reader = command.ExecuteReader();
-
-            reader.Close();
-            command.Dispose();
-
-            return "Entry successfully added";
-        }
-
-        public string UpdateExpense(NpgsqlConnection dbConn, int id, Expense updatedExpense)
-        {
-            NpgsqlCommand command = new NpgsqlCommand("UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id", dbConn);
-
-            NpgsqlParameter description = new NpgsqlParameter("Description", updatedExpense.Description);
-            NpgsqlParameter amount = new NpgsqlParameter("Amount", updatedExpense.Amount);
-            NpgsqlParameter category = new NpgsqlParameter("Category", updatedExpense.Category);
-            NpgsqlParameter date = new NpgsqlParameter("Date", updatedExpense.Date);
-            NpgsqlParameter updatedExpenseId = new NpgsqlParameter("Id", id);
-
-            command.Parameters.Add(description);
-            command.Parameters.Add(amount);
-            command.Parameters.Add(category);
-            command.Parameters.Add(date);
-            command.Parameters.Add(updatedExpenseId);
-
-            NpgsqlDataReader reader = command.ExecuteReader();
-
-            reader.Close();
-            command.Dispose();
-
-            return "Expense updated";
-        }
-
         public string deleteExpense(NpgsqlConnection dbConn, int id)
         {
             NpgsqlCommand command = new NpgsqlCommand("DELETE FROM budget WHERE id = @id", dbConn);
@@ -136,12 +98,72 @@ namespace Api
         }
     }
 
-    public class Expense
+    public class PostOrPut
     {
-        public int? Id {get; set;}
-        public string? Description {get; set;}
-        public double Amount {get; set;}
-        public string? Category {get; set;}
-        public string? Date {get; set;}
+        NpgsqlConnection dbConn;
+        Expense expense;
+        public int id;
+
+        // if Id is present, then we know it is UPDATE. If not, then we know it is POST
+        public PostOrPut(NpgsqlConnection dbConn, Expense expense, int id = -1)
+        {
+            this.dbConn = dbConn;
+            this.expense = expense;
+            this.id = id;
+        }
+
+        public string changeExpense()
+        {
+            string commandText;
+            // if a new insert rather than update an exisiting expense
+            if (id == -1)
+            {
+                commandText = "INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)";
+            }
+            else
+            {
+                commandText = "UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id";
+            }
+
+
+            NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
+
+            NpgsqlParameter description = new NpgsqlParameter("Description", expense.Description);
+            NpgsqlParameter amount = new NpgsqlParameter("Amount", expense.Amount);
+            NpgsqlParameter category = new NpgsqlParameter("Category", expense.Category);
+            NpgsqlParameter date = new NpgsqlParameter("Date", expense.Date);
+
+            // for UPDATE rather than POST
+            NpgsqlParameter updatedExpenseId = new NpgsqlParameter("Id", -1);
+            if (id != -1)
+            {
+                updatedExpenseId = new NpgsqlParameter("Id", id);
+            }
+
+            command.Parameters.Add(description);
+            command.Parameters.Add(amount);
+            command.Parameters.Add(category);
+            command.Parameters.Add(date);
+
+            // for UPDATE rather than POST
+            if (id != -1)
+            {
+                command.Parameters.Add(updatedExpenseId);
+            }
+
+            NpgsqlDataReader reader = command.ExecuteReader();
+
+            reader.Close();
+            command.Dispose();
+
+            if (id == -1)
+            {
+                return "Entry successfully added";
+            }
+            else 
+            {
+                return "Entry successfully updated";
+            }
+        }
     }
 }

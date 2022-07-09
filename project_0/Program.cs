@@ -36,7 +36,8 @@ namespace Budget
                 Expense newExpense = JsonSerializer.Deserialize<Expense>(requestBody); 
 
                 // once body has been parsed, can send to addExpense
-                api.AddExpense(dbConn, newExpense);
+                PostOrPut postOrPutRoutes = new PostOrPut(dbConn, newExpense, -1);
+                postOrPutRoutes.changeExpense();
              });
             
             app.MapPut("/editExpense/{id}", async (HttpRequest httpRequest, int id) => {
@@ -45,7 +46,8 @@ namespace Budget
 
                 Expense updatedExpense = JsonSerializer.Deserialize<Expense>(requestBody);
 
-                api.UpdateExpense(dbConn, id, updatedExpense);
+                PostOrPut postOrPutRoutes = new PostOrPut(dbConn, updatedExpense, id);
+                postOrPutRoutes.changeExpense();
             });
 
             app.MapDelete("/deleteExpense/{id}", (int id) => api.deleteExpense(dbConn, id));

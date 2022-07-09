@@ -1,8 +1,7 @@
 Solo Presentation: July 20th
     
     3. Refactor endpoints to better utilize OOP concepts        
-        - Perhaps break up singular BudgetApi class into classes with similar
-        methods (get, delete, post, etc)
+        - ** combine deletes into a single class
 
     4. Ask user for what command they want to give
         - Give a set of possible commands; automatically convert all responses to lower
