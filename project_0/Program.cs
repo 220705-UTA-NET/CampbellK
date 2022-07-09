@@ -47,7 +47,7 @@ namespace Budget
                 api.UpdateExpense(dbConn, id, updatedExpense);
             });
 
-            app.MapDelete("/deleteExpense/{id}", () => "Delete expense");
+            app.MapDelete("/deleteExpense/{id}", (int id) => api.deleteExpense(dbConn, id));
 
             app.MapDelete("/resetExpenses", () => api.resetExpenses(dbConn));
 

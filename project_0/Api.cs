@@ -116,6 +116,17 @@ namespace Api
             return "Expense updated";
         }
 
+        public string deleteExpense(NpgsqlConnection dbConn, int id)
+        {
+            NpgsqlCommand command = new NpgsqlCommand("DELETE FROM budget WHERE id = @id", dbConn);
+            NpgsqlDataReader reader = command.ExecuteReader();
+
+            reader.Close();
+            command.Dispose();
+
+            return "Expense deleted";
+        }
+
         public string resetExpenses(NpgsqlConnection dbConn)
         {
             NpgsqlCommand command = new NpgsqlCommand("TRUNCATE TABLE budget", dbConn);
