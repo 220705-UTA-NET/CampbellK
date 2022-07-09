@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Npgsql;
@@ -19,26 +19,21 @@ namespace Budget
             var builder = WebApplication.CreateBuilder(args);
             var app = builder.Build();
 
-            // ask for user input continuously -- perhaps in its own class?
-            // how do we get this working?
-
-            // Console.WriteLine("What would you like to do?");
-            // Console.WriteLine("1. View current balance  2. View past expenses  3. Add a new expense  4. Reset expenses");
-            // string? userCommand = Console.ReadLine();
-
             // API routes -- https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-6.0
             BudgetApi api = new BudgetApi();
             app.MapGet("/viewExpenseTotal", () => api.ViewExpenseTotal(dbConn));
             app.MapGet("/viewExpenseDetails", () => api.viewExpenseDetails(dbConn));
-            // app.MapPost("/newExpense", () => api.AddExpense(dbConn));
-             app.MapPost("/newExpense", async (HttpRequest httpRequest) => {
+            // for routes that need access to the request content, will need to parse the JSON first, then send that data on to the cooresponding method
+            app.MapPost("/newExpense", async (HttpRequest httpRequest) => {
 
-                // read request body for JSON
+                // read request body content
                 StreamReader reader = new StreamReader(httpRequest.Body);
                 string requestBody = await reader.ReadToEndAsync();
                 Console.WriteLine(requestBody);
 
-                // parse request body JSON
+                // parse request JSON into cooresponding expense class
+                Expense newExpense = JsonSerializer.Deserialize<Expense>(requestBody); 
+                Console.WriteLine(newExpense?.Amount);
 
                 // once body has been parsed, can send to addExpense
                 // api.AddExpense(dbConn);
