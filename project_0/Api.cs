@@ -62,9 +62,7 @@ namespace Api
                 listOfEntries.Add(budgetEntry);
             }
 
-            // end the reader
             reader.Close();
-            // discard the command
             command.Dispose();
 
             return listOfEntries;
@@ -88,16 +86,47 @@ namespace Api
 
             NpgsqlDataReader reader = command.ExecuteReader();
 
-            // end the reader
             reader.Close();
-            // discard the command
             command.Dispose();
 
             return "Entry successfully added";
         }
 
-        public void resetExpenses()
-        {}
+        public string UpdateExpense(NpgsqlConnection dbConn, int id, Expense updatedExpense)
+        {
+            NpgsqlCommand command = new NpgsqlCommand("UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id", dbConn);
+
+            NpgsqlParameter description = new NpgsqlParameter("Description", updatedExpense.Description);
+            NpgsqlParameter amount = new NpgsqlParameter("Amount", updatedExpense.Amount);
+            NpgsqlParameter category = new NpgsqlParameter("Category", updatedExpense.Category);
+            NpgsqlParameter date = new NpgsqlParameter("Date", updatedExpense.Date);
+            NpgsqlParameter updatedExpenseId = new NpgsqlParameter("Id", id);
+
+            command.Parameters.Add(description);
+            command.Parameters.Add(amount);
+            command.Parameters.Add(category);
+            command.Parameters.Add(date);
+            command.Parameters.Add(updatedExpenseId);
+
+            NpgsqlDataReader reader = command.ExecuteReader();
+
+            reader.Close();
+            command.Dispose();
+
+            return "Expense updated";
+        }
+
+        public string resetExpenses(NpgsqlConnection dbConn)
+        {
+            NpgsqlCommand command = new NpgsqlCommand("TRUNCATE TABLE budget", dbConn);
+
+            NpgsqlDataReader reader = command.ExecuteReader();
+
+            reader.Close();
+            command.Dispose();
+
+            return "Expense sheet reset";
+        }
     }
 
     public class Expense

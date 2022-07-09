@@ -3,10 +3,9 @@ Solo Presentation: July 20th
 Create simple budget CRUD app API that interfaces with CLI
 Take inputs from users for various things via Console.ReadLine();
     
-    1. Deserialze JSON into an *expense* class
-        - Current error: converting my given JSON to dateTime type
-
     2. Create endpoints
+        - Edit expense by id
+        - Delete individual expense
     
     3. Refactor endpoints to better utilize OOP concepts        
         ** what will the parent type look like?
