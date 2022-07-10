@@ -34,7 +34,6 @@ namespace Budget
             });
 
             app.MapPost("/newExpense", async (HttpRequest httpRequest) => {
-
                 // read request body content
                 StreamReader reader = new StreamReader(httpRequest.Body);
                 string requestBody = await reader.ReadToEndAsync();
@@ -43,7 +42,7 @@ namespace Budget
                 Expense newExpense = JsonSerializer.Deserialize<Expense>(requestBody); 
 
                 // once body has been parsed, can send to addExpense
-                PostAndPutRoutes postOrPutRoutes = new PostAndPutRoutes(dbConn, newExpense, -1);
+                PostAndPutRoutes postOrPutRoutes = new PostAndPutRoutes(dbConn, "INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)", newExpense, -1);
                 postOrPutRoutes.changeExpense();
              });
             
@@ -53,7 +52,7 @@ namespace Budget
 
                 Expense updatedExpense = JsonSerializer.Deserialize<Expense>(requestBody);
 
-                PostAndPutRoutes postOrPutRoutes = new PostAndPutRoutes(dbConn, updatedExpense, id);
+                PostAndPutRoutes postOrPutRoutes = new PostAndPutRoutes(dbConn, "UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id", updatedExpense, id);
                 postOrPutRoutes.changeExpense();
             });
 

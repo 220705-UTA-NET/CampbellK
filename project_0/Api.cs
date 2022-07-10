@@ -87,33 +87,19 @@ namespace Api
         }
     }
 
-    public class PostAndPutRoutes
+    public class PostAndPutRoutes : ApiMethods
     {
-        NpgsqlConnection dbConn;
         Expense expense;
         public int id;
 
-        // if Id is present, then we know it is UPDATE. If not, then we know it is POST
-        public PostAndPutRoutes(NpgsqlConnection dbConn, Expense expense, int id = -1)
+        public PostAndPutRoutes(NpgsqlConnection dbConn, string commandText, Expense expense, int id = -1) : base(dbConn, commandText)
         {
-            this.dbConn = dbConn;
             this.expense = expense;
             this.id = id;
         }
 
         public string changeExpense()
         {
-            string commandText;
-            // if a new insert rather than update an exisiting expense
-            if (id == -1)
-            {
-                commandText = "INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)";
-            }
-            else
-            {
-                commandText = "UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id";
-            }
-
             NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
 
             NpgsqlParameter description = new NpgsqlParameter("Description", expense.Description);
@@ -133,7 +119,7 @@ namespace Api
             command.Parameters.Add(category);
             command.Parameters.Add(date);
 
-            // for UPDATE rather than POST
+            // add id parameter for editExpense
             if (id != -1)
             {
                 command.Parameters.Add(updatedExpenseId);
