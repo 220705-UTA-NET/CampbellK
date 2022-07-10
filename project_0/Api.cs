@@ -141,30 +141,17 @@ namespace Api
         }
     }
 
-    public class DeleteRoutes
+    public class DeleteRoutes : ApiMethods
     {
-        NpgsqlConnection dbConn;
         public int id;
 
-        public DeleteRoutes(NpgsqlConnection dbConn, int id = -1)
+        public DeleteRoutes(NpgsqlConnection dbConn, string commandText, int id = -1) : base(dbConn, commandText)
         {
-            this.dbConn = dbConn;
             this.id = id;
         }
 
         public string deleteExpenses()
         {
-            string commandText;
-
-            if (id != -1)
-            {
-                commandText = "DELETE FROM budget WHERE id = @id";
-            }
-            else
-            {
-                commandText = "TRUNCATE TABLE budget";
-            }
-            
             NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
 
             if (id != -1)

@@ -21,8 +21,6 @@ namespace Budget
             var app = builder.Build();
 
             // API routes
-
-            // app.MapGet("/viewExpenseTotal", () => api.ViewExpenseTotal(dbConn));
             app.MapGet("/viewExpenseTotal", () => {
                 ReadRoutes api = new ReadRoutes(dbConn, "SELECT amount FROM budget");
                 api.ViewExpenseTotal();
@@ -57,12 +55,12 @@ namespace Budget
             });
 
             app.MapDelete("/deleteExpense/{id}", (int id) => {
-                DeleteRoutes deleteSingleExpense = new DeleteRoutes(dbConn, id);
+                DeleteRoutes deleteSingleExpense = new DeleteRoutes(dbConn, "DELETE FROM budget WHERE id = @id", id);
                 deleteSingleExpense.deleteExpenses();
             });
 
             app.MapDelete("/resetExpenses", () => {
-                DeleteRoutes deleteAllExpenses = new DeleteRoutes(dbConn, -1);
+                DeleteRoutes deleteAllExpenses = new DeleteRoutes(dbConn, "TRUNCATE TABLE budget", -1);
                 deleteAllExpenses.deleteExpenses();
             });
 
