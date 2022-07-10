@@ -1,10 +1,11 @@
 Solo Presentation: July 20th
     
-    3. Refactor endpoints to better utilize OOP concepts        
-        - keep BudgetAPI as base class that establishes the variables, maintains
-        the view totalExpenses & viewDetail methods, and have the other two
-        classes inherit to avoid having to re-establish the variables
+    3. Create a base budget API class that will serve as parent
+        - Make PostAndPut + DeleteRoutes child of ApiMethods
+    
+    ** Retest routes once parent super class is in place
 
+    ** Change protection levels to better reflect needs
 
 
     4. Ask user for what command they want to give
@@ -28,6 +29,8 @@ Solo Presentation: July 20th
     Set a savings goal; send email if go above it
 
     Fix null reference warnings
+
+    Add unit testing for endpoints
 
 
     

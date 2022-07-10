@@ -12,15 +12,28 @@ namespace Api
         public string? Date {get; set;}
     }
 
-    class BudgetApi
+    public class ApiMethods
     {
-        // set up consistent variables that all methods will need
-        
-        public double ViewExpenseTotal(NpgsqlConnection dbConn)
+        public NpgsqlConnection dbConn;
+        public string commandText = "";
+        public NpgsqlCommand command;
+
+        public ApiMethods(NpgsqlConnection dbConn, string commandText)
         {
+            this.dbConn = dbConn;
+            this.commandText = commandText;
             // sql command; use prepared statement for any user values
-            NpgsqlCommand command = new NpgsqlCommand("SELECT amount FROM budget", dbConn);
-            // execute query and save results 
+            this.command = new NpgsqlCommand(commandText, dbConn);
+        }
+    }
+
+    public class ReadRoutes: ApiMethods
+    {
+        public ReadRoutes(NpgsqlConnection dbConn, string commandText) : base(dbConn, commandText)
+        {}
+        
+        public double ViewExpenseTotal()
+        {
             NpgsqlDataReader reader = command.ExecuteReader();
 
             double expenseTotal = 0;
@@ -38,9 +51,8 @@ namespace Api
             return expenseTotal;
         }
 
-        public List<Dictionary<string, string>> viewExpenseDetails(NpgsqlConnection dbConn)
+        public List<Dictionary<string, string>> ViewExpenseDetails()
         {
-            NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM budget", dbConn);
 
             NpgsqlDataReader reader = command.ExecuteReader();
 
@@ -75,14 +87,14 @@ namespace Api
         }
     }
 
-    public class PostOrPutRoutes
+    public class PostAndPutRoutes
     {
         NpgsqlConnection dbConn;
         Expense expense;
         public int id;
 
         // if Id is present, then we know it is UPDATE. If not, then we know it is POST
-        public PostOrPutRoutes(NpgsqlConnection dbConn, Expense expense, int id = -1)
+        public PostAndPutRoutes(NpgsqlConnection dbConn, Expense expense, int id = -1)
         {
             this.dbConn = dbConn;
             this.expense = expense;

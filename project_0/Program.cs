@@ -21,10 +21,17 @@ namespace Budget
             var app = builder.Build();
 
             // API routes
-            BudgetApi api = new BudgetApi();
-            app.MapGet("/viewExpenseTotal", () => api.ViewExpenseTotal(dbConn));
 
-            app.MapGet("/viewExpenseDetails", () => api.viewExpenseDetails(dbConn));
+            // app.MapGet("/viewExpenseTotal", () => api.ViewExpenseTotal(dbConn));
+            app.MapGet("/viewExpenseTotal", () => {
+                ReadRoutes api = new ReadRoutes(dbConn, "SELECT amount FROM budget");
+                api.ViewExpenseTotal();
+            });
+
+            app.MapGet("/viewExpenseDetails", () => {
+                ReadRoutes api = new ReadRoutes(dbConn, "SELECT * FROM budget");
+                api.ViewExpenseDetails();
+            });
 
             app.MapPost("/newExpense", async (HttpRequest httpRequest) => {
 
@@ -36,7 +43,7 @@ namespace Budget
                 Expense newExpense = JsonSerializer.Deserialize<Expense>(requestBody); 
 
                 // once body has been parsed, can send to addExpense
-                PostOrPutRoutes postOrPutRoutes = new PostOrPutRoutes(dbConn, newExpense, -1);
+                PostAndPutRoutes postOrPutRoutes = new PostAndPutRoutes(dbConn, newExpense, -1);
                 postOrPutRoutes.changeExpense();
              });
             
@@ -46,7 +53,7 @@ namespace Budget
 
                 Expense updatedExpense = JsonSerializer.Deserialize<Expense>(requestBody);
 
-                PostOrPutRoutes postOrPutRoutes = new PostOrPutRoutes(dbConn, updatedExpense, id);
+                PostAndPutRoutes postOrPutRoutes = new PostAndPutRoutes(dbConn, updatedExpense, id);
                 postOrPutRoutes.changeExpense();
             });
 
