@@ -1,16 +1,17 @@
 Solo Presentation: July 20th
     
     1. Ask user for what command they want to give in a seperate class: 
-        - Does not work; once server starts it is entirely blocking
-            ** is there a way to open a new thread?
-                - Perhaps open the server on a new thread
+        - test new expense. IT WORKS!!
+    
+
+    2. After the first or second command, system crashes
 
     
-    2. Handle warnings 
+    3. Handle warnings 
         - Make grabbing of environmental variables its own method within Main
         and error handle with try/catch
 
-    3. For each request, save the information to a txt file or something?
+    4. For each request, save the information to a txt file or something?
         - Is console really the best way?
         - Perhaps create some sort of identifier to make it easier to read
 
