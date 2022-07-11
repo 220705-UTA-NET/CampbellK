@@ -1,14 +1,7 @@
 Solo Presentation: July 20th
     
-    1. Ask user for what command they want to give in a seperate class: 
-
-        - Edit does not work:
-            * Not printing all expenses (probably just need to wrinteline)
-            * even when given an id, nothing seems to happen
-
-    
-
-    2. After the first or second command, system crashes
+    2. After the first or second command, system crashes (exception when trying
+    to change request url?)
 
     
     3. Handle warnings 
@@ -17,6 +10,16 @@ Solo Presentation: July 20th
 
     
     5. Remove either the WriteLine or return in the API methods
+
+
+    6. Clean up console logs
+
+
+    7. Throw exceptions in catch() blocks
+
+
+    8. Clean-up; write more comments @ top of file to better instruct where
+    things are coming from
 
 --------------------------------------------------------------------------------
 

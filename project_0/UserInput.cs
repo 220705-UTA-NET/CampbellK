@@ -83,24 +83,6 @@ namespace UserInteraction
 
                     Console.WriteLine("Editing expenditure. Type the relevant information. If you wish to keep something the same, give a blank response");
 
-                    // Expense editedInformation = new Expense();
-
-                    // Console.WriteLine("Description:");
-                    // editedInformation.Description = Console.ReadLine();
-
-                    // Console.WriteLine("Amount:");
-                    // editedInformation.Amount = Convert.ToDouble(Console.ReadLine()); 
-                    
-                    // Console.WriteLine("Category:");
-                    // editedInformation.Category = Console.ReadLine();
-                
-                    // Console.WriteLine("Date:");
-                    // editedInformation.Date = Console.ReadLine();
-
-                    // var editedContent = JsonSerializer.Serialize(editedInformation);
-
-                    // StringContent editedStringContent = new StringContent(editedContent);
-
                     StringContent editedStringContent = gatherExpenseInfo();
                     
                     try 
