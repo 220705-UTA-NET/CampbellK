@@ -1,7 +1,11 @@
 Solo Presentation: July 20th
     
     1. Ask user for what command they want to give in a seperate class: 
-        - test new expense. IT WORKS!!
+
+        - Edit does not work:
+            * Not printing all expenses (probably just need to wrinteline)
+            * even when given an id, nothing seems to happen
+
     
 
     2. After the first or second command, system crashes
@@ -11,9 +15,8 @@ Solo Presentation: July 20th
         - Make grabbing of environmental variables its own method within Main
         and error handle with try/catch
 
-    4. For each request, save the information to a txt file or something?
-        - Is console really the best way?
-        - Perhaps create some sort of identifier to make it easier to read
+    
+    5. Remove either the WriteLine or return in the API methods
 
 --------------------------------------------------------------------------------
 
@@ -27,6 +30,10 @@ Solo Presentation: July 20th
     4. Simple auth (fail to login, shut down), transactions only with given name;
 
     5. Add unit testing for endpoints
+
+    6. For each request, save the information to a txt file or something?
+    - Is console really the best way?
+    - Perhaps create some sort of identifier to make it easier to read
 
 
     

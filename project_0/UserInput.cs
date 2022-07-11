@@ -65,27 +65,9 @@ namespace UserInteraction
                     break;
 
                 case "3":
-                    // combine the above into an object & serialize it for post request
-                    Expense newExpense = new Expense();
-
                     Console.WriteLine("Creating a new expenditure. Type the relevant information...");
 
-                    Console.WriteLine("Description:");
-                    newExpense.Description = Console.ReadLine();
-
-                    Console.WriteLine("Amount:");
-                    newExpense.Amount = Convert.ToDouble(Console.ReadLine()); 
-                    
-                    Console.WriteLine("Category:");
-                    newExpense.Category = Console.ReadLine();
-                
-                    Console.WriteLine("Date:");
-                    newExpense.Date = Console.ReadLine();
-
-                    // serializing newExpense
-                    var content = JsonSerializer.Serialize(newExpense);
-                    // wrapping JSON to enable adding it to body of request
-                    StringContent stringContent = new StringContent(content);
+                    StringContent stringContent = gatherExpenseInfo();
 
                     thread.Start();
                     client.PostAsync($"http://localhost:3000/newExpense", stringContent);
@@ -97,13 +79,34 @@ namespace UserInteraction
                     fetchAllExpenseDetails();
 
                     Console.WriteLine("Type the id of the expense you would like to edit:");
-                    string expenseToEdit = Console.ReadLine();
+                    string expenseToEditId = Console.ReadLine();
+
+                    Console.WriteLine("Editing expenditure. Type the relevant information. If you wish to keep something the same, give a blank response");
+
+                    // Expense editedInformation = new Expense();
+
+                    // Console.WriteLine("Description:");
+                    // editedInformation.Description = Console.ReadLine();
+
+                    // Console.WriteLine("Amount:");
+                    // editedInformation.Amount = Convert.ToDouble(Console.ReadLine()); 
+                    
+                    // Console.WriteLine("Category:");
+                    // editedInformation.Category = Console.ReadLine();
+                
+                    // Console.WriteLine("Date:");
+                    // editedInformation.Date = Console.ReadLine();
+
+                    // var editedContent = JsonSerializer.Serialize(editedInformation);
+
+                    // StringContent editedStringContent = new StringContent(editedContent);
+
+                    StringContent editedStringContent = gatherExpenseInfo();
                     
                     try 
                     {
                         thread.Start();
-                        client.GetAsync($"http://localhost:3000/editExpense/{expenseToEdit}");
-                        break;
+                        client.PutAsync($"http://localhost:3000/editExpense/{expenseToEditId}", editedStringContent);
                     }
                     catch (Exception ex)
                     {
@@ -123,7 +126,7 @@ namespace UserInteraction
                     try 
                     {
                         thread.Start();
-                        client.GetAsync($"http://localhost:3000/deleteExpense/{expenseToDelete}");
+                        client.DeleteAsync($"http://localhost:3000/deleteExpense/{expenseToDelete}");
                         break;
                     }
                     catch (Exception ex)
@@ -161,7 +164,32 @@ namespace UserInteraction
         {
             Thread showCurrentExpensesThread = new Thread(() => startWebServer());
             showCurrentExpensesThread.Start();
-            client.GetAsync($"http://localhost:3000/viewExpenseTotal");
+            client.GetAsync($"http://localhost:3000/viewExpenseDetails");
+        }
+
+        private StringContent gatherExpenseInfo()
+        {
+            // combine the below responses into an object & serialize it for post request
+            Expense editedInformation = new Expense();
+
+            Console.WriteLine("Description:");
+            editedInformation.Description = Console.ReadLine();
+
+            Console.WriteLine("Amount:");
+            editedInformation.Amount = Convert.ToDouble(Console.ReadLine()); 
+            
+            Console.WriteLine("Category:");
+            editedInformation.Category = Console.ReadLine();
+        
+            Console.WriteLine("Date:");
+            editedInformation.Date = Console.ReadLine();
+
+            // serializing expense
+            var editedContent = JsonSerializer.Serialize(editedInformation);
+            // wrapping JSON to enable adding it to body of request
+            StringContent editedStringContent = new StringContent(editedContent);
+
+            return editedStringContent;
         }
     } 
 }

@@ -63,6 +63,8 @@ namespace Api
             // list where table data will be saved
             List<Dictionary<string, string>> listOfEntries = new List<Dictionary<string, string>>();
 
+            Console.WriteLine($"Id:\t\t Description:\t\t Amount:\t\t Category:\t\t Date:\t\t");
+
             while (reader.Read())
             {
                 string? id = reader["id"].ToString();
@@ -82,6 +84,8 @@ namespace Api
                 };
 
                 listOfEntries.Add(budgetEntry);
+
+                Console.WriteLine($"{id}\t\t\t {description}\t\t\t {amount}\t\t\t {category}\t\t {date}");
             }
 
             reader.Close();
@@ -136,10 +140,12 @@ namespace Api
 
             if (id == -1)
             {
+                Console.WriteLine("Entry successfully added");
                 return "Entry successfully added";
             }
             else 
             {
+                Console.WriteLine("Entry successfully updated");
                 return "Entry successfully updated";
             }
         }
@@ -171,10 +177,12 @@ namespace Api
 
             if (id != -1)
             {
+                Console.WriteLine("Expense deleted");
                 return "Expense deleted";
             }
             else
             {
+                Console.WriteLine("All expenses reset");
                 return "All expenses reset";
             }
         }  
