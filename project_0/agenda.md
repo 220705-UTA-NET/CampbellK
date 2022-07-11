@@ -1,36 +1,31 @@
 Solo Presentation: July 20th
     
-    3. Create a base budget API class that will serve as parent
-        - Make PostAndPut + DeleteRoutes child of ApiMethods
+    1. Ask user for what command they want to give in a seperate class: 
+        - Does not work; once server starts it is entirely blocking
+            ** is there a way to open a new thread?
+                - Perhaps open the server on a new thread
+
     
-    ** Retest routes once parent super class is in place
+    2. Handle warnings 
+        - Make grabbing of environmental variables its own method within Main
+        and error handle with try/catch
 
-    ** Change protection levels to better reflect needs
-
-
-    4. Ask user for what command they want to give
-        - Give a set of possible commands; automatically convert all responses to lower
-        - if a typo or unavailable option, rerun Console.ReadLine();
-        - if null, give another response and rerun Console.ReadLine();
-
-        - With given command, create http request
+    3. For each request, save the information to a txt file or something?
+        - Is console really the best way?
+        - Perhaps create some sort of identifier to make it easier to read
 
 --------------------------------------------------------------------------------
 
     Further functionality:
-    - Current monthly expenditure & how much we have left to spend
-    - Categories
-    - Simple auth (fail to login, shut down), transactions only with given name;
+    1. Set a savings goal; send email if go above it
 
-    Keep all console interactions seperate, into its own class perhaps?
-        - Print to console, but also return to user? (postman)
-        - Look @ banking app with string builder to make a clean post to console
-    
-    Set a savings goal; send email if go above it
+    2. Current monthly expenditure & how much we have left to spend
 
-    Fix null reference warnings
+    3. Categories
 
-    Add unit testing for endpoints
+    4. Simple auth (fail to login, shut down), transactions only with given name;
+
+    5. Add unit testing for endpoints
 
 
     

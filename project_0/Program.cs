@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Npgsql;
 using Database;
 using Api;
+using UserInteraction;
 
 namespace Budget
 {
@@ -37,7 +38,7 @@ namespace Budget
                 string requestBody = await reader.ReadToEndAsync();
 
                 // parse request JSON into cooresponding expense class
-                Expense newExpense = JsonSerializer.Deserialize<Expense>(requestBody); 
+                Expense? newExpense = JsonSerializer.Deserialize<Expense>(requestBody); 
 
                 // once body has been parsed, can send to addExpense
                 PostAndPutRoutes postOrPutRoutes = new PostAndPutRoutes(dbConn, "INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)", newExpense, -1);
@@ -48,7 +49,7 @@ namespace Budget
                 StreamReader reader = new StreamReader(httpRequest.Body);
                 string requestBody = await reader.ReadToEndAsync();
 
-                Expense updatedExpense = JsonSerializer.Deserialize<Expense>(requestBody);
+                Expense? updatedExpense = JsonSerializer.Deserialize<Expense>(requestBody);
 
                 PostAndPutRoutes postOrPutRoutes = new PostAndPutRoutes(dbConn, "UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id", updatedExpense, id);
                 postOrPutRoutes.changeExpense();
@@ -64,10 +65,11 @@ namespace Budget
                 deleteAllExpenses.deleteExpenses();
             });
 
-            // start web server: is blocking
-            app.Run("http://localhost:3000");
+            // ask for user commands and respond accordingly
+            UserInput userInput = new UserInput(app);
+            userInput.askUserInput();
 
-            // close the db connection
+            // close the db connection @ program finish
             dbConn.Close();
         }
     }

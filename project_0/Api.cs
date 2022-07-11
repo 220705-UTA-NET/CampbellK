@@ -43,6 +43,10 @@ namespace Api
                 expenseTotal += reader.GetDouble(0);
             }
 
+            Console.WriteLine("");
+            Console.WriteLine(expenseTotal);
+            Console.WriteLine("");
+
             // end the reader
             reader.Close();
             // discard the command
@@ -90,7 +94,7 @@ namespace Api
     public class PostAndPutRoutes : ApiMethods
     {
         Expense expense;
-        public int id;
+        private int id;
 
         public PostAndPutRoutes(NpgsqlConnection dbConn, string commandText, Expense expense, int id = -1) : base(dbConn, commandText)
         {
@@ -143,7 +147,7 @@ namespace Api
 
     public class DeleteRoutes : ApiMethods
     {
-        public int id;
+        private int id;
 
         public DeleteRoutes(NpgsqlConnection dbConn, string commandText, int id = -1) : base(dbConn, commandText)
         {
