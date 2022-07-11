@@ -1,8 +1,14 @@
 Solo Presentation: July 20th
     
-    2. After the first or second command, system crashes (exception when trying
-    to change request url?)
+    2. Test all endpoints
+        - 1, 2, 3 all work
+        - 4 works, but crashes after words
+            "Changing the URL is not supported because Addresses IsReadOnly."
+        - 5 works, but crashes after words
+            "Changing the URL is not supported because Addresses IsReadOnly."
 
+
+        - 6 Should work, but haven't tested it yet
     
     3. Handle warnings 
         - Make grabbing of environmental variables its own method within Main
