@@ -1,8 +1,4 @@
-// probably does not need child classes and such
-// really just asking for user input
 using Microsoft.AspNetCore.Builder;
-using System.Threading;
-using System.Net.Http;
 using System.Text.Json;
 using Api;
 using Routes;
@@ -13,7 +9,7 @@ namespace UserInteraction
     public class UserInput
     {
         bool exit = false;
-        public WebApplication app;
+        public WebApplication? app;
         NpgsqlConnection dbConn;
         string[] args;
         // other threads may take some time to shut down, so utilizing various ports to avoid conflict
@@ -53,7 +49,7 @@ namespace UserInteraction
             }
         }
 
-        private void handleUserInput(string userInput, HttpClient client)
+        private void handleUserInput(string? userInput, HttpClient client)
         {
             // create additional thread to run the web server (since it is blocking)
             Thread thread = new Thread(() => startWebServer());
@@ -61,20 +57,20 @@ namespace UserInteraction
             switch(userInput)
             {
                 case "1":
-                    Console.WriteLine("Viewing expenes total...");
+                    Console.WriteLine($"\n Viewing expenes total... \n");
 
                     thread.Start();
                     client.GetAsync($"http://localhost:{port}/viewExpenseTotal");
                     break;
 
                 case "2":
-                    Console.WriteLine("Viewing all expenses...");
+                    Console.WriteLine("\n Viewing all expenses...\n");
                     
                     fetchAllExpenseDetails(client);
                     break;
 
                 case "3":
-                    Console.WriteLine("Creating a new expenditure. Type the relevant information...");
+                    Console.WriteLine($"\n Creating a new expenditure. Type the relevant information... \n");
 
                     StringContent stringContent = gatherExpenseInfo();
 
@@ -83,14 +79,14 @@ namespace UserInteraction
                     break;
 
                 case "4":
-                    Console.WriteLine("Which expense would like to edit?");
+                    Console.WriteLine($"\n Which expense would like to edit? ]\n");
 
                     fetchAllExpenseDetails(client);
 
-                    Console.WriteLine("Type the id of the expense you would like to edit:");
-                    string expenseToEditId = Console.ReadLine();
+                    Console.WriteLine($"\n Type the id of the expense you would like to edit: \n");
+                    string? expenseToEditId = Console.ReadLine();
 
-                    Console.WriteLine("Editing expenditure. Type the relevant information. If you wish to keep something the same, give a blank response");
+                    Console.WriteLine($"\n Editing expenditure. Type the relevant information. \n");
 
                     StringContent editedStringContent = gatherExpenseInfo();
                     
@@ -101,18 +97,18 @@ namespace UserInteraction
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("The request failed. Double check the Id you submitted");
+                        Console.WriteLine($"\n The request failed: {ex} \n");
                     }
 
                     break;
 
                 case "5":
-                    Console.WriteLine("Which expense would like to delete?");
+                    Console.WriteLine($"\n Which expense would like to delete? \n");
 
                     fetchAllExpenseDetails(client);
 
-                    Console.WriteLine("Type the id of the expense you would like to edit:");
-                    string expenseToDelete = Console.ReadLine();
+                    Console.WriteLine($"\n Type the id of the expense you would like to edit: \n");
+                    string? expenseToDelete = Console.ReadLine();
                     
                     try 
                     {
@@ -122,25 +118,25 @@ namespace UserInteraction
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("The request failed. Double check the Id you submitted");
+                        Console.WriteLine($"\n The request failed: {ex} \n");
                     }
 
                     break;
 
                 case "6":
-                    Console.WriteLine("Reseting expenses...");
+                    Console.WriteLine($"\n Reseting expenses... \n");
                     
                     thread.Start();
                     client.GetAsync($"http://localhost:{port}/resetExpense");
                     break;
 
                 case "0":
-                    Console.WriteLine("Terminating program...");
+                    Console.WriteLine($"\n Terminating program... \n");
                     exit = true;
                     break;
 
                 default:
-                    Console.WriteLine("Command not recognized, please try again.");
+                    Console.WriteLine($"\n Command not recognized, please try again. \n");
                     break;
             }
         }
@@ -148,7 +144,7 @@ namespace UserInteraction
         private void startWebServer()
         {
             // open server connection
-            app.Run($"http://localhost:{port}");
+            app?.Run($"http://localhost:{port}");
         }
 
         private void fetchAllExpenseDetails(HttpClient client)

@@ -32,7 +32,7 @@ namespace Api
         public ReadRoutes(NpgsqlConnection dbConn, string commandText) : base(dbConn, commandText)
         {}
         
-        public double ViewExpenseTotal()
+        public void ViewExpenseTotal()
         {
             NpgsqlDataReader reader = command.ExecuteReader();
 
@@ -43,19 +43,15 @@ namespace Api
                 expenseTotal += reader.GetDouble(0);
             }
 
-            Console.WriteLine("");
-            Console.WriteLine(expenseTotal);
-            Console.WriteLine("");
+            Console.WriteLine($"\n Expense Total: \n {expenseTotal} \n");
 
             // end the reader
             reader.Close();
             // discard the command
             command.Dispose();
-
-            return expenseTotal;
         }
 
-        public List<Dictionary<string, string>> ViewExpenseDetails()
+        public void ViewExpenseDetails()
         {
 
             NpgsqlDataReader reader = command.ExecuteReader();
@@ -90,8 +86,6 @@ namespace Api
 
             reader.Close();
             command.Dispose();
-
-            return listOfEntries;
         }
     }
 
@@ -106,7 +100,7 @@ namespace Api
             this.id = id;
         }
 
-        public string changeExpense()
+        public void changeExpense()
         {
             NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
 
@@ -141,12 +135,10 @@ namespace Api
             if (id == -1)
             {
                 Console.WriteLine("Entry successfully added");
-                return "Entry successfully added";
             }
             else 
             {
                 Console.WriteLine("Entry successfully updated");
-                return "Entry successfully updated";
             }
         }
     }
@@ -160,7 +152,7 @@ namespace Api
             this.id = id;
         }
 
-        public string deleteExpenses()
+        public void deleteExpenses()
         {
             NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
 
@@ -178,12 +170,10 @@ namespace Api
             if (id != -1)
             {
                 Console.WriteLine("Expense deleted");
-                return "Expense deleted";
             }
             else
             {
                 Console.WriteLine("All expenses reset");
-                return "All expenses reset";
             }
         }  
     }
