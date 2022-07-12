@@ -1,6 +1,10 @@
 using System;
 using Npgsql;
+using UserInteraction;
 
+// contains all API functionality used by the Routes namespace
+// parent class: ApiMethods. Accepts and establishes the database connection and the sql command
+// chidlren: ReadRoutes, PostAndPutRoutes, and DeleteRoutes
 namespace Api
 {
     public class Expense
@@ -49,6 +53,9 @@ namespace Api
             reader.Close();
             // discard the command
             command.Dispose();
+            // re-print the interaction menu
+            DisplayInformation displayInfo = new DisplayInformation();
+            displayInfo.displayInteractionMenu();
         }
 
         public void ViewExpenseDetails()
@@ -86,6 +93,8 @@ namespace Api
 
             reader.Close();
             command.Dispose();
+            DisplayInformation displayInfo = new DisplayInformation();
+            displayInfo.displayInteractionMenu();
         }
     }
 
@@ -135,10 +144,16 @@ namespace Api
             if (id == -1)
             {
                 Console.WriteLine("Entry successfully added");
+
+                DisplayInformation displayInfo = new DisplayInformation();
+                displayInfo.displayInteractionMenu();
             }
             else 
             {
                 Console.WriteLine("Entry successfully updated");
+
+                DisplayInformation displayInfo = new DisplayInformation();
+                displayInfo.displayInteractionMenu();
             }
         }
     }
@@ -170,10 +185,15 @@ namespace Api
             if (id != -1)
             {
                 Console.WriteLine("Expense deleted");
+
+                DisplayInformation displayInfo = new DisplayInformation();
+                displayInfo.displayInteractionMenu();
             }
             else
             {
                 Console.WriteLine("All expenses reset");
+                DisplayInformation displayInfo = new DisplayInformation();
+                displayInfo.displayInteractionMenu();
             }
         }  
     }

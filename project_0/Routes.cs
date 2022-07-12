@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Builder;
 using Npgsql;
 using Api;
 
+// contains all routes to be used by the web server
+// returns *app*, needed to start up the web server in the additional threads created in UserInput namespace
 namespace Routes
 {
     public class ApiRoutes

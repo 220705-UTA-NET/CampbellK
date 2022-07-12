@@ -4,13 +4,16 @@ using Api;
 using Routes;
 using Npgsql;
 
+// contains the code for handling all user interaction with the console and the multi-threading required to both run a web server & interact with it simultaneously
 namespace UserInteraction
 {
     public class UserInput
     {
         bool exit = false;
+        bool firstLoop = true;
         public WebApplication? app;
         NpgsqlConnection dbConn;
+        // drilled down from main; required fro WebApplication.CreateBuilder()
         string[] args;
         // other threads may take some time to shut down, so utilizing various ports to avoid conflict
         int port = 3000;
@@ -27,20 +30,17 @@ namespace UserInteraction
             {
                 // establish server connection & routes
                 ApiRoutes apiRoutes = new ApiRoutes();
-
+                // app needs to be re-recreated for each loop since it is readonly after creation (and therefore cannot change the url)
                 app = apiRoutes.EstablishRoutes(dbConn, args);
 
-                // client to fire http requests
                 HttpClient client = new HttpClient();
 
-                Console.WriteLine("Please type the number that cooresponds to your desired action:");
-                Console.WriteLine("1. View total expenditure");
-                Console.WriteLine("2. View all expense details");
-                Console.WriteLine("3. Create a new expenditure");
-                Console.WriteLine("4. Edit an existing expenditure");
-                Console.WriteLine("5. Delete an expenditure");
-                Console.WriteLine("6. Reset expenses");
-                Console.WriteLine("0. End");
+                if (firstLoop)
+                {
+                    DisplayInformation displayInfo = new DisplayInformation();
+                    displayInfo.displayInteractionMenu();
+                    firstLoop = false;
+                }
 
                 string? userAction = Console.ReadLine();
                 handleUserInput(userAction, client);
@@ -57,7 +57,7 @@ namespace UserInteraction
             switch(userInput)
             {
                 case "1":
-                    Console.WriteLine($"\n Viewing expenes total... \n");
+                    Console.WriteLine("\n Viewing expenes total... \n");
 
                     thread.Start();
                     client.GetAsync($"http://localhost:{port}/viewExpenseTotal");
@@ -70,7 +70,7 @@ namespace UserInteraction
                     break;
 
                 case "3":
-                    Console.WriteLine($"\n Creating a new expenditure. Type the relevant information... \n");
+                    Console.WriteLine("\n Creating a new expenditure. Type the relevant information... \n");
 
                     StringContent stringContent = gatherExpenseInfo();
 
@@ -79,14 +79,12 @@ namespace UserInteraction
                     break;
 
                 case "4":
-                    Console.WriteLine($"\n Which expense would like to edit? ]\n");
+                    Console.WriteLine("\n Which expense would like to edit? \n");
 
-                    fetchAllExpenseDetails(client);
-
-                    Console.WriteLine($"\n Type the id of the expense you would like to edit: \n");
+                    Console.WriteLine("\n Type the id of the expense you would like to edit: \n");
                     string? expenseToEditId = Console.ReadLine();
 
-                    Console.WriteLine($"\n Editing expenditure. Type the relevant information. \n");
+                    Console.WriteLine("\n Editing expenditure. Type the relevant information. \n");
 
                     StringContent editedStringContent = gatherExpenseInfo();
                     
@@ -103,11 +101,9 @@ namespace UserInteraction
                     break;
 
                 case "5":
-                    Console.WriteLine($"\n Which expense would like to delete? \n");
+                    Console.WriteLine("\n Which expense would like to delete? \n");
 
-                    fetchAllExpenseDetails(client);
-
-                    Console.WriteLine($"\n Type the id of the expense you would like to edit: \n");
+                    Console.WriteLine("\n Type the id of the expense you would like to delete: \n");
                     string? expenseToDelete = Console.ReadLine();
                     
                     try 
@@ -124,26 +120,27 @@ namespace UserInteraction
                     break;
 
                 case "6":
-                    Console.WriteLine($"\n Reseting expenses... \n");
+                    Console.WriteLine("\n Reseting expenses... \n");
                     
                     thread.Start();
-                    client.GetAsync($"http://localhost:{port}/resetExpense");
+                    client.DeleteAsync($"http://localhost:{port}/resetExpenses");
                     break;
 
                 case "0":
-                    Console.WriteLine($"\n Terminating program... \n");
+                    Console.WriteLine("\n Terminating program... \n");
                     exit = true;
+                    app?.StopAsync();
                     break;
 
                 default:
-                    Console.WriteLine($"\n Command not recognized, please try again. \n");
+                    Console.WriteLine("\n Command not recognized, please try again. \n");
                     break;
             }
         }
 
         private void startWebServer()
         {
-            // open server connection
+            // open server connection; blocking
             app?.Run($"http://localhost:{port}");
         }
 
@@ -179,4 +176,19 @@ namespace UserInteraction
             return editedStringContent;
         }
     } 
+
+    class DisplayInformation
+    {
+        public void displayInteractionMenu()
+        {
+            Console.WriteLine("\n Please type the number that cooresponds to your desired action: \n");
+            Console.WriteLine("1. View total expenditure");
+            Console.WriteLine("2. View all expense details");
+            Console.WriteLine("3. Create a new expenditure");
+            Console.WriteLine("4. Edit an existing expenditure");
+            Console.WriteLine("5. Delete an expenditure");
+            Console.WriteLine("6. Reset expenses");
+            Console.WriteLine("0. End \n");
+        }
+    }
 }

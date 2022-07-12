@@ -1,16 +1,6 @@
 Solo Presentation: July 20th
-    
-    5. Menu does not re-appear right after a selection has been finished;
-        - Rather, it re-shows once you make another choice
-    
-    6. Exit does not entirely shut the program down 
 
-
-    7. Throw exceptions in catch() blocks
-
-
-    8. Clean-up; write more comments @ top of file to better instruct where
-    things are coming from
+    1. Test all endpoints
 
 --------------------------------------------------------------------------------
 
@@ -19,9 +9,8 @@ Solo Presentation: July 20th
 
     2. Current monthly expenditure & how much we have left to spend
 
-    3. Grab all expenses by a particular category
-
-    4. Simple auth (fail to login, shut down), transactions only with given name;
+    3. Add other endpoints
+        - Grab all expenses by a particular category
 
     5. Add unit testing for endpoints
 
