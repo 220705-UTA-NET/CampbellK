@@ -17,16 +17,20 @@ namespace Routes
             var app = builder.Build();
 
             // API routes
+
+            // show sum of all expense costs
             app.MapGet("/viewExpenseTotal", () => {
                 ReadRoutes api = new ReadRoutes(dbConn, "SELECT amount FROM budget");
                 api.ViewExpenseTotal();
             });
 
+            // show details for all expenses
             app.MapGet("/viewExpenseDetails", () => {
                 ReadRoutes api = new ReadRoutes(dbConn, "SELECT * FROM budget");
                 api.ViewExpenseDetails();
             });
 
+            // add a new expense
             app.MapPost("/newExpense", async (HttpRequest httpRequest) => {
                 // read request body content
                 StreamReader reader = new StreamReader(httpRequest.Body);
@@ -40,6 +44,7 @@ namespace Routes
                 postOrPutRoutes.changeExpense();
                 });
             
+            // edit an existing expense
             app.MapPut("/editExpense/{id}", async (HttpRequest httpRequest, int id) => {
                 StreamReader reader = new StreamReader(httpRequest.Body);
                 string requestBody = await reader.ReadToEndAsync();
@@ -50,14 +55,33 @@ namespace Routes
                 postOrPutRoutes.changeExpense();
             });
 
+            // delete a particular expense
             app.MapDelete("/deleteExpense/{id}", (int id) => {
                 DeleteRoutes deleteSingleExpense = new DeleteRoutes(dbConn, "DELETE FROM budget WHERE id = @id", id);
                 deleteSingleExpense.deleteExpenses();
             });
 
+            // delete all expenses
             app.MapDelete("/resetExpenses", () => {
                 DeleteRoutes deleteAllExpenses = new DeleteRoutes(dbConn, "TRUNCATE TABLE budget", -1);
                 deleteAllExpenses.deleteExpenses();
+            });
+
+            // set a budget goal
+            app.MapPost("/setBudget", async (HttpRequest httpRequest) => {
+                StreamReader reader = new StreamReader(httpRequest.Body);
+                string requestBody = await reader.ReadToEndAsync();
+
+                string? newBudget = JsonSerializer.Deserialize<string>(requestBody);
+
+               Users setBudget = new Users(dbConn, $"INSERT INTO budgetGoal (budget) VALUES ({newBudget})"); 
+               setBudget.setBudgetGoal();
+            });
+
+            // view current budget
+            app.MapGet("/viewBudget", () => {
+               Users viewCurrentBudget = new Users(dbConn, "SELECT budget FROM budgetGoal ORDER BY id DESC LIMIT 1");
+               viewCurrentBudget.ViewBudget();
             });
 
             return app;

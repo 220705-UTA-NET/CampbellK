@@ -93,6 +93,7 @@ namespace Api
 
             reader.Close();
             command.Dispose();
+
             DisplayInformation displayInfo = new DisplayInformation();
             displayInfo.displayInteractionMenu();
         }
@@ -196,5 +197,46 @@ namespace Api
                 displayInfo.displayInteractionMenu();
             }
         }  
+    }
+
+    public class Users : ApiMethods
+    {
+        public Users(NpgsqlConnection dbConn, string commandText) : base(dbConn, commandText)
+        {}
+
+        public void ViewBudget()
+        {
+            NpgsqlDataReader reader = command.ExecuteReader();
+
+
+            while (reader.Read())
+            {
+                //  GetOrdinal retrieves the column ordinal of the given name
+                int budgetOrd = reader.GetOrdinal("budget");
+                int budget = reader.GetInt32(budgetOrd);
+                Console.WriteLine($"\n Current Budget Goal: \n {budget.ToString()}");
+            }
+
+            reader.Close();
+            command.Dispose();
+
+            DisplayInformation displayInfo = new DisplayInformation();
+            displayInfo.displayInteractionMenu();
+        }
+
+        public void setBudgetGoal()
+        {
+            NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
+
+            NpgsqlDataReader reader = command.ExecuteReader();
+
+            reader.Close();
+            command.Dispose();
+
+            DisplayInformation displayInfo = new DisplayInformation();
+            displayInfo.displayInteractionMenu();
+
+            Console.WriteLine("Budget goal successfully set");
+        }
     }
 }

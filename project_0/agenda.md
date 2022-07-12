@@ -1,20 +1,38 @@
 Solo Presentation: July 20th
 
-    1. Test all endpoints
+    1. Set a savings goal; send email if go above it
+
+        b. Create endpoint to see savings goal
+            - Current issue: returns 0 (even though it is not 0)
+            - getordinal is what returns 0
+
+        c. Send email when user nears budget limit
+            -- Will need to check after each new expense is added
+
+
+
+
+        
+    2. Rename ApiMethods subclasses to be more verbose
+        - should include expense somewhere in the name
+        - users should be changed to budgetGoal
+    
+
+
+
+
 
 --------------------------------------------------------------------------------
 
-    Further functionality:
-    1. Set a savings goal; send email if go above it
 
-    2. Current monthly expenditure & how much we have left to spend
+    Add unit testing for endpoints
 
-    3. Add other endpoints
-        - Grab all expenses by a particular category
 
-    5. Add unit testing for endpoints
 
-    6. Add a spell check (if command is close, make suggestion)
-
+    Endpoints related to Category
+        a. Set budget per category?
 
     
+    Clean up and finalize code
+        - Set up better error handling
+        - rename things to be more verbose

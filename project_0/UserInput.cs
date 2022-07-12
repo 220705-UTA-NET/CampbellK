@@ -125,6 +125,22 @@ namespace UserInteraction
                     thread.Start();
                     client.DeleteAsync($"http://localhost:{port}/resetExpenses");
                     break;
+                
+                case "7":
+                    thread.Start();
+                    client.GetAsync($"http://localhost:{port}/viewBudget");
+                    break;
+                
+                case "8":
+                    Console.WriteLine("\n Type your new budget goal: \n");
+                    string? budgetGoal = Console.ReadLine();
+
+                    var serializedBudget = JsonSerializer.Serialize(budgetGoal);
+                    StringContent budgetStringContent = new StringContent(serializedBudget);
+
+                    thread.Start();
+                    client.PostAsync($"http://localhost:{port}/setBudget", budgetStringContent);
+                    break;
 
                 case "0":
                     Console.WriteLine("\n Terminating program... \n");
@@ -188,6 +204,8 @@ namespace UserInteraction
             Console.WriteLine("4. Edit an existing expenditure");
             Console.WriteLine("5. Delete an expenditure");
             Console.WriteLine("6. Reset expenses");
+            Console.WriteLine("7. View budget goal");
+            Console.WriteLine("8. Set budget goal");
             Console.WriteLine("0. End \n");
         }
     }
