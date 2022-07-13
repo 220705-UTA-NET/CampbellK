@@ -1,13 +1,6 @@
 Solo Presentation: July 20th
 
-    When inputting a new expense or updating budget, update value in
-    Tracking.cs (currentBudget & currentExpenseTotal) and in JSON
-        When value is updated, it will need to overwrite budget.json
-
-    
-
-
-
+    Test default Tracking budget.json creation
 
     Rename ApiMethods subclasses to be more verbose
         - should include expense somewhere in the name

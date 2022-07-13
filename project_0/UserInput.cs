@@ -3,6 +3,7 @@ using System.Text.Json;
 using Api;
 using Routes;
 using Npgsql;
+using Tracking;
 
 // contains the code for handling all user interaction with the console and the multi-threading required to both run a web server & interact with it simultaneously
 namespace UserInteraction
@@ -17,6 +18,7 @@ namespace UserInteraction
         string[] args;
         // other threads may take some time to shut down, so utilizing various ports to avoid conflict
         public int port = 3000;
+        public BudgetTracking budgetTracker = new BudgetTracking();
 
         public UserInput(NpgsqlConnection dbConn, string[] args)
         {
@@ -147,6 +149,14 @@ namespace UserInteraction
 
                     thread.Start();
                     await client.PostAsync($"http://localhost:{port}/setBudget", budgetStringContent);
+
+                    Dictionary<string, string> previousBudget = budgetTracker.setBudgetAndExpense();
+
+                    // update expenseTotal & re-write the budget.json content
+                    previousBudget["currentBudget"] = budgetGoal;
+
+                    var serializedUpdatedBudget = JsonSerializer.Serialize(previousBudget);
+                    File.WriteAllText("./budget.json", serializedUpdatedBudget);
                     break;
 
                 case "0":

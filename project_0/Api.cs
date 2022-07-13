@@ -255,10 +255,10 @@ namespace Api
             reader.Close();
             command.Dispose();
 
+            Console.WriteLine("Budget goal successfully set");
+
             DisplayInformation displayInfo = new DisplayInformation();
             displayInfo.displayInteractionMenu();
-
-            Console.WriteLine("Budget goal successfully set");
         }
     }
 }
