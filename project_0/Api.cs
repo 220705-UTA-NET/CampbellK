@@ -2,6 +2,7 @@ using System;
 using Npgsql;
 using UserInteraction;
 using System.Text.Json;
+using Tracking;
 
 // contains all API functionality used by the Routes namespace
 // parent class: ApiMethods. Accepts and establishes the database connection and the sql command
@@ -22,6 +23,7 @@ namespace Api
         public NpgsqlConnection dbConn;
         public string commandText = "";
         public NpgsqlCommand command;
+        public BudgetTracking budgetTracker = new BudgetTracking();
 
         public ApiMethods(NpgsqlConnection dbConn, string commandText)
         {
@@ -60,13 +62,14 @@ namespace Api
                 {"totalExpense", expenseTotal}
             };
 
-            var serializedExpense = JsonSerializer.Serialize(savedExpense);
+            // returns our current values for currentBudget and totalExpense
+            Dictionary<string, string> previousBudget = budgetTracker.setBudgetAndExpense();
 
+            // update expenseTotal & re-write the budget.json content
+            previousBudget["currentExpenseTotal"] = expenseTotal.ToString();
 
-
-            // File.AppendAllText("./budget.json", serializedExpense);
-
-            
+            var serializedUpdatedBudget = JsonSerializer.Serialize(previousBudget);
+            File.WriteAllText("./budget.json", serializedUpdatedBudget);
 
             // re-print the interaction menu
             DisplayInformation displayInfo = new DisplayInformation();

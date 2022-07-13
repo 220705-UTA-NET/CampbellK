@@ -45,8 +45,6 @@ namespace UserInteraction
 
                 string? userAction = Console.ReadLine();
                 handleUserInput(userAction, client);
-
-                Console.WriteLine(port);
             }
         }
 

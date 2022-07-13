@@ -1,10 +1,5 @@
 Solo Presentation: July 20th
 
-    -- either way: add a try/catch with exception
-        -x- Can we avoid a fatal exception and just re-run the while loop?
-
-
-
     When inputting a new expense or updating budget, update value in
     Tracking.cs (currentBudget & currentExpenseTotal) and in JSON
         When value is updated, it will need to overwrite budget.json
