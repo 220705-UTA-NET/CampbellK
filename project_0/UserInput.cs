@@ -28,6 +28,7 @@ namespace UserInteraction
         {
             while (!exit)
             {
+                port++;
                 // establish server connection & routes
                 ApiRoutes apiRoutes = new ApiRoutes();
                 // app needs to be re-recreated for each loop since it is readonly after creation (and therefore cannot change the url)
@@ -45,7 +46,6 @@ namespace UserInteraction
                 string? userAction = Console.ReadLine();
                 handleUserInput(userAction, client);
 
-                port++;
                 Console.WriteLine(port);
             }
         }

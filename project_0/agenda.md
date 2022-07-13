@@ -1,17 +1,7 @@
 Solo Presentation: July 20th
 
-    Nothing wrong with inputs; 
-        -- seems that the port listened to vs called can sometimes be
-        off (have an instance of calling to 3003 but listening 3004)
-            Does the loop double run somehow?
-
-            *** continuously breaks @ 4th run (3003/3004)
-
-        -- check out UserInput, may not be perfectly running things ***
-
-
-        -- either way: add a try/catch with exception
-            -x- Can we avoid a fatal exception and just re-run the while loop?
+    -- either way: add a try/catch with exception
+        -x- Can we avoid a fatal exception and just re-run the while loop?
 
 
 
