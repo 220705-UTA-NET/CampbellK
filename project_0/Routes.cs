@@ -66,23 +66,6 @@ namespace Routes
                 deleteAllExpenses.deleteExpenses();
             });
 
-            // set a budget goal
-            app.MapPost("/setBudget", async (HttpRequest httpRequest) => {
-                StreamReader reader = new StreamReader(httpRequest.Body);
-                string requestBody = await reader.ReadToEndAsync();
-
-                string? newBudget = JsonSerializer.Deserialize<string>(requestBody);
-
-               Users setBudget = new Users(dbConn, $"INSERT INTO budgetGoal (budget) VALUES ({newBudget})"); 
-               setBudget.setBudgetGoal();
-            });
-
-            // view current budget
-            app.MapGet("/viewBudget", () => {
-               Users viewCurrentBudget = new Users(dbConn, "SELECT budget FROM budgetGoal ORDER BY id DESC LIMIT 1");
-               viewCurrentBudget.ViewBudget();
-            });
-
             return app;
         }
     }

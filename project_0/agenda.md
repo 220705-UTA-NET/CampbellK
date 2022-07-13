@@ -1,6 +1,5 @@
 Solo Presentation: July 20th
 
-    Test default Tracking budget.json creation
 
     Rename ApiMethods subclasses to be more verbose
         - should include expense somewhere in the name
@@ -9,9 +8,16 @@ Solo Presentation: July 20th
 
     create subfolders for api, db
 
+    Refactor:
+        Should be able to cut down on some code, especially re-instantiation
+        of classes (like Tracking in UserInput)
+
 
     Make displayed tables (expense detail, etc) more visible by wrapping them
     in ascii table
+
+    
+    Server still hits issues @ around 4th call
 
 
 --------------------------------------------------------------------------------

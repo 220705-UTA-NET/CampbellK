@@ -218,47 +218,4 @@ namespace Api
             }
         }  
     }
-
-    public class Users : ApiMethods
-    {
-        public Users(NpgsqlConnection dbConn, string commandText) : base(dbConn, commandText)
-        {}
-
-        public int ViewBudget()
-        {
-            int budget = 0;
-            NpgsqlDataReader reader = command.ExecuteReader();
-
-            while (reader.Read())
-            {
-                //  GetOrdinal retrieves the column ordinal of the given name
-                int budgetOrd = reader.GetOrdinal("budget");
-                budget = reader.GetInt32(budgetOrd);
-                Console.WriteLine($"\n Current Budget Goal: \n {budget.ToString()}");
-            }
-
-            reader.Close();
-            command.Dispose();
-
-            DisplayInformation displayInfo = new DisplayInformation();
-            displayInfo.displayInteractionMenu();
-
-            return budget;
-        }
-
-        public void setBudgetGoal()
-        {
-            NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
-
-            NpgsqlDataReader reader = command.ExecuteReader();
-
-            reader.Close();
-            command.Dispose();
-
-            Console.WriteLine("Budget goal successfully set");
-
-            DisplayInformation displayInfo = new DisplayInformation();
-            displayInfo.displayInteractionMenu();
-        }
-    }
 }

@@ -19,6 +19,7 @@ namespace UserInteraction
         // other threads may take some time to shut down, so utilizing various ports to avoid conflict
         public int port = 3000;
         public BudgetTracking budgetTracker = new BudgetTracking();
+        public DisplayInformation displayInfo = new DisplayInformation();
 
         public UserInput(NpgsqlConnection dbConn, string[] args)
         {
@@ -26,7 +27,7 @@ namespace UserInteraction
             this.args = args;
         }
 
-        async public void askUserInput()
+        public void askUserInput()
         {
             while (!exit)
             {
@@ -40,7 +41,6 @@ namespace UserInteraction
 
                 if (firstLoop)
                 {
-                    DisplayInformation displayInfo = new DisplayInformation();
                     displayInfo.displayInteractionMenu();
                     firstLoop = false;
                 }
@@ -136,19 +136,18 @@ namespace UserInteraction
                     break;
                 
                 case "7":
-                    thread.Start();
-                    await client.GetAsync($"http://localhost:{port}/viewBudget");
+                    Dictionary<string, string> priorBudget = budgetTracker.setBudgetAndExpense();
+
+                    Console.WriteLine("Current budget:");
+                    Console.WriteLine(priorBudget["currentBudget"]);
+
+                    displayInfo.displayInteractionMenu();
+
                     break;
                 
                 case "8":
                     Console.WriteLine("\n Type your new budget goal: \n");
                     string? budgetGoal = Console.ReadLine();
-
-                    var serializedBudget = JsonSerializer.Serialize(budgetGoal);
-                    StringContent budgetStringContent = new StringContent(serializedBudget);
-
-                    thread.Start();
-                    await client.PostAsync($"http://localhost:{port}/setBudget", budgetStringContent);
 
                     Dictionary<string, string> previousBudget = budgetTracker.setBudgetAndExpense();
 
@@ -157,6 +156,10 @@ namespace UserInteraction
 
                     var serializedUpdatedBudget = JsonSerializer.Serialize(previousBudget);
                     File.WriteAllText("./budget.json", serializedUpdatedBudget);
+
+                    Console.WriteLine("Budget goal set");
+
+                    displayInfo.displayInteractionMenu();
                     break;
 
                 case "0":
@@ -205,7 +208,7 @@ namespace UserInteraction
         }
     } 
 
-    class DisplayInformation
+    public class DisplayInformation
     {
         public void displayInteractionMenu()
         {

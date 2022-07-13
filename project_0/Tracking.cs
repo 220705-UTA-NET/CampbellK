@@ -12,8 +12,6 @@ namespace Tracking
         {
             if (!File.Exists("./budget.json"))
             {
-                File.Create("./budget.json");
-
                 Dictionary<string, string> defaultTracker = new Dictionary<string, string>()
                 {
                     {"currentBudget", "0"},
@@ -22,7 +20,7 @@ namespace Tracking
 
                 var serializedDefault = JsonSerializer.Serialize(defaultTracker);
 
-                File.AppendAllText("./budget.json", serializedDefault);
+                File.WriteAllText("./budget.json", serializedDefault);
             }
             else
             {    
