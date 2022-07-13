@@ -1,25 +1,39 @@
 Solo Presentation: July 20th
 
-    1. Set a savings goal; send email if go above it
+    Nothing wrong with inputs; 
+        -- seems that the port listened to vs called can sometimes be
+        off (have an instance of calling to 3003 but listening 3004)
+            Does the loop double run somehow?
 
-        b. Create endpoint to see savings goal
-            - Current issue: returns 0 (even though it is not 0)
-            - getordinal is what returns 0
+            *** continuously breaks @ 4th run (3003/3004)
 
-        c. Send email when user nears budget limit
-            -- Will need to check after each new expense is added
-
-
+        -- check out UserInput, may not be perfectly running things ***
 
 
-        
-    2. Rename ApiMethods subclasses to be more verbose
-        - should include expense somewhere in the name
-        - users should be changed to budgetGoal
+        -- either way: add a try/catch with exception
+            -x- Can we avoid a fatal exception and just re-run the while loop?
+
+
+
+    When inputting a new expense or updating budget, update value in
+    Tracking.cs (currentBudget & currentExpenseTotal) and in JSON
+        When value is updated, it will need to overwrite budget.json
+
     
 
 
 
+
+    Rename ApiMethods subclasses to be more verbose
+        - should include expense somewhere in the name
+        - users should be changed to budgetGoal
+    
+
+    create subfolders for api, db
+
+
+    Make displayed tables (expense detail, etc) more visible by wrapping them
+    in ascii table
 
 
 --------------------------------------------------------------------------------
@@ -36,3 +50,4 @@ Solo Presentation: July 20th
     Clean up and finalize code
         - Set up better error handling
         - rename things to be more verbose
+        - add checks to reader.Read() & other checks in general

@@ -1,6 +1,7 @@
 using System;
 using Npgsql;
 using UserInteraction;
+using System.Text.Json;
 
 // contains all API functionality used by the Routes namespace
 // parent class: ApiMethods. Accepts and establishes the database connection and the sql command
@@ -36,7 +37,7 @@ namespace Api
         public ReadRoutes(NpgsqlConnection dbConn, string commandText) : base(dbConn, commandText)
         {}
         
-        public void ViewExpenseTotal()
+        public double ViewExpenseTotal()
         {
             NpgsqlDataReader reader = command.ExecuteReader();
 
@@ -53,9 +54,25 @@ namespace Api
             reader.Close();
             // discard the command
             command.Dispose();
+
+            Dictionary<string, double> savedExpense = new Dictionary<string, double>()
+            {
+                {"totalExpense", expenseTotal}
+            };
+
+            var serializedExpense = JsonSerializer.Serialize(savedExpense);
+
+
+
+            // File.AppendAllText("./budget.json", serializedExpense);
+
+            
+
             // re-print the interaction menu
             DisplayInformation displayInfo = new DisplayInformation();
             displayInfo.displayInteractionMenu();
+
+            return expenseTotal;
         }
 
         public void ViewExpenseDetails()
@@ -66,7 +83,7 @@ namespace Api
             // list where table data will be saved
             List<Dictionary<string, string>> listOfEntries = new List<Dictionary<string, string>>();
 
-            Console.WriteLine($"Id:\t\t Description:\t\t Amount:\t\t Category:\t\t Date:\t\t");
+            Console.WriteLine($"\n Id:\t\t Description:\t\t Amount:\t\t Category:\t\t Date:\t\t");
 
             while (reader.Read())
             {
@@ -204,16 +221,16 @@ namespace Api
         public Users(NpgsqlConnection dbConn, string commandText) : base(dbConn, commandText)
         {}
 
-        public void ViewBudget()
+        public int ViewBudget()
         {
+            int budget = 0;
             NpgsqlDataReader reader = command.ExecuteReader();
-
 
             while (reader.Read())
             {
                 //  GetOrdinal retrieves the column ordinal of the given name
                 int budgetOrd = reader.GetOrdinal("budget");
-                int budget = reader.GetInt32(budgetOrd);
+                budget = reader.GetInt32(budgetOrd);
                 Console.WriteLine($"\n Current Budget Goal: \n {budget.ToString()}");
             }
 
@@ -222,6 +239,8 @@ namespace Api
 
             DisplayInformation displayInfo = new DisplayInformation();
             displayInfo.displayInteractionMenu();
+
+            return budget;
         }
 
         public void setBudgetGoal()

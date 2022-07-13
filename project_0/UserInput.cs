@@ -16,7 +16,7 @@ namespace UserInteraction
         // drilled down from main; required fro WebApplication.CreateBuilder()
         string[] args;
         // other threads may take some time to shut down, so utilizing various ports to avoid conflict
-        int port = 3000;
+        public int port = 3000;
 
         public UserInput(NpgsqlConnection dbConn, string[] args)
         {
@@ -24,7 +24,7 @@ namespace UserInteraction
             this.args = args;
         }
 
-        public void askUserInput()
+        async public void askUserInput()
         {
             while (!exit)
             {
@@ -46,10 +46,11 @@ namespace UserInteraction
                 handleUserInput(userAction, client);
 
                 port++;
+                Console.WriteLine(port);
             }
         }
 
-        private void handleUserInput(string? userInput, HttpClient client)
+        async private void handleUserInput(string? userInput, HttpClient client)
         {
             // create additional thread to run the web server (since it is blocking)
             Thread thread = new Thread(() => startWebServer());
@@ -60,13 +61,14 @@ namespace UserInteraction
                     Console.WriteLine("\n Viewing expenes total... \n");
 
                     thread.Start();
-                    client.GetAsync($"http://localhost:{port}/viewExpenseTotal");
+                    await client.GetAsync($"http://localhost:{port}/viewExpenseTotal");
                     break;
 
                 case "2":
                     Console.WriteLine("\n Viewing all expenses...\n");
                     
-                    fetchAllExpenseDetails(client);
+                    thread.Start();
+                    await client.GetAsync($"http://localhost:{port}/viewExpenseDetails");
                     break;
 
                 case "3":
@@ -74,8 +76,15 @@ namespace UserInteraction
 
                     StringContent stringContent = gatherExpenseInfo();
 
+                    Console.WriteLine("prior to thread start");
+
+
                     thread.Start();
-                    client.PostAsync($"http://localhost:{port}/newExpense", stringContent);
+
+                    Console.WriteLine("After thread start");
+
+                    await client.PostAsync($"http://localhost:{port}/newExpense", stringContent);
+
                     break;
 
                 case "4":
@@ -91,7 +100,7 @@ namespace UserInteraction
                     try 
                     {
                         thread.Start();
-                        client.PutAsync($"http://localhost:{port}/editExpense/{expenseToEditId}", editedStringContent);
+                        await client.PutAsync($"http://localhost:{port}/editExpense/{expenseToEditId}", editedStringContent);
                     }
                     catch (Exception ex)
                     {
@@ -109,7 +118,7 @@ namespace UserInteraction
                     try 
                     {
                         thread.Start();
-                        client.DeleteAsync($"http://localhost:{port}/deleteExpense/{expenseToDelete}");
+                        await client.DeleteAsync($"http://localhost:{port}/deleteExpense/{expenseToDelete}");
                         break;
                     }
                     catch (Exception ex)
@@ -123,12 +132,12 @@ namespace UserInteraction
                     Console.WriteLine("\n Reseting expenses... \n");
                     
                     thread.Start();
-                    client.DeleteAsync($"http://localhost:{port}/resetExpenses");
+                    await client.DeleteAsync($"http://localhost:{port}/resetExpenses");
                     break;
                 
                 case "7":
                     thread.Start();
-                    client.GetAsync($"http://localhost:{port}/viewBudget");
+                    await client.GetAsync($"http://localhost:{port}/viewBudget");
                     break;
                 
                 case "8":
@@ -139,7 +148,7 @@ namespace UserInteraction
                     StringContent budgetStringContent = new StringContent(serializedBudget);
 
                     thread.Start();
-                    client.PostAsync($"http://localhost:{port}/setBudget", budgetStringContent);
+                    await client.PostAsync($"http://localhost:{port}/setBudget", budgetStringContent);
                     break;
 
                 case "0":
@@ -154,17 +163,12 @@ namespace UserInteraction
             }
         }
 
-        private void startWebServer()
+        // making port a parameter despite having a public port variable due to needing to offer different ports for the multiple threads that may be running outside of the above while loop
+        public void startWebServer()
         {
+            Console.WriteLine($"Listening on port {port}");
             // open server connection; blocking
             app?.Run($"http://localhost:{port}");
-        }
-
-        private void fetchAllExpenseDetails(HttpClient client)
-        {
-            Thread showCurrentExpensesThread = new Thread(() => startWebServer());
-            showCurrentExpensesThread.Start();
-            client.GetAsync($"http://localhost:{port}/viewExpenseDetails");
         }
 
         private StringContent gatherExpenseInfo()

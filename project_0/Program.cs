@@ -1,6 +1,7 @@
 ﻿using Npgsql;
 using Database;
 using UserInteraction;
+using Tracking;
 
 namespace Budget
 {
@@ -11,6 +12,10 @@ namespace Budget
             // establish connection to database; needs to be passed in routing/api
             DbConnection connection = new DbConnection();
             NpgsqlConnection dbConn = connection.DbConnect();
+
+            // for setting variables used to track current expenses
+            // will be saved to a local file in json
+            BudgetTracking budgetConstruction = new BudgetTracking(); budgetConstruction.fetchUserBudgetInfo();
 
             // ask for user commands and respond accordingly
             UserInput userInput = new UserInput(dbConn, args);
