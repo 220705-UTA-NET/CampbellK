@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json;
 
-namespace Tracking
+namespace Budget.Tracking
 {
     public class BudgetTracking
     {

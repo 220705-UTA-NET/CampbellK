@@ -1,13 +1,11 @@
 using System;
 using Npgsql;
-using UserInteraction;
-using System.Text.Json;
-using Tracking;
+using Budget.UserInteraction;
 
 // contains all API functionality used by the Routes namespace
 // parent class: ApiMethods. Accepts and establishes the database connection and the sql command
 // chidlren: ReadRoutes, PostAndPutRoutes, and DeleteRoutes
-namespace RouteMethods
+namespace Budget.RouteMethods
 {
     public class Expense
     {
@@ -23,8 +21,7 @@ namespace RouteMethods
         public NpgsqlConnection dbConn;
         public string commandText = "";
         public NpgsqlCommand command;
-        // for pulling prior values of totalExpense & budgetGoal
-        public BudgetTracking budgetTracker = new BudgetTracking();
+        protected DisplayInformation commandMenu = new DisplayInformation();
 
         public ApiMethods(NpgsqlConnection dbConn, string commandText)
         {

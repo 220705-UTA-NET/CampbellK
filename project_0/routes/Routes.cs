@@ -2,14 +2,24 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Npgsql;
-using RouteMethods;
+using Budget.RouteMethods;
+using Budget.UserInteraction;
 
 // contains all routes to be used by the web server
 // returns *app*, needed to start up the web server in the additional threads created in UserInput namespace
-namespace Routes
+namespace Budget.Routes
 {
     public class ApiRoutes
     {  
+        NpgsqlConnection dbConn;
+        string[] args;
+        
+        public ApiRoutes(NpgsqlConnection dbConn, string[] args)
+        {
+            this.dbConn = dbConn;
+            this.args = args;
+        }
+
         public WebApplication EstablishRoutes(NpgsqlConnection dbConn, string[] args)
         {   
             // establish server component

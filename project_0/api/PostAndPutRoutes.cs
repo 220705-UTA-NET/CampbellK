@@ -1,8 +1,8 @@
 using System;
 using Npgsql;
-using UserInteraction;
+using Budget.UserInteraction;
 
-namespace RouteMethods
+namespace Budget.RouteMethods
 {
     public class PostAndPutRouteMethods : ApiMethods
     {
@@ -13,7 +13,6 @@ namespace RouteMethods
         private NpgsqlParameter? category;
         private NpgsqlParameter? date;
         private NpgsqlParameter? updatedExpenseId;
-        private DisplayInformation displayInfo = new DisplayInformation();
 
         public PostAndPutRouteMethods(NpgsqlConnection dbConn, string commandText, Expense expense, int id = -1) : base(dbConn, commandText)
         {
@@ -37,7 +36,6 @@ namespace RouteMethods
             command.Parameters.Add(date);
 
             return command;
-
         }
 
         public void createNewExpense()
@@ -55,7 +53,7 @@ namespace RouteMethods
                 Console.WriteLine("\n Entry successfully added \n");
                 Console.WriteLine("\n --------------------------------------- \n");
 
-                displayInfo.displayInteractionMenu();
+                commandMenu.displayInteractionMenu();
             }
             catch (Exception ex)
             {
@@ -80,8 +78,8 @@ namespace RouteMethods
                 Console.WriteLine("\n --------------------------------------- \n");
                 Console.WriteLine("\n Entry successfully updated \n");
                 Console.WriteLine("\n --------------------------------------- \n");
-                
-                displayInfo.displayInteractionMenu();
+
+                commandMenu.displayInteractionMenu();
             }
             catch (Exception ex)
             {

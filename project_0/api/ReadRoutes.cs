@@ -1,9 +1,9 @@
 using System;
 using Npgsql;
-using UserInteraction;
 using System.Text.Json;
+using Budget.Tracking;
 
-namespace RouteMethods
+namespace Budget.RouteMethods
 {
     public class ReadRouteMethods: ApiMethods
     {
@@ -33,6 +33,7 @@ namespace RouteMethods
                 command.Dispose();
 
                 // returns our current values for currentBudget and totalExpense
+                BudgetTracking budgetTracker = new BudgetTracking();
                 Dictionary<string, string> previousBudget = budgetTracker.getBudgetAndExpense();
 
                 // update expenseTotal & re-write the budget.json content
@@ -41,9 +42,7 @@ namespace RouteMethods
                 var serializedUpdatedBudget = JsonSerializer.Serialize(previousBudget);
                 File.WriteAllText("./budget.json", serializedUpdatedBudget);
 
-                // re-print the interaction menu
-                DisplayInformation displayInfo = new DisplayInformation();
-                displayInfo.displayInteractionMenu();
+                commandMenu.displayInteractionMenu();
             }
             catch (Exception ex)
             {
@@ -78,8 +77,7 @@ namespace RouteMethods
                 reader.Close();
                 command.Dispose();
 
-                DisplayInformation displayInfo = new DisplayInformation();
-                displayInfo.displayInteractionMenu();
+                commandMenu.displayInteractionMenu();
             }
             catch (Exception ex)
             {

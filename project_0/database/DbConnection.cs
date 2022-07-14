@@ -2,7 +2,7 @@ using System;
 using Npgsql;
 
 // establishes database connection and returns *dbConn*, which is utilized by the API methods in Api namespace
-namespace Database
+namespace Budget.Database
 {
     public class DbConnection
     {

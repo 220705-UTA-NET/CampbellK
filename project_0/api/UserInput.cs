@@ -1,17 +1,17 @@
 using Microsoft.AspNetCore.Builder;
 using System.Text.Json;
-using RouteMethods;
-using Routes;
+using Budget.RouteMethods;
+using Budget.Routes;
 using Npgsql;
-using Tracking;
+using Budget.Tracking;
+using Budget.Helpers;
 
 // contains the code for handling all user interaction with the console and the multi-threading required to both run a web server & interact with it simultaneously
-namespace UserInteraction
+namespace Budget.UserInteraction
 {
     public class UserInput
     {
         bool exit = false;
-        bool firstLoop = true;
         public WebApplication? app;
         NpgsqlConnection dbConn;
         // drilled down from main; required fro WebApplication.CreateBuilder()
@@ -22,11 +22,14 @@ namespace UserInteraction
         public BudgetTracking budgetTracker = new BudgetTracking();
         // for displaying the console menu to user
         public DisplayInformation displayInfo = new DisplayInformation();
+        private ApiRoutes apiRoutes;
 
         public UserInput(NpgsqlConnection dbConn, string[] args)
         {
             this.dbConn = dbConn;
             this.args = args;
+            // establish server connection & routes
+            apiRoutes = new ApiRoutes(dbConn, args);
         }
 
         public void askUserInput()
@@ -36,19 +39,13 @@ namespace UserInteraction
                 while (!exit)
                 {
                     port++;
-                    // establish server connection & routes
-                    ApiRoutes apiRoutes = new ApiRoutes();
+                    
                     // app needs to be re-recreated for each loop since it is readonly after creation (and therefore cannot change the http url)
                     app = apiRoutes.EstablishRoutes(dbConn, args);
 
                     HttpClient client = new HttpClient();
 
-                    if (firstLoop)
-                    {
-                        // for first iteration, display interaction menu
-                        displayInfo.displayInteractionMenu();
-                        firstLoop = false;
-                    }
+                    displayInfo.displayInteractionMenu();
 
                     string? userAction = Console.ReadLine();
                     handleUserInput(userAction, client);
@@ -56,14 +53,16 @@ namespace UserInteraction
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed during user input: {ex}");
+                throw new Exception($"Failed during user input: {ex}");
             }
         }
 
         async private void handleUserInput(string? userInput, HttpClient client)
         {
             // create additional thread to run the web server (since it is blocking)
-            Thread thread = new Thread(() => startWebServer());
+
+            HelperMethods helperMethods = new HelperMethods();
+            Thread thread = new Thread(() => helperMethods.startWebServer(port, app));
 
             switch(userInput)
             {
@@ -144,8 +143,6 @@ namespace UserInteraction
                     Console.WriteLine(priorBudget["currentBudget"]);
                     Console.WriteLine("\n --------------------------------------- \n");
 
-                    displayInfo.displayInteractionMenu();
-
                     break;
                 
                 case "8":
@@ -164,7 +161,6 @@ namespace UserInteraction
                     Console.WriteLine("Budget goal set");
                     Console.WriteLine("\n --------------------------------------- \n");
 
-                    displayInfo.displayInteractionMenu();
                     break;
 
                 case "0":
@@ -181,13 +177,6 @@ namespace UserInteraction
                     Console.WriteLine("\n --------------------------------------- \n");
                     break;
             }
-        }
-
-        // making port a parameter despite having a public port variable due to needing to offer different ports for the multiple threads that may be running outside of the above while loop
-        public void startWebServer()
-        {
-            Console.WriteLine($"Listening on port {port}");
-            app?.Run($"http://localhost:{port}");
         }
 
         private StringContent gatherExpenseInfo()
@@ -214,6 +203,8 @@ namespace UserInteraction
 
             return editedStringContent;
         }
+
+
     } 
 
     public class DisplayInformation

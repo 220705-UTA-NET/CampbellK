@@ -1,13 +1,12 @@
 using System;
 using Npgsql;
-using UserInteraction;
+using Budget.UserInteraction;
 
-namespace RouteMethods
+namespace Budget.RouteMethods
 {
     public class DeleteRouteMethods : ApiMethods
     {
         private int id;
-        private DisplayInformation displayInfo = new DisplayInformation();
 
         public DeleteRouteMethods(NpgsqlConnection dbConn, string commandText, int id = -1) : base(dbConn, commandText)
         {
@@ -26,6 +25,8 @@ namespace RouteMethods
             Console.WriteLine("\n --------------------------------------- \n");
 
             executeDeleteCommand(command);
+
+            commandMenu.displayInteractionMenu();
         }
 
         public void ResetExpenses()
@@ -36,6 +37,8 @@ namespace RouteMethods
             Console.WriteLine("\n --------------------------------------- \n");
             
             executeDeleteCommand(command);
+
+            commandMenu.displayInteractionMenu();
         }
 
         private void executeDeleteCommand(NpgsqlCommand command)
@@ -45,8 +48,6 @@ namespace RouteMethods
                 NpgsqlDataReader reader = command.ExecuteReader();
                 reader.Close();
                 command.Dispose();
-
-                displayInfo.displayInteractionMenu();
             }
             catch (Exception ex)
             {

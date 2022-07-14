@@ -1,7 +1,7 @@
 ﻿using Npgsql;
-using Database;
-using UserInteraction;
-using Tracking;
+using Budget.Database;
+using Budget.UserInteraction;
+using Budget.Tracking;
 
 namespace Budget
 {
