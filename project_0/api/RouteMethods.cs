@@ -1,6 +1,6 @@
 using System;
 using Npgsql;
-using Budget.UserInteraction;
+using Budget.Helpers;
 
 // contains all API functionality used by the Routes namespace
 // parent class: ApiMethods. Accepts and establishes the database connection and the sql command
@@ -21,7 +21,7 @@ namespace Budget.RouteMethods
         public NpgsqlConnection dbConn;
         public string commandText = "";
         public NpgsqlCommand command;
-        protected DisplayInformation commandMenu = new DisplayInformation();
+        protected HelperMethods commandMenu = new HelperMethods();
 
         public ApiMethods(NpgsqlConnection dbConn, string commandText)
         {

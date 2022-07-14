@@ -20,9 +20,8 @@ namespace Budget.UserInteraction
         public int port = 3000;
         // allows us to read & write to budget.json, where totalExpense & budgetGoal are stored
         public BudgetTracking budgetTracker = new BudgetTracking();
-        // for displaying the console menu to user
-        public DisplayInformation displayInfo = new DisplayInformation();
         private ApiRoutes apiRoutes;
+        private HelperMethods helperMethods;
 
         public UserInput(NpgsqlConnection dbConn, string[] args)
         {
@@ -30,6 +29,7 @@ namespace Budget.UserInteraction
             this.args = args;
             // establish server connection & routes
             apiRoutes = new ApiRoutes(dbConn, args);
+            helperMethods = new HelperMethods();
         }
 
         public void askUserInput()
@@ -45,7 +45,7 @@ namespace Budget.UserInteraction
 
                     HttpClient client = new HttpClient();
 
-                    displayInfo.displayInteractionMenu();
+                    helperMethods.displayInteractionMenu();
 
                     string? userAction = Console.ReadLine();
                     handleUserInput(userAction, client);
@@ -60,8 +60,6 @@ namespace Budget.UserInteraction
         async private void handleUserInput(string? userInput, HttpClient client)
         {
             // create additional thread to run the web server (since it is blocking)
-
-            HelperMethods helperMethods = new HelperMethods();
             Thread thread = new Thread(() => helperMethods.startWebServer(port, app));
 
             switch(userInput)
@@ -203,24 +201,5 @@ namespace Budget.UserInteraction
 
             return editedStringContent;
         }
-
-
     } 
-
-    public class DisplayInformation
-    {
-        public void displayInteractionMenu()
-        {
-            Console.WriteLine("\n Please type the number that cooresponds to your desired action: \n");
-            Console.WriteLine("1. View total expenditure");
-            Console.WriteLine("2. View all expense details");
-            Console.WriteLine("3. Create a new expenditure");
-            Console.WriteLine("4. Edit an existing expenditure");
-            Console.WriteLine("5. Delete an expenditure");
-            Console.WriteLine("6. Reset expenses");
-            Console.WriteLine("7. View budget goal");
-            Console.WriteLine("8. Set budget goal");
-            Console.WriteLine("0. End \n");
-        }
-    }
 }
