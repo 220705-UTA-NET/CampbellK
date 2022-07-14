@@ -18,13 +18,13 @@ namespace Routes
 
             // show sum of all expense costs
             app.MapGet("/viewExpenseTotal", () => {
-                ReadRoutes api = new ReadRoutes(dbConn, "SELECT amount FROM budget");
+                ReadRouteMethods api = new ReadRouteMethods(dbConn, "SELECT amount FROM budget");
                 api.ViewExpenseTotal();
             });
 
             // show details for all expenses
             app.MapGet("/viewExpenseDetails", () => {
-                ReadRoutes api = new ReadRoutes(dbConn, "SELECT * FROM budget");
+                ReadRouteMethods api = new ReadRouteMethods(dbConn, "SELECT * FROM budget");
                 api.ViewExpenseDetails();
             });
 
@@ -38,30 +38,30 @@ namespace Routes
                 Expense? newExpense = JsonSerializer.Deserialize<Expense>(requestBody); 
 
                 // once body has been parsed, can send to addExpense
-                PostAndPutRoutes postOrPutRoutes = new PostAndPutRoutes(dbConn, "INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)", newExpense, -1);
-                postOrPutRoutes.changeExpense();
-                });
+                PostAndPutRouteMethods postOrPutRoutes = new PostAndPutRouteMethods(dbConn, "INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)", newExpense);
+                postOrPutRoutes.createNewExpense();
+            });
             
-            // edit an existing expense
+            // edit existing expense
             app.MapPut("/editExpense/{id}", async (HttpRequest httpRequest, int id) => {
                 StreamReader reader = new StreamReader(httpRequest.Body);
                 string requestBody = await reader.ReadToEndAsync();
 
                 Expense? updatedExpense = JsonSerializer.Deserialize<Expense>(requestBody);
 
-                PostAndPutRoutes postOrPutRoutes = new PostAndPutRoutes(dbConn, "UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id", updatedExpense, id);
-                postOrPutRoutes.changeExpense();
+                PostAndPutRouteMethods postOrPutRoutes = new PostAndPutRouteMethods(dbConn, "UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id", updatedExpense, id);
+                postOrPutRoutes.updateOldExpense();
             });
 
             // delete a particular expense
             app.MapDelete("/deleteExpense/{id}", (int id) => {
-                DeleteRoutes deleteSingleExpense = new DeleteRoutes(dbConn, "DELETE FROM budget WHERE id = @id", id);
+                DeleteRouteMethods deleteSingleExpense = new DeleteRouteMethods(dbConn, "DELETE FROM budget WHERE id = @id", id);
                 deleteSingleExpense.deleteExpenses();
             });
 
             // delete all expenses
             app.MapDelete("/resetExpenses", () => {
-                DeleteRoutes deleteAllExpenses = new DeleteRoutes(dbConn, "TRUNCATE TABLE budget", -1);
+                DeleteRouteMethods deleteAllExpenses = new DeleteRouteMethods(dbConn, "TRUNCATE TABLE budget", -1);
                 deleteAllExpenses.deleteExpenses();
             });
 

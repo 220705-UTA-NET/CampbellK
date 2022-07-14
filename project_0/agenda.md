@@ -1,13 +1,14 @@
 Solo Presentation: July 20th
 
     Refactor all files:
-        - API : For method class names, state METHODS in the class name ***
-            -x- post/put routes are ...
-                -- seperate post/put into two seperate sub classes?
+        - API : 
 
             -x- delete routes are ...
-                -- seperate delete one and delete all into two seperate sub
-                classes?
+                -- seperate delete one and delete all into two seperate methods
+    
+
+    Test all routes now that route classes have been seperated
+
 
 
     Make displayed tables (expense detail, etc) more visible by wrapping them
