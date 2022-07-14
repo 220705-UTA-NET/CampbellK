@@ -21,25 +21,38 @@ namespace RouteMethods
             NpgsqlParameter expenseId = new NpgsqlParameter("Id", id);
             command.Parameters.Add(expenseId);
 
+            Console.WriteLine("\n --------------------------------------- \n");
             Console.WriteLine("Expense deleted");
+            Console.WriteLine("\n --------------------------------------- \n");
+
             executeDeleteCommand(command);
         }
 
         public void ResetExpenses()
         {
             NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
-
+            Console.WriteLine("\n --------------------------------------- \n");
             Console.WriteLine("All expenses reset");
+            Console.WriteLine("\n --------------------------------------- \n");
+            
             executeDeleteCommand(command);
         }
 
         private void executeDeleteCommand(NpgsqlCommand command)
         {
-            NpgsqlDataReader reader = command.ExecuteReader();
-            reader.Close();
-            command.Dispose();
+            try
+            {
+                NpgsqlDataReader reader = command.ExecuteReader();
+                reader.Close();
+                command.Dispose();
 
-            displayInfo.displayInteractionMenu();
+                displayInfo.displayInteractionMenu();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to execute delete command: {ex}");
+            }
+
         }
     }
 }

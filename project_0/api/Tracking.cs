@@ -31,6 +31,7 @@ namespace Tracking
                 Console.WriteLine($"\n Current budget goal: \n {currentBudget}");
                 Console.WriteLine($"\n Current expense total:\n {currentExpenseTotal}");
                 Console.WriteLine($"\n You have ${currentBudget - currentExpenseTotal} remaining \n");
+                Console.WriteLine("\n --------------------------------------- \n");
             }
         }
 
@@ -41,8 +42,15 @@ namespace Tracking
             Dictionary<string, string>? previousBudgetInfo = JsonSerializer.Deserialize<Dictionary<string, string>>(budgetJson);
 
             // write values to global variables for expense total and budget goal
-            currentBudget = Int32.Parse(previousBudgetInfo["currentBudget"]);
-            currentExpenseTotal = Convert.ToDouble(previousBudgetInfo["currentExpenseTotal"]);
+            try 
+            {
+                currentBudget = Int32.Parse(previousBudgetInfo["currentBudget"]);
+                currentExpenseTotal = Convert.ToDouble(previousBudgetInfo["currentExpenseTotal"]);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error parsing budget info: {ex}");
+            }
 
             return previousBudgetInfo;
         }

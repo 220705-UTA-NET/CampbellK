@@ -12,61 +12,79 @@ namespace RouteMethods
         
         public void ViewExpenseTotal()
         {
-            NpgsqlDataReader reader = command.ExecuteReader();
-
-            double expenseTotal = 0;
-
-            while (reader.Read())
+            try 
             {
-                expenseTotal += reader.GetDouble(0);
+                NpgsqlDataReader reader = command.ExecuteReader();
+
+                double expenseTotal = 0;
+
+                while (reader.Read())
+                {
+                    expenseTotal += reader.GetDouble(0);
+                }
+
+                Console.WriteLine("\n --------------------------------------- \n");
+                Console.WriteLine($"\n Expense Total: \n {expenseTotal} \n");
+                Console.WriteLine("\n --------------------------------------- \n");
+
+                // end the reader
+                reader.Close();
+                // discard the command
+                command.Dispose();
+
+                // returns our current values for currentBudget and totalExpense
+                Dictionary<string, string> previousBudget = budgetTracker.getBudgetAndExpense();
+
+                // update expenseTotal & re-write the budget.json content
+                previousBudget["currentExpenseTotal"] = expenseTotal.ToString();
+
+                var serializedUpdatedBudget = JsonSerializer.Serialize(previousBudget);
+                File.WriteAllText("./budget.json", serializedUpdatedBudget);
+
+                // re-print the interaction menu
+                DisplayInformation displayInfo = new DisplayInformation();
+                displayInfo.displayInteractionMenu();
             }
-
-            Console.WriteLine($"\n Expense Total: \n {expenseTotal} \n");
-
-            // end the reader
-            reader.Close();
-            // discard the command
-            command.Dispose();
-
-            // returns our current values for currentBudget and totalExpense
-            Dictionary<string, string> previousBudget = budgetTracker.getBudgetAndExpense();
-
-            // update expenseTotal & re-write the budget.json content
-            previousBudget["currentExpenseTotal"] = expenseTotal.ToString();
-
-            var serializedUpdatedBudget = JsonSerializer.Serialize(previousBudget);
-            File.WriteAllText("./budget.json", serializedUpdatedBudget);
-
-            // re-print the interaction menu
-            DisplayInformation displayInfo = new DisplayInformation();
-            displayInfo.displayInteractionMenu();
+            catch (Exception ex)
+            {
+                throw new Exception($"Error viewing expense total: {ex}");
+            }
         }
 
         public void ViewExpenseDetails()
         {
-            NpgsqlDataReader reader = command.ExecuteReader();
-
-            // list where table data will be saved
-            List<Dictionary<string, string>> listOfEntries = new List<Dictionary<string, string>>();
-
-            Console.WriteLine($"\n Id:\t\t Description:\t\t Amount:\t\t Category:\t\t Date:\t\t");
-
-            while (reader.Read())
+            try
             {
-                string? id = reader["id"].ToString();
-                string? description = reader["description"].ToString();
-                string? amount = reader["amount"].ToString();
-                string? category = reader["category"].ToString();
-                string? date = reader["date"].ToString();
+                NpgsqlDataReader reader = command.ExecuteReader();
 
-                Console.WriteLine($"{id}\t\t\t {description}\t\t\t {amount}\t\t\t {category}\t\t {date}");
+                // list where table data will be saved
+                List<Dictionary<string, string>> listOfEntries = new List<Dictionary<string, string>>();
+
+                Console.WriteLine("\n --------------------------------------- \n");
+                Console.WriteLine($"\n Id:\t\t Description:\t\t Amount:\t\t Category:\t\t Date:\t\t");
+
+                while (reader.Read())
+                {
+                    string? id = reader["id"].ToString();
+                    string? description = reader["description"].ToString();
+                    string? amount = reader["amount"].ToString();
+                    string? category = reader["category"].ToString();
+                    string? date = reader["date"].ToString();
+
+                    Console.WriteLine($"{id}\t\t\t {description}\t\t\t {amount}\t\t\t {category}\t\t {date}");
+                }
+                Console.WriteLine("\n --------------------------------------- \n");
+
+                reader.Close();
+                command.Dispose();
+
+                DisplayInformation displayInfo = new DisplayInformation();
+                displayInfo.displayInteractionMenu();
             }
-
-            reader.Close();
-            command.Dispose();
-
-            DisplayInformation displayInfo = new DisplayInformation();
-            displayInfo.displayInteractionMenu();
+            catch (Exception ex)
+            {
+                throw new Exception($"Error viewing expense detail: {ex}");
+            }
         }
     }
 }

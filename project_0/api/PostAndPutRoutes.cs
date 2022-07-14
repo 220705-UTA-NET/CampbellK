@@ -42,33 +42,51 @@ namespace RouteMethods
 
         public void createNewExpense()
         {
-            NpgsqlCommand command = setSqlParameters();
+            try
+            {
+                NpgsqlCommand command = setSqlParameters();
 
-            NpgsqlDataReader reader = command.ExecuteReader();
+                NpgsqlDataReader reader = command.ExecuteReader();
 
-            reader.Close();
-            command.Dispose();
+                reader.Close();
+                command.Dispose();
 
-            Console.WriteLine("\n Entry successfully added \n");
+                Console.WriteLine("\n --------------------------------------- \n");
+                Console.WriteLine("\n Entry successfully added \n");
+                Console.WriteLine("\n --------------------------------------- \n");
 
-            displayInfo.displayInteractionMenu();
+                displayInfo.displayInteractionMenu();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to create new expense: {ex}");
+            }
         }
 
         public void updateOldExpense()
         {
-            NpgsqlCommand command = setSqlParameters();
+            try
+            {
+                NpgsqlCommand command = setSqlParameters();
 
-            updatedExpenseId = new NpgsqlParameter("Id", id);
-            command.Parameters.Add(updatedExpenseId);
+                updatedExpenseId = new NpgsqlParameter("Id", id);
+                command.Parameters.Add(updatedExpenseId);
 
-            NpgsqlDataReader reader = command.ExecuteReader();
+                NpgsqlDataReader reader = command.ExecuteReader();
 
-            reader.Close();
-            command.Dispose();
+                reader.Close();
+                command.Dispose();
 
-            Console.WriteLine("\n Entry successfully updated \n");
-
-            displayInfo.displayInteractionMenu();
+                Console.WriteLine("\n --------------------------------------- \n");
+                Console.WriteLine("\n Entry successfully updated \n");
+                Console.WriteLine("\n --------------------------------------- \n");
+                
+                displayInfo.displayInteractionMenu();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating previous expense: {ex}");
+            }
         }
     }
 }

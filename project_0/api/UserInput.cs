@@ -31,25 +31,32 @@ namespace UserInteraction
 
         public void askUserInput()
         {
-            while (!exit)
+            try
             {
-                port++;
-                // establish server connection & routes
-                ApiRoutes apiRoutes = new ApiRoutes();
-                // app needs to be re-recreated for each loop since it is readonly after creation (and therefore cannot change the http url)
-                app = apiRoutes.EstablishRoutes(dbConn, args);
-
-                HttpClient client = new HttpClient();
-
-                if (firstLoop)
+                while (!exit)
                 {
-                    // for first iteration, display interaction menu
-                    displayInfo.displayInteractionMenu();
-                    firstLoop = false;
-                }
+                    port++;
+                    // establish server connection & routes
+                    ApiRoutes apiRoutes = new ApiRoutes();
+                    // app needs to be re-recreated for each loop since it is readonly after creation (and therefore cannot change the http url)
+                    app = apiRoutes.EstablishRoutes(dbConn, args);
 
-                string? userAction = Console.ReadLine();
-                handleUserInput(userAction, client);
+                    HttpClient client = new HttpClient();
+
+                    if (firstLoop)
+                    {
+                        // for first iteration, display interaction menu
+                        displayInfo.displayInteractionMenu();
+                        firstLoop = false;
+                    }
+
+                    string? userAction = Console.ReadLine();
+                    handleUserInput(userAction, client);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed during user input: {ex}");
             }
         }
 
@@ -132,8 +139,10 @@ namespace UserInteraction
                 case "7":
                     Dictionary<string, string> priorBudget = budgetTracker.getBudgetAndExpense();
 
+                    Console.WriteLine("\n --------------------------------------- \n");
                     Console.WriteLine("Current budget:");
                     Console.WriteLine(priorBudget["currentBudget"]);
+                    Console.WriteLine("\n --------------------------------------- \n");
 
                     displayInfo.displayInteractionMenu();
 
@@ -151,19 +160,25 @@ namespace UserInteraction
                     var serializedUpdatedBudget = JsonSerializer.Serialize(previousBudget);
                     File.WriteAllText("./budget.json", serializedUpdatedBudget);
 
+                    Console.WriteLine("\n --------------------------------------- \n");
                     Console.WriteLine("Budget goal set");
+                    Console.WriteLine("\n --------------------------------------- \n");
 
                     displayInfo.displayInteractionMenu();
                     break;
 
                 case "0":
+                    Console.WriteLine("\n --------------------------------------- \n");
                     Console.WriteLine("\n Terminating program... \n");
+                    Console.WriteLine("\n --------------------------------------- \n");
                     exit = true;
                     app?.StopAsync();
                     break;
 
                 default:
+                    Console.WriteLine("\n --------------------------------------- \n");
                     Console.WriteLine("\n Command not recognized, please try again. \n");
+                    Console.WriteLine("\n --------------------------------------- \n");
                     break;
             }
         }
