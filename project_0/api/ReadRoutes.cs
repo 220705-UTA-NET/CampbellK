@@ -71,7 +71,7 @@ namespace RouteMethods
                     string? category = reader["category"].ToString();
                     string? date = reader["date"].ToString();
 
-                    Console.WriteLine($"{id}\t\t\t {description}\t\t\t {amount}\t\t\t {category}\t\t {date}");
+                    Console.WriteLine($"{id}\t\t {description}\t\t\t {amount}\t\t\t {category}\t\t {date}");
                 }
                 Console.WriteLine("\n --------------------------------------- \n");
 
