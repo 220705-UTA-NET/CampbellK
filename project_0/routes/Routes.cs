@@ -56,13 +56,13 @@ namespace Routes
             // delete a particular expense
             app.MapDelete("/deleteExpense/{id}", (int id) => {
                 DeleteRouteMethods deleteSingleExpense = new DeleteRouteMethods(dbConn, "DELETE FROM budget WHERE id = @id", id);
-                deleteSingleExpense.deleteExpenses();
+                deleteSingleExpense.DeleteSingleExpense();
             });
 
             // delete all expenses
             app.MapDelete("/resetExpenses", () => {
                 DeleteRouteMethods deleteAllExpenses = new DeleteRouteMethods(dbConn, "TRUNCATE TABLE budget", -1);
-                deleteAllExpenses.deleteExpenses();
+                deleteAllExpenses.ResetExpenses();
             });
 
             return app;

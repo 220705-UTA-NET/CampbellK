@@ -1,15 +1,5 @@
 Solo Presentation: July 20th
 
-    Refactor all files:
-        - API : 
-
-            -x- delete routes are ...
-                -- seperate delete one and delete all into two seperate methods
-    
-
-    Test all routes now that route classes have been seperated
-
-
 
     Make displayed tables (expense detail, etc) more visible by wrapping them
     in ascii table
