@@ -18,22 +18,23 @@ namespace Tracking
                     {"currentExpenseTotal", "0"}
                 };
 
-                var serializedDefault = JsonSerializer.Serialize(defaultTracker);
+                string serializedDefault = JsonSerializer.Serialize(defaultTracker);
 
                 File.WriteAllText("./budget.json", serializedDefault);
+
+                Console.WriteLine("\n Initializing expense and budget goal tracking... \n");
             }
             else
             {    
-                setBudgetAndExpense();
-            }
+                getBudgetAndExpense();
 
-            // logic for displaying current budget and current total expenses
-            Console.WriteLine($"\n Current budget goal: \n {currentBudget}");
-            Console.WriteLine($"\n Current expense total:\n {currentExpenseTotal}");
-            Console.WriteLine($"\n You have ${currentBudget - currentExpenseTotal} remaining \n");
+                Console.WriteLine($"\n Current budget goal: \n {currentBudget}");
+                Console.WriteLine($"\n Current expense total:\n {currentExpenseTotal}");
+                Console.WriteLine($"\n You have ${currentBudget - currentExpenseTotal} remaining \n");
+            }
         }
 
-        public Dictionary<string, string> setBudgetAndExpense()
+        public Dictionary<string, string> getBudgetAndExpense()
         {
             string budgetJson = File.ReadAllText("./budget.json");
 

@@ -13,8 +13,7 @@ namespace Budget
             DbConnection connection = new DbConnection();
             NpgsqlConnection dbConn = connection.DbConnect();
 
-            // for setting variables used to track current expenses
-            // will be saved to a local file in json
+            // display users current totalExpense & budgetGoal
             BudgetTracking budgetConstruction = new BudgetTracking(); budgetConstruction.fetchUserBudgetInfo();
 
             // ask for user commands and respond accordingly

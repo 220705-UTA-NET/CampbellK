@@ -12,10 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="Npgsql" Version="6.0.5" />
-
-    <!-- testing -->
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
 </Project>

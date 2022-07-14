@@ -6,7 +6,6 @@ namespace Database
 {
     public class DbConnection
     {
-            // static are scoped to class rather than object instance, therefore cannot declare them within DbConnect()
             private static string? Host = System.Environment.GetEnvironmentVariable("postgres_host");
             private static string? Username = System.Environment.GetEnvironmentVariable("postgres_username");
             private static string? Database = System.Environment.GetEnvironmentVariable("postgres_database");

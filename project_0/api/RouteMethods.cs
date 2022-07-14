@@ -7,7 +7,7 @@ using Tracking;
 // contains all API functionality used by the Routes namespace
 // parent class: ApiMethods. Accepts and establishes the database connection and the sql command
 // chidlren: ReadRoutes, PostAndPutRoutes, and DeleteRoutes
-namespace Api
+namespace RouteMethods
 {
     public class Expense
     {
@@ -18,11 +18,12 @@ namespace Api
         public string? Date {get; set;}
     }
 
-    public class ApiMethods
+    public abstract class ApiMethods
     {
         public NpgsqlConnection dbConn;
         public string commandText = "";
         public NpgsqlCommand command;
+        // for pulling prior values of totalExpense & budgetGoal
         public BudgetTracking budgetTracker = new BudgetTracking();
 
         public ApiMethods(NpgsqlConnection dbConn, string commandText)
@@ -39,7 +40,7 @@ namespace Api
         public ReadRoutes(NpgsqlConnection dbConn, string commandText) : base(dbConn, commandText)
         {}
         
-        public double ViewExpenseTotal()
+        public void ViewExpenseTotal()
         {
             NpgsqlDataReader reader = command.ExecuteReader();
 
@@ -57,13 +58,8 @@ namespace Api
             // discard the command
             command.Dispose();
 
-            Dictionary<string, double> savedExpense = new Dictionary<string, double>()
-            {
-                {"totalExpense", expenseTotal}
-            };
-
             // returns our current values for currentBudget and totalExpense
-            Dictionary<string, string> previousBudget = budgetTracker.setBudgetAndExpense();
+            Dictionary<string, string> previousBudget = budgetTracker.getBudgetAndExpense();
 
             // update expenseTotal & re-write the budget.json content
             previousBudget["currentExpenseTotal"] = expenseTotal.ToString();
@@ -74,13 +70,10 @@ namespace Api
             // re-print the interaction menu
             DisplayInformation displayInfo = new DisplayInformation();
             displayInfo.displayInteractionMenu();
-
-            return expenseTotal;
         }
 
         public void ViewExpenseDetails()
         {
-
             NpgsqlDataReader reader = command.ExecuteReader();
 
             // list where table data will be saved
@@ -96,18 +89,6 @@ namespace Api
                 string? category = reader["category"].ToString();
                 string? date = reader["date"].ToString();
 
-                // combine the row data into a single dictionary to save to listOfEntries;
-                Dictionary<string, string> budgetEntry = new Dictionary<string, string>()
-                {
-                    {"id", id},
-                    {"description", description},
-                    {"amount", amount},
-                    {"category", category},
-                    {"date", date}
-                };
-
-                listOfEntries.Add(budgetEntry);
-
                 Console.WriteLine($"{id}\t\t\t {description}\t\t\t {amount}\t\t\t {category}\t\t {date}");
             }
 
@@ -121,7 +102,7 @@ namespace Api
 
     public class PostAndPutRoutes : ApiMethods
     {
-        Expense expense;
+        private Expense expense;
         private int id;
 
         public PostAndPutRoutes(NpgsqlConnection dbConn, string commandText, Expense expense, int id = -1) : base(dbConn, commandText)
@@ -134,6 +115,7 @@ namespace Api
         {
             NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
 
+            // creating params for prepared statement
             NpgsqlParameter description = new NpgsqlParameter("Description", expense.Description);
             NpgsqlParameter amount = new NpgsqlParameter("Amount", expense.Amount);
             NpgsqlParameter category = new NpgsqlParameter("Category", expense.Category);
@@ -151,7 +133,7 @@ namespace Api
             command.Parameters.Add(category);
             command.Parameters.Add(date);
 
-            // add id parameter for editExpense
+            // Add id parameter for editExpense
             if (id != -1)
             {
                 command.Parameters.Add(updatedExpenseId);
@@ -165,17 +147,14 @@ namespace Api
             if (id == -1)
             {
                 Console.WriteLine("Entry successfully added");
-
-                DisplayInformation displayInfo = new DisplayInformation();
-                displayInfo.displayInteractionMenu();
             }
             else 
             {
                 Console.WriteLine("Entry successfully updated");
-
-                DisplayInformation displayInfo = new DisplayInformation();
-                displayInfo.displayInteractionMenu();
             }
+
+            DisplayInformation displayInfo = new DisplayInformation();
+            displayInfo.displayInteractionMenu();
         }
     }
 
@@ -192,6 +171,7 @@ namespace Api
         {
             NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
 
+            // if deleting a particular expense item RATHER than clearing the table
             if (id != -1)
             {
                 NpgsqlParameter expenseId = new NpgsqlParameter("Id", id);
@@ -206,16 +186,14 @@ namespace Api
             if (id != -1)
             {
                 Console.WriteLine("Expense deleted");
-
-                DisplayInformation displayInfo = new DisplayInformation();
-                displayInfo.displayInteractionMenu();
             }
             else
             {
                 Console.WriteLine("All expenses reset");
-                DisplayInformation displayInfo = new DisplayInformation();
-                displayInfo.displayInteractionMenu();
             }
+
+            DisplayInformation displayInfo = new DisplayInformation();
+            displayInfo.displayInteractionMenu();
         }  
     }
 }

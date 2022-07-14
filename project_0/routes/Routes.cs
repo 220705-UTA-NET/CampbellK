@@ -2,8 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Npgsql;
-using Api;
-using Tracking;
+using RouteMethods;
 
 // contains all routes to be used by the web server
 // returns *app*, needed to start up the web server in the additional threads created in UserInput namespace
@@ -14,8 +13,8 @@ namespace Routes
         public WebApplication EstablishRoutes(NpgsqlConnection dbConn, string[] args)
         {   
             // establish server component
-            var builder = WebApplication.CreateBuilder(args);
-            var app = builder.Build();
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+            WebApplication app = builder.Build();
 
             // show sum of all expense costs
             app.MapGet("/viewExpenseTotal", () => {

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using System.Text.Json;
-using Api;
+using RouteMethods;
 using Routes;
 using Npgsql;
 using Tracking;
@@ -18,7 +18,9 @@ namespace UserInteraction
         string[] args;
         // other threads may take some time to shut down, so utilizing various ports to avoid conflict
         public int port = 3000;
+        // allows us to read & write to budget.json, where totalExpense & budgetGoal are stored
         public BudgetTracking budgetTracker = new BudgetTracking();
+        // for displaying the console menu to user
         public DisplayInformation displayInfo = new DisplayInformation();
 
         public UserInput(NpgsqlConnection dbConn, string[] args)
@@ -34,13 +36,14 @@ namespace UserInteraction
                 port++;
                 // establish server connection & routes
                 ApiRoutes apiRoutes = new ApiRoutes();
-                // app needs to be re-recreated for each loop since it is readonly after creation (and therefore cannot change the url)
+                // app needs to be re-recreated for each loop since it is readonly after creation (and therefore cannot change the http url)
                 app = apiRoutes.EstablishRoutes(dbConn, args);
 
                 HttpClient client = new HttpClient();
 
                 if (firstLoop)
                 {
+                    // for first iteration, display interaction menu
                     displayInfo.displayInteractionMenu();
                     firstLoop = false;
                 }
@@ -58,17 +61,15 @@ namespace UserInteraction
             switch(userInput)
             {
                 case "1":
-                    Console.WriteLine("\n Viewing expenes total... \n");
-
                     thread.Start();
                     await client.GetAsync($"http://localhost:{port}/viewExpenseTotal");
+
                     break;
 
-                case "2":
-                    Console.WriteLine("\n Viewing all expenses...\n");
-                    
+                case "2":                    
                     thread.Start();
                     await client.GetAsync($"http://localhost:{port}/viewExpenseDetails");
+
                     break;
 
                 case "3":
@@ -76,13 +77,7 @@ namespace UserInteraction
 
                     StringContent stringContent = gatherExpenseInfo();
 
-                    Console.WriteLine("prior to thread start");
-
-
                     thread.Start();
-
-                    Console.WriteLine("After thread start");
-
                     await client.PostAsync($"http://localhost:{port}/newExpense", stringContent);
 
                     break;
@@ -94,7 +89,6 @@ namespace UserInteraction
                     string? expenseToEditId = Console.ReadLine();
 
                     Console.WriteLine("\n Editing expenditure. Type the relevant information. \n");
-
                     StringContent editedStringContent = gatherExpenseInfo();
                     
                     try 
@@ -136,7 +130,7 @@ namespace UserInteraction
                     break;
                 
                 case "7":
-                    Dictionary<string, string> priorBudget = budgetTracker.setBudgetAndExpense();
+                    Dictionary<string, string> priorBudget = budgetTracker.getBudgetAndExpense();
 
                     Console.WriteLine("Current budget:");
                     Console.WriteLine(priorBudget["currentBudget"]);
@@ -149,7 +143,7 @@ namespace UserInteraction
                     Console.WriteLine("\n Type your new budget goal: \n");
                     string? budgetGoal = Console.ReadLine();
 
-                    Dictionary<string, string> previousBudget = budgetTracker.setBudgetAndExpense();
+                    Dictionary<string, string> previousBudget = budgetTracker.getBudgetAndExpense();
 
                     // update expenseTotal & re-write the budget.json content
                     previousBudget["currentBudget"] = budgetGoal;
@@ -178,7 +172,6 @@ namespace UserInteraction
         public void startWebServer()
         {
             Console.WriteLine($"Listening on port {port}");
-            // open server connection; blocking
             app?.Run($"http://localhost:{port}");
         }
 

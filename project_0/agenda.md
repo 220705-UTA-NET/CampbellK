@@ -1,16 +1,13 @@
 Solo Presentation: July 20th
 
+    Refactor all files:
+        - API : For method class names, state METHODS in the class name ***
+            -x- post/put routes are ...
+                -- seperate post/put into two seperate sub classes?
 
-    Rename ApiMethods subclasses to be more verbose
-        - should include expense somewhere in the name
-        - users should be changed to budgetGoal
-    
-
-    create subfolders for api, db
-
-    Refactor:
-        Should be able to cut down on some code, especially re-instantiation
-        of classes (like Tracking in UserInput)
+            -x- delete routes are ...
+                -- seperate delete one and delete all into two seperate sub
+                classes?
 
 
     Make displayed tables (expense detail, etc) more visible by wrapping them
@@ -20,18 +17,17 @@ Solo Presentation: July 20th
     Server still hits issues @ around 4th call
 
 
+    Add more try/catch and exception throwing/handling
+        - add checks to reader.Read() & other checks in general
+    
+    clear up possible null reference warnings
+
+
 --------------------------------------------------------------------------------
 
 
     Add unit testing for endpoints
 
 
-
     Endpoints related to Category
         a. Set budget per category?
-
-    
-    Clean up and finalize code
-        - Set up better error handling
-        - rename things to be more verbose
-        - add checks to reader.Read() & other checks in general
