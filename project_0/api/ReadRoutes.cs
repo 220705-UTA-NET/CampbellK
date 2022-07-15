@@ -61,9 +61,8 @@ namespace Budget.RouteMethods
                 // list where table data will be saved
                 List<Dictionary<string, string>> listOfEntries = new List<Dictionary<string, string>>();
 
-                Console.WriteLine("\n --------------------------------------- \n");
-                Console.WriteLine($"{"Id:", 0} {"Description:", 25} {"Amount:", 25} {"Category:", 25} {"Date:", 25}");
-                Console.WriteLine("\n --------------------------------------- \n");
+                Console.WriteLine($"\n\n {"Id:", 0} {"Description:", 25} {"Amount:", 25} {"Category:", 25} {"Date:", 25}");
+                Console.WriteLine("\n --------------------------------------------------------------------------------------------------------------------- \n");
 
                 while (reader.Read())
                 {
@@ -73,17 +72,10 @@ namespace Budget.RouteMethods
                     string? category = reader["category"].ToString();
                     string? date = reader["date"].ToString();
 
-                    // Console.WriteLine($"{id}\t\t {description}\t\t\t {amount}\t\t\t {category}\t\t {date}");
-
                     Console.WriteLine($"{id, 0} {description, 25} {amount, 25} {category, 25} {date, 25}");
 
-                //     Console.WriteLine($"{customer[DisplayPos],10}" +
-                //   $"{salesFigures[DisplayPos],10}" +
-                //   $"{feePayable[DisplayPos],10}" +
-                //   $"{seventyPercentValue,10}" +
-                //   $"{thirtyPercentValue,10}");
                 }
-                Console.WriteLine("\n --------------------------------------- \n");
+                Console.WriteLine("\n --------------------------------------------------------------------------------------------------------------------- \n");
 
                 reader.Close();
                 command.Dispose();

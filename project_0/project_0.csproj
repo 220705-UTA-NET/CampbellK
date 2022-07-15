@@ -6,6 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <!-- <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel> -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>   
+
   </PropertyGroup>
 
   <ItemGroup>

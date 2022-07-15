@@ -1,5 +1,4 @@
 using System;
-using Npgsql;
 using Microsoft.AspNetCore.Builder;
 
 namespace Budget.Helpers
@@ -10,8 +9,15 @@ namespace Budget.Helpers
         // referencing the namespace variable is not always as up-to-date as it should be; passing it as a param has shown more consistent results
         public void startWebServer(int port, WebApplication app)
         {
-            Console.WriteLine($"Listening on port {port}");
-            app.Run($"http://localhost:{port}");
+            try
+            {
+                Console.WriteLine($"Listening on port {port}");
+                app.Run($"http://localhost:{port}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Threaded web server error: {ex}");
+            }
         }
 
         public void displayInteractionMenu()
