@@ -12,7 +12,6 @@ namespace Budget.UserInteraction
     public class UserInput
     {
         bool exit = false;
-        public WebApplication? app;
         NpgsqlConnection dbConn;
         // drilled down from main; required fro WebApplication.CreateBuilder()
         string[] args;
@@ -41,14 +40,14 @@ namespace Budget.UserInteraction
                     port++;
                     
                     // app needs to be re-recreated for each loop since it is readonly after creation (and therefore cannot change the http url)
-                    app = apiRoutes.EstablishRoutes(dbConn, args);
+                    WebApplication app = apiRoutes.EstablishRoutes(dbConn, args) ?? throw new ArgumentNullException(nameof(app));
 
                     HttpClient client = new HttpClient();
 
                     helperMethods.displayInteractionMenu();
 
                     string? userAction = Console.ReadLine();
-                    handleUserInput(userAction, client);
+                    handleUserInput(userAction, client, app);
                 }
             }
             catch (Exception ex)
@@ -57,7 +56,7 @@ namespace Budget.UserInteraction
             }
         }
 
-        async private void handleUserInput(string? userInput, HttpClient client)
+        async private void handleUserInput(string? userInput, HttpClient client, WebApplication app)
         {
             // create additional thread to run the web server (since it is blocking)
             Thread thread = new Thread(() => helperMethods.startWebServer(port, app));
@@ -145,7 +144,7 @@ namespace Budget.UserInteraction
                 
                 case "8":
                     Console.WriteLine("\n Type your new budget goal: \n");
-                    string? budgetGoal = Console.ReadLine();
+                    string? budgetGoal = Console.ReadLine() ?? throw new ArgumentNullException(nameof(budgetGoal));
 
                     Dictionary<string, string> previousBudget = budgetTracker.getBudgetAndExpense();
 

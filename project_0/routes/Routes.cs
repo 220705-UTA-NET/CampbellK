@@ -45,10 +45,11 @@ namespace Budget.Routes
                 string requestBody = await reader.ReadToEndAsync();
 
                 // parse request JSON into cooresponding expense class
-                Expense? newExpense = JsonSerializer.Deserialize<Expense>(requestBody); 
+                Expense? newExpense = JsonSerializer.Deserialize<Expense>(requestBody) ?? throw new NullReferenceException(nameof(newExpense)); 
 
                 // once body has been parsed, can send to addExpense
                 PostAndPutRouteMethods postOrPutRoutes = new PostAndPutRouteMethods(dbConn, "INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)", newExpense);
+
                 postOrPutRoutes.createNewExpense();
             });
             
@@ -57,9 +58,10 @@ namespace Budget.Routes
                 StreamReader reader = new StreamReader(httpRequest.Body);
                 string requestBody = await reader.ReadToEndAsync();
 
-                Expense? updatedExpense = JsonSerializer.Deserialize<Expense>(requestBody);
+                Expense? updatedExpense = JsonSerializer.Deserialize<Expense>(requestBody) ?? throw new NullReferenceException(nameof(updatedExpense));
 
                 PostAndPutRouteMethods postOrPutRoutes = new PostAndPutRouteMethods(dbConn, "UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id", updatedExpense, id);
+                
                 postOrPutRoutes.updateOldExpense();
             });
 

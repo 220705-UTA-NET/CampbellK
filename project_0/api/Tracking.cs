@@ -39,7 +39,7 @@ namespace Budget.Tracking
         {
             string budgetJson = File.ReadAllText("./budget.json");
 
-            Dictionary<string, string>? previousBudgetInfo = JsonSerializer.Deserialize<Dictionary<string, string>>(budgetJson);
+            Dictionary<string, string>? previousBudgetInfo = JsonSerializer.Deserialize<Dictionary<string, string>>(budgetJson) ?? throw new ArgumentNullException(nameof(previousBudgetInfo));
 
             // write values to global variables for expense total and budget goal
             try 

@@ -10,7 +10,7 @@ namespace Budget.RouteMethods
         public ReadRouteMethods(NpgsqlConnection dbConn, string commandText) : base(dbConn, commandText)
         {}
         
-        public void ViewExpenseTotal()
+        public bool ViewExpenseTotal()
         {
             try 
             {
@@ -27,11 +27,6 @@ namespace Budget.RouteMethods
                 Console.WriteLine($"\n Expense Total: \n {expenseTotal} \n");
                 Console.WriteLine("\n --------------------------------------- \n");
 
-                // end the reader
-                reader.Close();
-                // discard the command
-                command.Dispose();
-
                 // returns our current values for currentBudget and totalExpense
                 BudgetTracking budgetTracker = new BudgetTracking();
                 Dictionary<string, string> previousBudget = budgetTracker.getBudgetAndExpense();
@@ -42,7 +37,14 @@ namespace Budget.RouteMethods
                 var serializedUpdatedBudget = JsonSerializer.Serialize(previousBudget);
                 File.WriteAllText("./budget.json", serializedUpdatedBudget);
 
+                // end the reader
+                reader.Close();
+                // discard the command
+                command.Dispose();
+
                 commandMenu.displayInteractionMenu();
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -50,7 +52,7 @@ namespace Budget.RouteMethods
             }
         }
 
-        public void ViewExpenseDetails()
+        public bool ViewExpenseDetails()
         {
             try
             {
@@ -60,7 +62,8 @@ namespace Budget.RouteMethods
                 List<Dictionary<string, string>> listOfEntries = new List<Dictionary<string, string>>();
 
                 Console.WriteLine("\n --------------------------------------- \n");
-                Console.WriteLine($"\n Id:\t\t Description:\t\t Amount:\t\t Category:\t\t Date:\t\t");
+                Console.WriteLine($"{"Id:", 0} {"Description:", 25} {"Amount:", 25} {"Category:", 25} {"Date:", 25}");
+                Console.WriteLine("\n --------------------------------------- \n");
 
                 while (reader.Read())
                 {
@@ -70,7 +73,15 @@ namespace Budget.RouteMethods
                     string? category = reader["category"].ToString();
                     string? date = reader["date"].ToString();
 
-                    Console.WriteLine($"{id}\t\t {description}\t\t\t {amount}\t\t\t {category}\t\t {date}");
+                    // Console.WriteLine($"{id}\t\t {description}\t\t\t {amount}\t\t\t {category}\t\t {date}");
+
+                    Console.WriteLine($"{id, 0} {description, 25} {amount, 25} {category, 25} {date, 25}");
+
+                //     Console.WriteLine($"{customer[DisplayPos],10}" +
+                //   $"{salesFigures[DisplayPos],10}" +
+                //   $"{feePayable[DisplayPos],10}" +
+                //   $"{seventyPercentValue,10}" +
+                //   $"{thirtyPercentValue,10}");
                 }
                 Console.WriteLine("\n --------------------------------------- \n");
 
@@ -78,6 +89,8 @@ namespace Budget.RouteMethods
                 command.Dispose();
 
                 commandMenu.displayInteractionMenu();
+
+                return true;
             }
             catch (Exception ex)
             {

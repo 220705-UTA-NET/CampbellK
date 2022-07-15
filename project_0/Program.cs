@@ -10,8 +10,7 @@ namespace Budget
         static void Main(string[] args)
         {
             // establish connection to database; needs to be passed in routing/api
-            DbConnection connection = new DbConnection();
-            NpgsqlConnection dbConn = connection.DbConnect();
+            NpgsqlConnection dbConn = DbConnection.DbConnect();
 
             // display users current totalExpense & budgetGoal
             BudgetTracking budgetConstruction = new BudgetTracking(); budgetConstruction.fetchUserBudgetInfo();
