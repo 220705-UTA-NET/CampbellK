@@ -13,7 +13,7 @@ namespace Budget.RouteMethods
             this.id = id;
         }
 
-        public void DeleteSingleExpense()
+        public int DeleteSingleExpense()
         {
             NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
 
@@ -24,30 +24,35 @@ namespace Budget.RouteMethods
             Console.WriteLine("Expense deleted");
             Console.WriteLine("\n --------------------------------------- \n");
 
-            executeDeleteCommand(command);
+            int affectedRows = executeDeleteCommand(command);
 
             commandMenu.displayInteractionMenu();
+
+            return affectedRows;
         }
 
-        public void ResetExpenses()
+        public int ResetExpenses()
         {
             NpgsqlCommand command = new NpgsqlCommand(commandText, dbConn);
             Console.WriteLine("\n --------------------------------------- \n");
             Console.WriteLine("All expenses reset");
             Console.WriteLine("\n --------------------------------------- \n");
             
-            executeDeleteCommand(command);
+            int affectedRows = executeDeleteCommand(command);
 
             commandMenu.displayInteractionMenu();
+
+            return affectedRows;
         }
 
-        private void executeDeleteCommand(NpgsqlCommand command)
+        private int executeDeleteCommand(NpgsqlCommand command)
         {
             try
             {
-                NpgsqlDataReader reader = command.ExecuteReader();
-                reader.Close();
+                int reader = command.ExecuteNonQuery();
                 command.Dispose();
+
+                return reader;
             }
             catch (Exception ex)
             {

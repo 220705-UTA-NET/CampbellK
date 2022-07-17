@@ -73,7 +73,7 @@ namespace Budget.Routes
 
             // delete all expenses
             app.MapDelete("/resetExpenses", () => {
-                DeleteRouteMethods deleteAllExpenses = new DeleteRouteMethods(dbConn, "TRUNCATE TABLE budget", -1);
+                DeleteRouteMethods deleteAllExpenses = new DeleteRouteMethods(dbConn, "DELETE FROM budget", -1);
                 deleteAllExpenses.ResetExpenses();
             });
 
