@@ -40,24 +40,44 @@ namespace Budget.ApiTests
 
     public class TestPostAndPutRoutes
     {
+        NpgsqlConnection dbConn;
+        Expense testData = new Expense();
+        PostAndPutRouteMethods route;
+        int insertStatus;
 
-        [Fact]
-        public void TestSuccessCreateNewExpense()
+        public TestPostAndPutRoutes()
         {
-            NpgsqlConnection dbConn = DbConnection.DbConnect();
-
-            Expense testData = new Expense();
             testData.Description = "Testing description";
             testData.Amount = 50;
             testData.Category = "Testing";
             testData.Date = "07/17/2022";
+        }
 
-            PostAndPutRouteMethods route = new PostAndPutRouteMethods(dbConn, "INSERT INTO budget (description, amount, category, date) VALUES (@1, @2, @3, @4)", testData, -1);
+        [Fact]
+        public void TestSuccessCreateNewExpense()
+        {
+            dbConn = DbConnection.DbConnect();
 
-            int insertStatus = route.CreateNewExpense();
+            route = new PostAndPutRouteMethods(dbConn, "INSERT INTO budget (description, amount, category, date) VALUES (@Description, @Amount, @Category, @Date)", testData, -1);
+
+            insertStatus = route.CreateNewExpense();
 
             // returns the number of rows inserted upon success
             Assert.Equal(1, insertStatus);
         }
-    }
+
+        [Fact]
+        public void TestSuccessUpdateExpense()
+        {
+            NpgsqlConnection dbConn = DbConnection.DbConnect();
+
+            // will need a valid id in order to test the put route
+            route = new PostAndPutRouteMethods(dbConn, "UPDATE budget SET (description, amount, category, date) = (@Description, @Amount, @Category, @Date) WHERE id = @Id", testData, 40);
+
+            insertStatus = route.UpdateOldExpense();
+
+            // returns the number of rows inserted upon success
+            Assert.Equal(1, insertStatus);
+        }
+    }    
 }
