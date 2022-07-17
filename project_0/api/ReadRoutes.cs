@@ -77,6 +77,8 @@ namespace Budget.RouteMethods
                 }
                 Console.WriteLine("\n --------------------------------------------------------------------------------------------------------------------- \n");
 
+                Console.WriteLine(reader);
+
                 reader.Close();
                 command.Dispose();
 

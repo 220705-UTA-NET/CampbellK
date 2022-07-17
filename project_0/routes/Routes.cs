@@ -50,7 +50,7 @@ namespace Budget.Routes
                 // once body has been parsed, can send to addExpense
                 PostAndPutRouteMethods postOrPutRoutes = new PostAndPutRouteMethods(dbConn, "INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)", newExpense);
 
-                postOrPutRoutes.createNewExpense();
+                postOrPutRoutes.CreateNewExpense();
             });
             
             // edit existing expense
@@ -62,7 +62,7 @@ namespace Budget.Routes
 
                 PostAndPutRouteMethods postOrPutRoutes = new PostAndPutRouteMethods(dbConn, "UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id", updatedExpense, id);
                 
-                postOrPutRoutes.updateOldExpense();
+                postOrPutRoutes.UpdateOldExpense();
             });
 
             // delete a particular expense

@@ -20,7 +20,7 @@ namespace Budget.RouteMethods
             this.id = id;
         }
 
-        private NpgsqlCommand setSqlParameters()
+        private NpgsqlCommand SetSqlParameters()
         {
             // creating params for prepared statement
             description = new NpgsqlParameter("Description", expense.Description);
@@ -38,15 +38,13 @@ namespace Budget.RouteMethods
             return command;
         }
 
-        public void createNewExpense()
+        public int CreateNewExpense()
         {
             try
             {
-                NpgsqlCommand command = setSqlParameters();
+                NpgsqlCommand command = SetSqlParameters();
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-
-                reader.Close();
+                int reader = command.ExecuteNonQuery();
                 command.Dispose();
 
                 Console.WriteLine("\n --------------------------------------- \n");
@@ -54,6 +52,8 @@ namespace Budget.RouteMethods
                 Console.WriteLine("\n --------------------------------------- \n");
 
                 commandMenu.displayInteractionMenu();
+
+                return reader;
             }
             catch (Exception ex)
             {
@@ -61,18 +61,16 @@ namespace Budget.RouteMethods
             }
         }
 
-        public void updateOldExpense()
+        public int UpdateOldExpense()
         {
             try
             {
-                NpgsqlCommand command = setSqlParameters();
+                NpgsqlCommand command = SetSqlParameters();
 
                 updatedExpenseId = new NpgsqlParameter("Id", id);
                 command.Parameters.Add(updatedExpenseId);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-
-                reader.Close();
+                int reader = command.ExecuteNonQuery();
                 command.Dispose();
 
                 Console.WriteLine("\n --------------------------------------- \n");
@@ -80,6 +78,8 @@ namespace Budget.RouteMethods
                 Console.WriteLine("\n --------------------------------------- \n");
 
                 commandMenu.displayInteractionMenu();
+
+                return reader;
             }
             catch (Exception ex)
             {
