@@ -11,15 +11,15 @@ namespace Budget.UserInteraction
 {
     public class UserInput
     {
-        bool exitStatus = false;
-        bool firstLoop = true;
-        NpgsqlConnection dbConn;
+        private bool exitStatus = false;
+        private bool firstLoop = true;
+        private NpgsqlConnection dbConn;
         // drilled down from main; required fro WebApplication.CreateBuilder()
-        string[] args;
+        private string[] args;
         // other threads may take some time to shut down, so utilizing various ports to avoid conflict
         public int port = 3000;
         // allows us to read & write to budget.json, where totalExpense & budgetGoal are stored
-        public BudgetTracking budgetTracker = new BudgetTracking();
+        private BudgetTracking budgetTracker = new BudgetTracking();
         private ApiRoutes apiRoutes;
         private HelperMethods helperMethods;
 
@@ -140,7 +140,25 @@ namespace Budget.UserInteraction
                 
                 case "8":
                     Console.WriteLine("\n Type your new budget goal: \n");
-                    string? budgetGoal = Console.ReadLine() ?? throw new ArgumentNullException(nameof(budgetGoal));
+
+                    string budgetGoal = "";
+                    bool gotBudgetNumber = false;
+
+                    while (!gotBudgetNumber)
+                    {
+                        try
+                        {
+                            budgetGoal = Console.ReadLine() ?? throw new ArgumentNullException(nameof(budgetGoal));
+
+                            double testIfNumber = Convert.ToDouble(budgetGoal);
+
+                            gotBudgetNumber = true;
+                        }
+                        catch
+                        {
+                            Console.WriteLine("\n Invalid input. Please submit a number \n");
+                        }
+                    }
 
                     Dictionary<string, string> previousBudget = budgetTracker.getBudgetAndExpense();
 
@@ -190,7 +208,21 @@ namespace Budget.UserInteraction
             editedInformation.Description = Console.ReadLine();
 
             Console.WriteLine("Amount:");
-            editedInformation.Amount = Convert.ToDouble(Console.ReadLine()); 
+            bool gotNumber = false;
+            // continue to loop until user gives a number
+            while (!gotNumber)
+            {
+                try
+                {
+                    editedInformation.Amount = Convert.ToDouble(Console.ReadLine());
+                    gotNumber = true;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("\n Invalid input. Please enter a number \n");
+                }
+                
+            } 
             
             Console.WriteLine("Category:");
             editedInformation.Category = Console.ReadLine();

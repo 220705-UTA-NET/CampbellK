@@ -12,7 +12,7 @@ namespace Budget
             // establish connection to database; needs to be passed in routing/api
             NpgsqlConnection dbConn = DbConnection.DbConnect();
 
-            // display users current totalExpense & budgetGoal
+            // update & display users current totalExpense & budgetGoal
             BudgetTracking budgetConstruction = new BudgetTracking(); budgetConstruction.fetchUserBudgetInfo(dbConn);
 
             // ask for user commands and respond accordingly

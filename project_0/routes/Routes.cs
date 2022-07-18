@@ -13,7 +13,7 @@ namespace Budget.Routes
     {  
         NpgsqlConnection dbConn;
         string[] args;
-        Expense requestExpense;
+        Expense? requestExpense;
         
         public ApiRoutes(NpgsqlConnection dbConn, string[] args)
         {

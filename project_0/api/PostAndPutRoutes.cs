@@ -17,7 +17,7 @@ namespace Budget.RouteMethods
 
         public PostAndPutRouteMethods(NpgsqlConnection dbConn, string commandText, Expense expense, int id = -1) : base(dbConn, commandText)
         {
-            this.expense = expense;
+            this.expense = expense ?? throw new ArgumentNullException(nameof(expense));
             this.id = id;
         }
 
@@ -92,7 +92,7 @@ namespace Budget.RouteMethods
             }
         }
 
-        public Dictionary<string, double> GetUpdatedExpenseAndRemainder()
+        private Dictionary<string, double> GetUpdatedExpenseAndRemainder()
         {
             // incorporate into a seperate function when finished
             BudgetTracking tracker = new BudgetTracking();

@@ -7,8 +7,8 @@ namespace Budget.Tracking
 {
     public class BudgetTracking
     {
-        public int currentBudget;
-        public double currentExpenseTotal;
+        private int currentBudget;
+        private double currentExpenseTotal;
 
         public void fetchUserBudgetInfo(NpgsqlConnection dbConn)
         {
@@ -29,6 +29,7 @@ namespace Budget.Tracking
             }
             else
             {    
+                // get budget and expense values from budget.json & setting them in the current scope
                 getBudgetAndExpense();
 
                 Console.WriteLine($"\n Current budget goal: \n {currentBudget}");

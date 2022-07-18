@@ -15,7 +15,7 @@ namespace Budget.ApiTests
 {
     public class TestApiRoutes
     {
-        NpgsqlConnection dbConn;
+        NpgsqlConnection? dbConn;
         private Expense testData = new Expense();
 
         public TestApiRoutes()
@@ -68,7 +68,7 @@ namespace Budget.ApiTests
             dbConn = DbConnection.DbConnect();
 
             // will need a valid id in order to test the put route
-            PostAndPutRouteMethods route = new PostAndPutRouteMethods(dbConn, "UPDATE budget SET (description, amount, category, date) = (@Description, @Amount, @Category, @Date) WHERE id = @Id", testData, 73);
+            PostAndPutRouteMethods route = new PostAndPutRouteMethods(dbConn, "UPDATE budget SET (description, amount, category, date) = (@Description, @Amount, @Category, @Date) WHERE id = @Id", testData, 93);
 
             int insertStatus = route.UpdateOldExpense();
 
