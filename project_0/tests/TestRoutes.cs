@@ -27,7 +27,7 @@ namespace Budget.ApiTests
         }
 
         [Fact]
-        public void TestSuccessViewExpenseDetail()
+        public void ViewExpense_Success()
         {
             // need to create a new connection for each test since each api ends by closing the connect
             dbConn = DbConnection.DbConnect();
@@ -41,7 +41,7 @@ namespace Budget.ApiTests
         }
 
         [Fact]
-        public void TestFailViewExpenseDetail()
+        public void ViewExpense_Fail()
         {
             dbConn = DbConnection.DbConnect();
             ReadRouteMethods readRoute = new ReadRouteMethods(dbConn, "Select abc FROM budget");
@@ -50,7 +50,7 @@ namespace Budget.ApiTests
         }
 
         [Fact]
-        public void TestSuccessCreateNewExpense()
+        public void CreateNewExpense_Success()
         {
             dbConn = DbConnection.DbConnect();
 
@@ -63,7 +63,7 @@ namespace Budget.ApiTests
         }
 
         [Fact]
-        public void TestSuccessUpdateExpense()
+        public void UpdateExpense_Success()
         {
             dbConn = DbConnection.DbConnect();
 
@@ -76,28 +76,28 @@ namespace Budget.ApiTests
             Assert.Equal(1, insertStatus);
         }
 
-        [Fact]
-        public void TestSuccessDeleteOne()
-        {
-            dbConn = DbConnection.DbConnect();
+        // [Fact]
+        // public void DeleteOne_Success()
+        // {
+        //     dbConn = DbConnection.DbConnect();
 
-            // will need a valid id to be successful
-            DeleteRouteMethods route = new DeleteRouteMethods(dbConn, "DELETE FROM budget WHERE id = @Id", 73);
-            int deleteStatus = route.DeleteSingleExpense();
+        //     // will need a valid id to be successful
+        //     DeleteRouteMethods route = new DeleteRouteMethods(dbConn, "DELETE FROM budget WHERE id = @Id", 73);
+        //     int deleteStatus = route.DeleteSingleExpense();
             
-            Assert.Equal(1, deleteStatus);
-        }
+        //     Assert.Equal(1, deleteStatus);
+        // }
 
-        [Fact]
-        public void TestSuccessResetExpenses()
-        {
-            dbConn = DbConnection.DbConnect();
+        // [Fact]
+        // public void ResetExpenses_Success()
+        // {
+        //     dbConn = DbConnection.DbConnect();
 
-            DeleteRouteMethods route = new DeleteRouteMethods(dbConn, "DELETE FROM budget", -1);
+        //     DeleteRouteMethods route = new DeleteRouteMethods(dbConn, "DELETE FROM budget", -1);
             
-            int deleteStatus = route.ResetExpenses();
+        //     int deleteStatus = route.ResetExpenses();
 
-            Assert.True(deleteStatus > 0);
-        }
+        //     Assert.True(deleteStatus > 0);
+        // }
     }
 }

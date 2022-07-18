@@ -1,10 +1,6 @@
 **Solo Presentation: July 20th**
 
 
-Rename Test content according to standards
-    - Comment out the delete tests
-
-
 On startup in tracking, query db to update totalExpense
     Will need to run dbConn (don't need the http request,
     just call the function)
