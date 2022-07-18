@@ -12,6 +12,7 @@ namespace Budget.UserInteraction
     public class UserInput
     {
         bool exit = false;
+        bool firstLoop = true;
         NpgsqlConnection dbConn;
         // drilled down from main; required fro WebApplication.CreateBuilder()
         string[] args;
@@ -46,7 +47,11 @@ namespace Budget.UserInteraction
 
                     HttpClient client = new HttpClient();
 
-                    helperMethods.displayInteractionMenu();
+                    if (firstLoop)
+                    {
+                        helperMethods.displayInteractionMenu();
+                        firstLoop = false;
+                    }
 
                     string? userAction = Console.ReadLine();
                     handleUserInput(userAction, client, app);
