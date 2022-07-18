@@ -166,6 +166,7 @@ namespace Budget.UserInteraction
                     exit = true;
                     app?.StopAsync();
 
+                    // setting exit, app.stopasync & breaking is not reliably ending the program, so including the below
                     Environment.Exit(0);
 
                     break;

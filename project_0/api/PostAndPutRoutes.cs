@@ -1,6 +1,7 @@
 using System;
 using Npgsql;
 using Budget.UserInteraction;
+using Budget.Tracking;
 
 namespace Budget.RouteMethods
 {
@@ -47,8 +48,12 @@ namespace Budget.RouteMethods
                 int reader = command.ExecuteNonQuery();
                 command.Dispose();
 
+                Dictionary<string, double> updatedExpenseAndReminader = GetUpdatedExpenseAndRemainder();
+
                 Console.WriteLine("\n --------------------------------------- \n");
-                Console.WriteLine("\n Entry successfully added \n");
+                Console.WriteLine("\nEntry successfully added.");
+                Console.WriteLine($"New expense total: ${updatedExpenseAndReminader["updatedTotalExpense"]}");
+                Console.WriteLine($"You have ${updatedExpenseAndReminader["remainder"]} remaining\n");
                 Console.WriteLine("\n --------------------------------------- \n");
 
                 commandMenu.displayInteractionMenu();
@@ -85,6 +90,24 @@ namespace Budget.RouteMethods
             {
                 throw new Exception($"Error updating previous expense: {ex}");
             }
+        }
+
+        public Dictionary<string, double> GetUpdatedExpenseAndRemainder()
+        {
+            // incorporate into a seperate function when finished
+            BudgetTracking tracker = new BudgetTracking();
+            Dictionary<string, string> previousBudget = tracker.getBudgetAndExpense();
+
+            double updatedTotalExpense = expense.Amount + Convert.ToDouble(previousBudget["currentExpenseTotal"]);
+            double remainder = Int32.Parse(previousBudget["currentBudget"]) - updatedTotalExpense;
+
+            Dictionary<string, double> updatedExpenseAndBudget = new Dictionary<string, double>()
+            {
+                {"updatedTotalExpense", updatedTotalExpense},
+                {"remainder", remainder}
+            };
+
+            return updatedExpenseAndBudget;
         }
     }
 }
