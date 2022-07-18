@@ -1,9 +1,10 @@
 **Solo Presentation: July 20th**
 
 
-On startup in tracking, query db to update totalExpense
-    Will need to run dbConn (don't need the http request,
-    just call the function)
+
+Add MOQ to mock db interaction ??
+
+
 
 
 Further refactoring all files

@@ -10,7 +10,7 @@ namespace Budget.RouteMethods
         public ReadRouteMethods(NpgsqlConnection dbConn, string commandText) : base(dbConn, commandText)
         {}
         
-        public bool ViewExpenseTotal()
+        public bool ViewExpenseTotal(bool startupCall)
         {
             try 
             {
@@ -23,9 +23,12 @@ namespace Budget.RouteMethods
                     expenseTotal += reader.GetDouble(0);
                 }
 
-                Console.WriteLine("\n --------------------------------------- \n");
-                Console.WriteLine($"\n Expense Total: \n {expenseTotal} \n");
-                Console.WriteLine("\n --------------------------------------- \n");
+                if (!startupCall)
+                {
+                    Console.WriteLine("\n --------------------------------------- \n");
+                    Console.WriteLine($"\n Expense Total: \n {expenseTotal} \n");
+                    Console.WriteLine("\n --------------------------------------- \n");
+                }
 
                 // returns our current values for currentBudget and totalExpense
                 BudgetTracking budgetTracker = new BudgetTracking();
@@ -42,8 +45,11 @@ namespace Budget.RouteMethods
                 // discard the command
                 command.Dispose();
 
-                commandMenu.displayInteractionMenu();
-
+                if (!startupCall)
+                {
+                    commandMenu.displayInteractionMenu();
+                }
+                
                 return true;
             }
             catch (Exception ex)

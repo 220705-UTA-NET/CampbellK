@@ -29,7 +29,7 @@ namespace Budget.Routes
             // show sum of all expense costs
             app.MapGet("/viewExpenseTotal", () => {
                 ReadRouteMethods api = new ReadRouteMethods(dbConn, "SELECT amount FROM budget");
-                api.ViewExpenseTotal();
+                api.ViewExpenseTotal(false);
             });
 
             // show details for all expenses

@@ -13,7 +13,7 @@ namespace Budget
             NpgsqlConnection dbConn = DbConnection.DbConnect();
 
             // display users current totalExpense & budgetGoal
-            BudgetTracking budgetConstruction = new BudgetTracking(); budgetConstruction.fetchUserBudgetInfo();
+            BudgetTracking budgetConstruction = new BudgetTracking(); budgetConstruction.fetchUserBudgetInfo(dbConn);
 
             // ask for user commands and respond accordingly
             UserInput userInput = new UserInput(dbConn, args);

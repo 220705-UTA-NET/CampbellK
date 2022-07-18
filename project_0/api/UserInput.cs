@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using System.Text.Json;
+using Npgsql;
 using Budget.RouteMethods;
 using Budget.Routes;
-using Npgsql;
 using Budget.Tracking;
 using Budget.Helpers;
 

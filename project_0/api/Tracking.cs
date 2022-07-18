@@ -1,5 +1,7 @@
 using System;
 using System.Text.Json;
+using Npgsql;
+using Budget.RouteMethods;
 
 namespace Budget.Tracking
 {
@@ -8,8 +10,13 @@ namespace Budget.Tracking
         public int currentBudget;
         public double currentExpenseTotal;
 
-        public void fetchUserBudgetInfo()
+        public void fetchUserBudgetInfo(NpgsqlConnection dbConn)
         {
+
+            // update local tracking with fresh expense data
+            ReadRouteMethods readRoutes = new ReadRouteMethods(dbConn, "SELECT amount FROM budget");
+            readRoutes.ViewExpenseTotal(true);
+
             if (!File.Exists("./budget.json"))
             {
                 Dictionary<string, string> defaultTracker = new Dictionary<string, string>()
@@ -41,7 +48,6 @@ namespace Budget.Tracking
 
             Dictionary<string, string>? previousBudgetInfo = JsonSerializer.Deserialize<Dictionary<string, string>>(budgetJson) ?? throw new ArgumentNullException(nameof(previousBudgetInfo));
 
-            // write values to global variables for expense total and budget goal
             try 
             {
                 currentBudget = Int32.Parse(previousBudgetInfo["currentBudget"]);
