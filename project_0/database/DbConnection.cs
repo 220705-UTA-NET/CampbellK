@@ -4,7 +4,6 @@ using Npgsql;
 // establishes database connection and returns *dbConn*, which is utilized by the API methods in Api namespace
 namespace Budget.Database
 {
-    // since server is running off of my local machine rather than Azure cloud, will need to utilize a webserver
     public class DbConnection
     {
             private static string? Host = System.Environment.GetEnvironmentVariable("postgres_host") ?? throw new ArgumentNullException(nameof(Host));
@@ -15,8 +14,6 @@ namespace Budget.Database
 
         public static NpgsqlConnection DbConnect()
         {
-            Console.WriteLine("Connecting to postgresql...");
-
             string connectionString = String.Format(
                 "server={0};Username={1};Database={2};Port={3};Password={4}",
                 Host,

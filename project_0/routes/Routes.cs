@@ -6,13 +6,14 @@ using Budget.RouteMethods;
 using Budget.UserInteraction;
 
 // contains all routes to be used by the web server
-// returns *app*, needed to start up the web server in the additional threads created in UserInput namespace
+// returns *app*, needed to start up the web server in the additional thread created in UserInput namespace
 namespace Budget.Routes
 {
     public class ApiRoutes
     {  
         NpgsqlConnection dbConn;
         string[] args;
+        Expense requestExpense;
         
         public ApiRoutes(NpgsqlConnection dbConn, string[] args)
         {
@@ -22,7 +23,6 @@ namespace Budget.Routes
 
         public WebApplication EstablishRoutes(NpgsqlConnection dbConn, string[] args)
         {   
-            // establish server component
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
             WebApplication app = builder.Build();
 
@@ -39,28 +39,20 @@ namespace Budget.Routes
             });
 
             // add a new expense
-            app.MapPost("/newExpense", async (HttpRequest httpRequest) => {
-                // read request body content
-                StreamReader reader = new StreamReader(httpRequest.Body);
-                string requestBody = await reader.ReadToEndAsync();
+            app.MapPost("/newExpense", (HttpRequest httpRequest) => {
+                // sets requestExpense's value to be inserted/updated
+                ParseRequestBody(httpRequest);
 
-                // parse request JSON into cooresponding expense class
-                Expense? newExpense = JsonSerializer.Deserialize<Expense>(requestBody) ?? throw new NullReferenceException(nameof(newExpense)); 
-
-                // once body has been parsed, can send to addExpense
-                PostAndPutRouteMethods postOrPutRoutes = new PostAndPutRouteMethods(dbConn, "INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)", newExpense);
+                PostAndPutRouteMethods postOrPutRoutes = new PostAndPutRouteMethods(dbConn, "INSERT INTO budget (Description, Amount, Category, Date) VALUES (@Description, @Amount, @Category, @Date)", requestExpense);
 
                 postOrPutRoutes.CreateNewExpense();
             });
             
             // edit existing expense
-            app.MapPut("/editExpense/{id}", async (HttpRequest httpRequest, int id) => {
-                StreamReader reader = new StreamReader(httpRequest.Body);
-                string requestBody = await reader.ReadToEndAsync();
+            app.MapPut("/editExpense/{id}", (HttpRequest httpRequest, int id) => {
+                ParseRequestBody(httpRequest);
 
-                Expense? updatedExpense = JsonSerializer.Deserialize<Expense>(requestBody) ?? throw new NullReferenceException(nameof(updatedExpense));
-
-                PostAndPutRouteMethods postOrPutRoutes = new PostAndPutRouteMethods(dbConn, "UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id", updatedExpense, id);
+                PostAndPutRouteMethods postOrPutRoutes = new PostAndPutRouteMethods(dbConn, "UPDATE budget SET (Description, Amount, Category, Date) = (@Description, @Amount, @Category, @Date) WHERE id = @id", requestExpense, id);
                 
                 postOrPutRoutes.UpdateOldExpense();
             });
@@ -78,6 +70,16 @@ namespace Budget.Routes
             });
 
             return app;
+        }
+
+        async private void ParseRequestBody(HttpRequest httpRequest)
+        {
+            StreamReader reader = new StreamReader(httpRequest.Body);
+            string requestBody = await reader.ReadToEndAsync();
+
+            // parse request JSON into cooresponding expense class
+            requestExpense = JsonSerializer.Deserialize<Expense>(requestBody) ?? throw new NullReferenceException(nameof(requestExpense)); 
+
         }
     }
 }
