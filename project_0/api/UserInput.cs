@@ -35,10 +35,12 @@ namespace Budget.UserInteraction
         {
             try
             {
+                // listening for requests on a seperate thread
+                Thread thread = new Thread(() => helperMethods.startWebServer(port, dbConn, args));
+                thread.Start();
+
                 while (!exit)
                 {
-                    port++;
-                    
                     // app needs to be re-recreated for each loop since it is readonly after creation (and therefore cannot change the http url)
                     WebApplication app = apiRoutes.EstablishRoutes(dbConn, args) ?? throw new ArgumentNullException(nameof(app));
 
@@ -58,19 +60,15 @@ namespace Budget.UserInteraction
 
         async private void handleUserInput(string? userInput, HttpClient client, WebApplication app)
         {
-            // create additional thread to run the web server (since it is blocking)
-            Thread thread = new Thread(() => helperMethods.startWebServer(port, app));
 
             switch(userInput)
             {
                 case "1":
-                    thread.Start();
                     await client.GetAsync($"http://localhost:{port}/viewExpenseTotal");
 
                     break;
 
                 case "2":                    
-                    thread.Start();
                     await client.GetAsync($"http://localhost:{port}/viewExpenseDetails");
 
                     break;
@@ -80,7 +78,6 @@ namespace Budget.UserInteraction
 
                     StringContent stringContent = gatherExpenseInfo();
 
-                    thread.Start();
                     await client.PostAsync($"http://localhost:{port}/newExpense", stringContent);
 
                     break;
@@ -96,7 +93,6 @@ namespace Budget.UserInteraction
                     
                     try 
                     {
-                        thread.Start();
                         await client.PutAsync($"http://localhost:{port}/editExpense/{expenseToEditId}", editedStringContent);
                     }
                     catch (Exception ex)
@@ -114,7 +110,6 @@ namespace Budget.UserInteraction
                     
                     try 
                     {
-                        thread.Start();
                         await client.DeleteAsync($"http://localhost:{port}/deleteExpense/{expenseToDelete}");
                         break;
                     }
@@ -128,7 +123,6 @@ namespace Budget.UserInteraction
                 case "6":
                     Console.WriteLine("\n Reseting expenses... \n");
                     
-                    thread.Start();
                     await client.DeleteAsync($"http://localhost:{port}/resetExpenses");
                     break;
                 
@@ -166,6 +160,9 @@ namespace Budget.UserInteraction
                     Console.WriteLine("\n --------------------------------------- \n");
                     exit = true;
                     app?.StopAsync();
+
+                    // Environment.Exit(0);
+
                     break;
 
                 default:

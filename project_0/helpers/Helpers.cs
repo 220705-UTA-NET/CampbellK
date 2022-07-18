@@ -1,18 +1,22 @@
 using System;
 using Microsoft.AspNetCore.Builder;
+using Npgsql;
+using Budget.Routes;
 
 namespace Budget.Helpers
 {
     public class HelperMethods
     {
-        // making port a parameter despite having a public port variable in UserInput.cs due to needing to offer different ports for the multiple threads that may be running outside of the above while loop
-        // referencing the namespace variable is not always as up-to-date as it should be; passing it as a param has shown more consistent results
-        public void startWebServer(int port, WebApplication app)
+        WebApplication serverApp;
+        public void startWebServer(int port, NpgsqlConnection dbConn, string[] args)
         {
             try
             {
+                ApiRoutes apiRoutes = new ApiRoutes(dbConn, args);
+                WebApplication serverApp = apiRoutes.EstablishRoutes(dbConn, args) ?? throw new ArgumentNullException(nameof(serverApp));
+
                 Console.WriteLine($"Listening on port {port}");
-                app.Run($"http://localhost:{port}");
+                serverApp.Run($"http://localhost:{port}");
             }
             catch (Exception ex)
             {
