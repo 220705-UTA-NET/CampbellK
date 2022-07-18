@@ -14,22 +14,30 @@ namespace Budget.Database
 
         public static NpgsqlConnection DbConnect()
         {
-            string connectionString = String.Format(
-                "server={0};Username={1};Database={2};Port={3};Password={4}",
-                Host,
-                Username,
-                Database,
-                Port,
-                Password
-            );
+            try
+            {
+                string connectionString = String.Format(
+                    "server={0};Username={1};Database={2};Port={3};Password={4}",
+                    Host,
+                    Username,
+                    Database,
+                    Port,
+                    Password
+                );
 
-            // establishing connection to postgresql
-            NpgsqlConnection dbConn = new NpgsqlConnection(connectionString);
+                // establishing connection to postgresql
+                NpgsqlConnection dbConn = new NpgsqlConnection(connectionString);
 
-            // open connection to db, enabling execution of queries
-            dbConn.Open();
+                // open connection to db, enabling execution of queries
+                dbConn.Open();
 
-            return dbConn;
+                return dbConn;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"Failed to connect to database: {ex}");
+            }
+
         }
     }
 }

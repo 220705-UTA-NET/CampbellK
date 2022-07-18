@@ -18,16 +18,15 @@ namespace Budget.RouteMethods
 
     public abstract class ApiMethods
     {
-        public NpgsqlConnection dbConn;
-        public string commandText = "";
-        public NpgsqlCommand command;
+        protected NpgsqlConnection dbConn;
+        protected string commandText = "";
+        protected NpgsqlCommand command;
         protected HelperMethods commandMenu = new HelperMethods();
 
         public ApiMethods(NpgsqlConnection dbConn, string commandText)
         {
             this.dbConn = dbConn;
             this.commandText = commandText;
-            // sql command; use prepared statement for any user values
             this.command = new NpgsqlCommand(commandText, dbConn);
         }
     }

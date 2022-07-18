@@ -40,14 +40,12 @@ namespace Budget.RouteMethods
                 var serializedUpdatedBudget = JsonSerializer.Serialize(previousBudget);
                 File.WriteAllText("./budget.json", serializedUpdatedBudget);
 
-                // end the reader
                 reader.Close();
-                // discard the command
                 command.Dispose();
 
                 if (!startupCall)
                 {
-                    commandMenu.displayInteractionMenu();
+                    commandMenu.DisplayInteractionMenu();
                 }
                 
                 return true;
@@ -83,12 +81,10 @@ namespace Budget.RouteMethods
                 }
                 Console.WriteLine("\n --------------------------------------------------------------------------------------------------------------------- \n");
 
-                Console.WriteLine(reader);
-
                 reader.Close();
                 command.Dispose();
 
-                commandMenu.displayInteractionMenu();
+                commandMenu.DisplayInteractionMenu();
 
                 return true;
             }

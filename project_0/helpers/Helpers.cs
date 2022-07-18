@@ -24,7 +24,7 @@ namespace Budget.Helpers
             }
         }
 
-        public void displayInteractionMenu()
+        public void DisplayInteractionMenu()
         {
             Console.WriteLine("\n Please type the number that cooresponds to your desired action: \n");
             Console.WriteLine("1. View total expenditure");

@@ -79,7 +79,6 @@ namespace Budget.Routes
 
             // parse request JSON into cooresponding expense class
             requestExpense = JsonSerializer.Deserialize<Expense>(requestBody) ?? throw new NullReferenceException(nameof(requestExpense)); 
-
         }
     }
 }

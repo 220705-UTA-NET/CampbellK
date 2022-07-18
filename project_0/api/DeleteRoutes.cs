@@ -26,7 +26,7 @@ namespace Budget.RouteMethods
 
             int affectedRows = executeDeleteCommand(command);
 
-            commandMenu.displayInteractionMenu();
+            commandMenu.DisplayInteractionMenu();
 
             return affectedRows;
         }
@@ -40,7 +40,7 @@ namespace Budget.RouteMethods
             
             int affectedRows = executeDeleteCommand(command);
 
-            commandMenu.displayInteractionMenu();
+            commandMenu.DisplayInteractionMenu();
 
             return affectedRows;
         }

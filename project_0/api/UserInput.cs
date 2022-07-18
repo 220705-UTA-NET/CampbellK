@@ -11,7 +11,7 @@ namespace Budget.UserInteraction
 {
     public class UserInput
     {
-        bool exit = false;
+        bool exitStatus = false;
         bool firstLoop = true;
         NpgsqlConnection dbConn;
         // drilled down from main; required fro WebApplication.CreateBuilder()
@@ -37,10 +37,10 @@ namespace Budget.UserInteraction
             try
             {
                 // listening for requests on a seperate thread
-                Thread thread = new Thread(() => helperMethods.startWebServer(port, dbConn, args));
-                thread.Start();
+                Thread webServerThread = new Thread(() => helperMethods.startWebServer(port, dbConn, args));
+                webServerThread.Start();
 
-                while (!exit)
+                while (!exitStatus)
                 {
                     // app needs to be re-recreated for each loop since it is readonly after creation (and therefore cannot change the http url)
                     WebApplication app = apiRoutes.EstablishRoutes(dbConn, args) ?? throw new ArgumentNullException(nameof(app));
@@ -49,7 +49,7 @@ namespace Budget.UserInteraction
 
                     if (firstLoop)
                     {
-                        helperMethods.displayInteractionMenu();
+                        helperMethods.DisplayInteractionMenu();
                         firstLoop = false;
                     }
 
@@ -65,7 +65,6 @@ namespace Budget.UserInteraction
 
         async private void handleUserInput(string? userInput, HttpClient client, WebApplication app)
         {
-
             switch(userInput)
             {
                 case "1":
@@ -79,22 +78,20 @@ namespace Budget.UserInteraction
                     break;
 
                 case "3":
-                    Console.WriteLine("\n Creating a new expenditure. Type the relevant information... \n");
+                    Console.WriteLine("\n Creating a new expenditure. Fill in the relevant information... \n");
 
-                    StringContent stringContent = gatherExpenseInfo();
+                    StringContent stringContent = GatherExpenseInfo();
 
                     await client.PostAsync($"http://localhost:{port}/newExpense", stringContent);
 
                     break;
 
                 case "4":
-                    Console.WriteLine("\n Which expense would like to edit? \n");
-
                     Console.WriteLine("\n Type the id of the expense you would like to edit: \n");
                     string? expenseToEditId = Console.ReadLine();
 
-                    Console.WriteLine("\n Editing expenditure. Type the relevant information. \n");
-                    StringContent editedStringContent = gatherExpenseInfo();
+                    Console.WriteLine("\n Editing expenditure: type the relevant information. \n");
+                    StringContent editedStringContent = GatherExpenseInfo();
                     
                     try 
                     {
@@ -102,14 +99,12 @@ namespace Budget.UserInteraction
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"\n The request failed: {ex} \n");
+                        Console.WriteLine($"\n The edit request failed: {ex} \n");
                     }
 
                     break;
 
                 case "5":
-                    Console.WriteLine("\n Which expense would like to delete? \n");
-
                     Console.WriteLine("\n Type the id of the expense you would like to delete: \n");
                     string? expenseToDelete = Console.ReadLine();
                     
@@ -120,7 +115,7 @@ namespace Budget.UserInteraction
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"\n The request failed: {ex} \n");
+                        Console.WriteLine($"\n The delete request failed: {ex} \n");
                     }
 
                     break;
@@ -135,9 +130,11 @@ namespace Budget.UserInteraction
                     Dictionary<string, string> priorBudget = budgetTracker.getBudgetAndExpense();
 
                     Console.WriteLine("\n --------------------------------------- \n");
-                    Console.WriteLine("Current budget:");
+                    Console.WriteLine("Current budget goal:");
                     Console.WriteLine(priorBudget["currentBudget"]);
                     Console.WriteLine("\n --------------------------------------- \n");
+
+                    helperMethods.DisplayInteractionMenu();
 
                     break;
                 
@@ -157,13 +154,15 @@ namespace Budget.UserInteraction
                     Console.WriteLine("Budget goal set");
                     Console.WriteLine("\n --------------------------------------- \n");
 
+                    helperMethods.DisplayInteractionMenu();
+
                     break;
 
                 case "0":
                     Console.WriteLine("\n --------------------------------------- \n");
                     Console.WriteLine("\n Terminating program... \n");
                     Console.WriteLine("\n --------------------------------------- \n");
-                    exit = true;
+                    exitStatus = true;
                     app?.StopAsync();
 
                     // setting exit, app.stopasync & breaking is not reliably ending the program, so including the below
@@ -175,11 +174,14 @@ namespace Budget.UserInteraction
                     Console.WriteLine("\n --------------------------------------- \n");
                     Console.WriteLine("\n Command not recognized, please try again. \n");
                     Console.WriteLine("\n --------------------------------------- \n");
+
+                    helperMethods.DisplayInteractionMenu();
+
                     break;
             }
         }
 
-        private StringContent gatherExpenseInfo()
+        private StringContent GatherExpenseInfo()
         {
             // combine the below responses into an object & serialize it for post request
             Expense editedInformation = new Expense();

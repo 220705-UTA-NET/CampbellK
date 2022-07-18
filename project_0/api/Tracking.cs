@@ -12,7 +12,6 @@ namespace Budget.Tracking
 
         public void fetchUserBudgetInfo(NpgsqlConnection dbConn)
         {
-
             // update local tracking with fresh expense data
             ReadRouteMethods readRoutes = new ReadRouteMethods(dbConn, "SELECT amount FROM budget");
             readRoutes.ViewExpenseTotal(true);
@@ -26,10 +25,7 @@ namespace Budget.Tracking
                 };
 
                 string serializedDefault = JsonSerializer.Serialize(defaultTracker);
-
                 File.WriteAllText("./budget.json", serializedDefault);
-
-                Console.WriteLine("\n Initializing expense and budget goal tracking... \n");
             }
             else
             {    

@@ -56,7 +56,7 @@ namespace Budget.RouteMethods
                 Console.WriteLine($"You have ${updatedExpenseAndReminader["remainder"]} remaining\n");
                 Console.WriteLine("\n --------------------------------------- \n");
 
-                commandMenu.displayInteractionMenu();
+                commandMenu.DisplayInteractionMenu();
 
                 return reader;
             }
@@ -82,7 +82,7 @@ namespace Budget.RouteMethods
                 Console.WriteLine("\n Entry successfully updated \n");
                 Console.WriteLine("\n --------------------------------------- \n");
 
-                commandMenu.displayInteractionMenu();
+                commandMenu.DisplayInteractionMenu();
 
                 return reader;
             }
