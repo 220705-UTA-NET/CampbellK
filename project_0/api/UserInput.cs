@@ -166,7 +166,7 @@ namespace Budget.UserInteraction
                     exit = true;
                     app?.StopAsync();
 
-                    // Environment.Exit(0);
+                    Environment.Exit(0);
 
                     break;
 
