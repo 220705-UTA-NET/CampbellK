@@ -1,5 +1,6 @@
 using System;
 using Npgsql;
+using System.Text.Json;
 using Budget.UserInteraction;
 using Budget.Tracking;
 
@@ -48,7 +49,7 @@ namespace Budget.RouteMethods
                 int reader = command.ExecuteNonQuery();
                 command.Dispose();
 
-                Dictionary<string, double> updatedExpenseAndReminader = GetUpdatedExpenseAndRemainder();
+                Dictionary<string, string> updatedExpenseAndReminader = GetUpdatedExpenseAndRemainder();
 
                 Console.WriteLine("\n --------------------------------------- \n");
                 Console.WriteLine("\nEntry successfully added.");
@@ -92,7 +93,7 @@ namespace Budget.RouteMethods
             }
         }
 
-        private Dictionary<string, double> GetUpdatedExpenseAndRemainder()
+        private Dictionary<string, string> GetUpdatedExpenseAndRemainder()
         {
             // incorporate into a seperate function when finished
             BudgetTracking tracker = new BudgetTracking();
@@ -101,10 +102,10 @@ namespace Budget.RouteMethods
             double updatedTotalExpense = expense.Amount + Convert.ToDouble(previousBudget["currentExpenseTotal"]);
             double remainder = Int32.Parse(previousBudget["currentBudget"]) - updatedTotalExpense;
 
-            Dictionary<string, double> updatedExpenseAndBudget = new Dictionary<string, double>()
+            Dictionary<string, string> updatedExpenseAndBudget = new Dictionary<string, string>()
             {
-                {"updatedTotalExpense", updatedTotalExpense},
-                {"remainder", remainder}
+                {"updatedTotalExpense", updatedTotalExpense.ToString()},
+                {"remainder", remainder.ToString()}
             };
 
             return updatedExpenseAndBudget;

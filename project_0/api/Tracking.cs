@@ -12,10 +12,6 @@ namespace Budget.Tracking
 
         public void fetchUserBudgetInfo(NpgsqlConnection dbConn)
         {
-            // update local tracking with fresh expense data
-            ReadRouteMethods readRoutes = new ReadRouteMethods(dbConn, "SELECT amount FROM budget");
-            readRoutes.ViewExpenseTotal(true);
-
             if (!File.Exists("./budget.json"))
             {
                 Dictionary<string, string> defaultTracker = new Dictionary<string, string>()
@@ -29,6 +25,10 @@ namespace Budget.Tracking
             }
             else
             {    
+                // update local tracking with fresh expense data
+                ReadRouteMethods readRoutes = new ReadRouteMethods(dbConn, "SELECT amount FROM budget");
+                readRoutes.ViewExpenseTotal(true);
+
                 // get budget and expense values from budget.json & setting them in the current scope
                 getBudgetAndExpense();
 
