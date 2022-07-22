@@ -2,7 +2,11 @@
 
 **Tasks**
 
-1. Establish Azure connection, flashcard table & CRUD functions
+1. CRUD functions
+    - Create new
+    - Edit one
+    - Delete one
+
 
 2. Establish routes in ASP.net Application
     - Controllers directory 
@@ -19,7 +23,8 @@
 
 **Idea**
 1. Low-budget Anki copy that saves to Azure
-    - Data: vocab word, definition, furigana, example sentence, difficulty
+    - Data: auto id, vocab word, definition, furigana, example sentence, 
+        difficulty
     - Be able to make cards, edit cards, & review the flash cards
     - Be able to mark how well you know the word
 
