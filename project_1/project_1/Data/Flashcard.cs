@@ -7,5 +7,6 @@ namespace Flash.Data
         public string? Definition;
         public string? Example;
         public string? Difficulty;
+        public string? Notes;
     }
 }
