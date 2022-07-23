@@ -4,26 +4,27 @@
 
 2. Establish routes in ASP.net Application
     - Controllers directory 
-        -- Should call the CRUD functions from Data, do something with it, and
-        return something
-        
-        -- Review vocab (FetchAllFlashcards)
-        -- See a ledger of all words (FetchAllFlashcards)
-        -- Create a new word (CreateNewCard)
-        -- Editing existing card (EditCard)
+
         -- Delete a card (DeleteCard)
         -- Delete all cards (DeleteAllCards)
 
 
 
     - Middleware directory
+        ++ What middleware should be added, if any?
 
-    - Routes directory
+        
+    
+    - clean up program.cs in API
+
+
+
 
 3. Create UserInput interface in Console Application
     - Display word, have user type the definition, then display correct 
     definition, sentence. allow for early exit
-        ++ should be a method within Flashcard class
+        ++ For a Review all option. will receive the same list as ledger,
+        just handle it differently
 
 --------------------------------------------------------------------------------
 

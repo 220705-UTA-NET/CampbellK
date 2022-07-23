@@ -8,11 +8,9 @@ namespace Flash.Data
         // establish azure connection
         private static string? connectionString = System.Environment.GetEnvironmentVariable("Azure_Connection_String") ?? throw new ArgumentNullException(nameof(connectionString));
 
-        public SqlConnection? dbConn;
-
         public SqlConnection DbConnect()
         {
-            dbConn = new SqlConnection(connectionString);
+            SqlConnection dbConn = new SqlConnection(connectionString);
 
             dbConn.Open();
             System.Console.WriteLine("Sql Connection Established");
@@ -24,7 +22,7 @@ namespace Flash.Data
         // will be used to either study or view all in a ledger
         public List<Flashcard> FetchAllFlashcards()
         {
-            dbConn = DbConnect();
+            SqlConnection dbConn = DbConnect();
 
             List<Flashcard> allFlashcards = new List<Flashcard>();
 
@@ -51,48 +49,57 @@ namespace Flash.Data
 
         public int CreateNewCard(Flashcard newFlashcard)
         {
-            // newFlashcard will need to be parsed from Request body in the controller
+            SqlConnection dbConn = DbConnect();
 
             using SqlCommand command = new SqlCommand("INSERT INTO flashcards (Word, Definition, Example, Notes, Difficulty) VALUES (@Word, @Definition, @Example, @Notes, @Difficulty)", dbConn);
 
             SetQueryParameters(command, newFlashcard);
-            dbConn.Close();
 
             int commandStatus = command.ExecuteNonQuery();
+
+            dbConn.Close();
             return commandStatus;
         }
 
         public int EditCard(Flashcard updatedFlashcard, int cardId)
         {
+            SqlConnection dbConn = DbConnect();
+
             using SqlCommand command = new SqlCommand("UPDATE flashcards SET Word = @Word, Definition = @Definition, Example = @Example, Notes = @Notes, Difficulty = @Difficulty WHERE Id = @Id", dbConn);
 
             SetQueryParameters(command, updatedFlashcard);
             command.Parameters.AddWithValue("@Id", cardId);
 
             int commandStatus = command.ExecuteNonQuery();
+
+            dbConn.Close();
             return commandStatus;
         }
 
 
         public int DeleteCard(int cardId)
         {
+            SqlConnection dbConn = DbConnect();
+
             using SqlCommand command = new SqlCommand("DELETE FROM flashcards WHERE Id = @Id", dbConn);
             command.Parameters.AddWithValue("@Id", cardId);
 
-            dbConn.Close();
-
             int commandStatus = command.ExecuteNonQuery();
+
+            dbConn.Close();
             return commandStatus;
         }
 
 
         public int DeleteAllCards()
         {
+            SqlConnection dbConn = DbConnect();
+
             using SqlCommand command = new SqlCommand("DELETE FROM flashcards", dbConn);
 
-            dbConn.Close();
-
             int commandStatus = command.ExecuteNonQuery();
+
+            dbConn.Close();
             return commandStatus;
         }
 
