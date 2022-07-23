@@ -9,6 +9,6 @@
 --     Difficulty nvarchar(10)
 -- );
 
--- INSERT INTO flashcards (Word, Definition, Example, Notes, Difficulty) VALUES ('hello', 'world', 'example', 'notes example', 'easy');
+INSERT INTO flashcards (Word, Definition, Example, Notes, Difficulty) VALUES ('hello', 'world', 'example', 'notes example', 'easy');
 
--- SELECT * FROM flashcards;
+SELECT * FROM flashcards;
