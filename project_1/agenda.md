@@ -2,29 +2,20 @@
 
 **Tasks**
 
-2. Establish routes in ASP.net Application
-    - Controllers directory 
-
-        -- Delete a card (DeleteCard)
-        -- Delete all cards (DeleteAllCards)
-
-
-
-    - Middleware directory
-        ++ What middleware should be added, if any?
-
-        
-    
-    - clean up program.cs in API
-
-
-
-
 3. Create UserInput interface in Console Application
     - Display word, have user type the definition, then display correct 
     definition, sentence. allow for early exit
         ++ For a Review all option. will receive the same list as ledger,
         just handle it differently
+
+
+
+4. Update API
+    - Middleware directory
+        ++ What middleware should be added, if any?
+            -+- Will I be adding users?
+
+    - clean up program.cs in API
 
 --------------------------------------------------------------------------------
 
