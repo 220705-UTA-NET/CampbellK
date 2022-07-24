@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Flash.Data;
 using System.Text.Json;
-using System.Data.SqlClient;
 
 namespace Flash.Api.Controllers
 {

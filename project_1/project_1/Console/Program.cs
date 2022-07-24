@@ -1,20 +1,16 @@
 ﻿using System;
-using Flash.Data;
+using Flash.Console.UserInterface;
 
 namespace Flash.Console
 {
     public class Console
     {
+        private static UserInput userInput = new UserInput();
         static void Main()
         {
+            System.Console.WriteLine("\n Welcome to Flash. Please choose from the following options: \n");
 
-            // Everything below is just for testing and needs to be deleted after CRUD methods are set up
-
-            Database dbConn = new Database();
-            dbConn.DbConnect();
-
-            // delete all
-            dbConn.DeleteAllCards();
+            userInput.HandleUserInput();
         }
     }
 }

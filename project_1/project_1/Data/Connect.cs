@@ -46,7 +46,6 @@ namespace Flash.Data
             dbConn.Close();
             return allFlashcards;
         }
-
         public int CreateNewCard(Flashcard newFlashcard)
         {
             SqlConnection dbConn = DbConnect();
@@ -76,7 +75,6 @@ namespace Flash.Data
             return commandStatus;
         }
 
-
         public int DeleteCard(int cardId)
         {
             SqlConnection dbConn = DbConnect();
@@ -89,7 +87,6 @@ namespace Flash.Data
             dbConn.Close();
             return commandStatus;
         }
-
 
         public int DeleteAllCards()
         {

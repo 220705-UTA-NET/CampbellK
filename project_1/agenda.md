@@ -8,6 +8,8 @@
         ++ For a Review all option. will receive the same list as ledger,
         just handle it differently
 
+    -- Move each case into its own function
+
 
 
 4. Update API
