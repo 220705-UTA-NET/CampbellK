@@ -113,9 +113,26 @@ namespace Flash.Console.UserInterface
 
         async private Task CreateNewCard(HttpClient client)
         {
+            Flashcard newCard = new Flashcard();
+
             System.Console.WriteLine("\n Creating a new flashcard... \n");
 
-            Flashcard newCard = FillOutFlashcard();
+            System.Console.WriteLine("\n Would you like to auto-fill a card? Y/N");
+            string autoFillCard = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(autoFillCard));
+
+
+
+
+            if (autoFillCard.ToLower() == "y")
+            {
+                newCard = await AutoFillCard();
+            }
+            else
+            {
+                System.Console.WriteLine("\n Continuing to manual card creation. \n");
+                newCard = FillOutFlashcard();
+            }
+
             string serializedContent = JsonSerializer.Serialize(newCard);
             // Required to include the data type in StringContent, or else get a 415 error
             StringContent stringContent = new StringContent(serializedContent, Encoding.UTF8, "application/json");
@@ -200,6 +217,31 @@ namespace Flash.Console.UserInterface
             card.Difficulty = System.Console.ReadLine();
 
             return card;
+        }
+
+        async private Task<Flashcard> AutoFillCard()
+        {
+            Flashcard newCard = new Flashcard();
+
+            System.Console.WriteLine("\n Which word would you like to autofill? \n");
+            string desiredWord = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(desiredWord));
+
+            HttpClient jishoClient = new HttpClient();
+
+            HttpResponseMessage wordData = await jishoClient.GetAsync($"https://jisho.org/api/v1/search/words?keyword={desiredWord}");
+
+            string autofillResponse = await wordData.Content.ReadAsStringAsync();
+
+            AutoFillFlashcard autoFilledData = JsonSerializer.Deserialize<AutoFillFlashcard>(autofillResponse) ?? throw new NullReferenceException(nameof(autoFilledData));
+
+            newCard.Word = autoFilledData.data[0].slug;
+            newCard.Definition = autoFilledData.data[0].senses[0].english_definitions[0];
+            newCard.Example = "";
+            // notes returns ?? for some reason
+            newCard.Notes = autoFilledData.data[0].japanese[0].reading;
+            newCard.Difficulty = autoFilledData.data[0].jlpt[0];
+
+            return newCard;
         }
 
         async private Task ParseResponse(HttpResponseMessage response)
