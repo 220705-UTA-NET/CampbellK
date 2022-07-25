@@ -29,7 +29,7 @@ namespace Flash.Console.UserInterface
 
                 DisplayMenu();
 
-                string? userRequest = System.Console.ReadLine();
+                string userRequest = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userRequest));
                 FireUserRequest(client, userRequest);
             }
         }
@@ -71,14 +71,14 @@ namespace Flash.Console.UserInterface
             var response = await client.GetAsync($"{uri}/reviewAll");
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            List<Flashcard> contents = JsonSerializer.Deserialize<List<Flashcard>>(responseContent);
+            List<Flashcard> contents = JsonSerializer.Deserialize<List<Flashcard>>(responseContent) ?? throw new NullReferenceException(nameof(contents));
 
             System.Console.WriteLine("\n For each word shown, type the defintion. \n");
             // foreach through each word in contents, ask for user input, then give definition, example, notes
             foreach(Flashcard card in contents)
             {
                 System.Console.WriteLine($"\n{card.Word}\n");
-                string userAnswer = System.Console.ReadLine();
+                string userAnswer = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userAnswer));
 
                 if (userAnswer.ToLower() == card.Definition.ToLower())
                 {
@@ -101,7 +101,7 @@ namespace Flash.Console.UserInterface
             var response = await client.GetAsync($"{uri}/reviewAll");
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            List<Flashcard> contents = JsonSerializer.Deserialize<List<Flashcard>>(responseContent);
+            List<Flashcard> contents = JsonSerializer.Deserialize<List<Flashcard>>(responseContent) ?? throw new NullReferenceException(nameof(contents));
             System.Console.WriteLine($"\n {"Id", 0} {"Word", 20} {"Definition", 20} {"Example", 20} {"Notes", 20} {"Difficulty", 20} \n");
             foreach (Flashcard card in contents)
             {
@@ -120,14 +120,8 @@ namespace Flash.Console.UserInterface
             // Required to include the data type in StringContent, or else get a 415 error
             StringContent stringContent = new StringContent(serializedContent, Encoding.UTF8, "application/json");
 
-            //client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
             var response = await client.PostAsync($"{uri}/addNewCard", stringContent);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            string contents = JsonSerializer.Deserialize<string>(responseContent);
-
-            System.Console.WriteLine(contents);
-            HandleUserInput();
+            await ParseResponse(response);
         }
 
         async private Task EditCard(HttpClient client)
@@ -142,11 +136,7 @@ namespace Flash.Console.UserInterface
             StringContent stringContent = new StringContent(serializedContent, Encoding.UTF8, "application/json");
 
             var response = await client.PutAsync($"{uri}/editCard/{cardId}", stringContent);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            string contents = JsonSerializer.Deserialize<string>(responseContent);
-
-            System.Console.WriteLine(contents);
-            HandleUserInput();
+            await ParseResponse(response);
         }
 
         async private Task DeleteCard(HttpClient client)
@@ -156,12 +146,8 @@ namespace Flash.Console.UserInterface
 
             string cardId = GetCardId();
 
-            var response = await client.DeleteAsync($"{uri}/deleteCard/{cardId}");
-            var responsenContent = await response.Content.ReadAsStringAsync();
-            string contents = JsonSerializer.Deserialize<string>(responsenContent);
-
-            System.Console.WriteLine(contents);
-            HandleUserInput();
+            HttpResponseMessage response = await client.DeleteAsync($"{uri}/deleteCard/{cardId}");
+            await ParseResponse(response);
         }
 
         async private Task DeleteAllCards(HttpClient client)
@@ -171,18 +157,14 @@ namespace Flash.Console.UserInterface
             while (!validInput)
             {
                 System.Console.WriteLine("\n Deleting all cards. Would you like to continue? Y/N \n");
-                string userDeleteResponse = System.Console.ReadLine();
+                string userDeleteResponse = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userDeleteResponse));
 
                 if (userDeleteResponse.ToLower() == "y")
                 {
                     validInput = true;
 
                     var response = await client.DeleteAsync($"{uri}/deleteAllCards");
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    string contents = JsonSerializer.Deserialize<string>(responseContent);
-
-                    System.Console.WriteLine(contents);
-                    HandleUserInput();
+                    await ParseResponse(response);
                 }
                 else if (userDeleteResponse.ToLower() == "n")
                 {
@@ -220,6 +202,15 @@ namespace Flash.Console.UserInterface
             return card;
         }
 
+        async private Task ParseResponse(HttpResponseMessage response)
+        {
+            var responseContent = await response.Content.ReadAsStringAsync();
+            string contents = JsonSerializer.Deserialize<string>(responseContent) ?? throw new NullReferenceException(nameof(contents));
+
+            System.Console.WriteLine(contents);
+            HandleUserInput();
+        }
+
         private static string GetCardId()
         {
             string cardId = "";
@@ -228,7 +219,8 @@ namespace Flash.Console.UserInterface
             {
                 try
                 {
-                    int userInputCardId = Int32.Parse(System.Console.ReadLine());
+                    string userInput = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userInput));
+                    int userInputCardId = Int32.Parse(userInput);
                     cardId = userInputCardId.ToString();
                     retrievedCardId = true;
                 }

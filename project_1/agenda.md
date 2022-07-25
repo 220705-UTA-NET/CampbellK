@@ -2,9 +2,6 @@
 
 **Tasks**
 
-3. Create UserInput interface in Console Application
-
-
 4. Update API
     - Middleware directory
         ++ What middleware should be added, if any?
