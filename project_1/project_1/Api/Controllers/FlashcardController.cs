@@ -19,17 +19,29 @@ namespace Flash.Api.Controllers
         [HttpGet("/reviewAll")]
         public ContentResult ViewAllCards()
         {
-            Database dbConn = new Database();
-            List<Flashcard> allFlashcards = dbConn.FetchAllFlashcards();
+            ContentResult response = new ContentResult();
 
-            // not converting the list to json; just returning empty
-            string jsonContent = JsonSerializer.Serialize(allFlashcards);
-            ContentResult response = new ContentResult()
+            try
             {
-                StatusCode = 200,
-                ContentType = "application/json",
-                Content = jsonContent
-            };
+                Database dbConn = new Database();
+                List<Flashcard> allFlashcards = dbConn.FetchAllFlashcards();
+
+                // not converting the list to json; just returning empty
+                string jsonContent = JsonSerializer.Serialize(allFlashcards);
+                response = new ContentResult()
+                {
+                    StatusCode = 200,
+                    ContentType = "application/json",
+                    Content = jsonContent
+                };
+
+                logger.LogInformation(jsonContent);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"ViewAllCards error: {ex}");
+                response.StatusCode = 500;
+            }
 
             return response;
         }
@@ -38,18 +50,29 @@ namespace Flash.Api.Controllers
         [HttpPost("/addNewCard")]
         public ContentResult CreateNewCard([FromBody] Flashcard newFlashcard)
         {
-            Database dbConn = new Database();
-            // parse out data from body
+            ContentResult response = new ContentResult();
 
-            int status = dbConn.CreateNewCard(newFlashcard);
-
-            string jsonContent = JsonSerializer.Serialize($"New card successfully created: {status}");
-            ContentResult response = new ContentResult()
+            try
             {
-                StatusCode = 200,
-                ContentType = "application/json",
-                Content = jsonContent
-            };
+                Database dbConn = new Database();
+
+                int status = dbConn.CreateNewCard(newFlashcard);
+
+                string jsonContent = JsonSerializer.Serialize($"New card successfully created: {status}");
+                response = new ContentResult()
+                {
+                    StatusCode = 200,
+                    ContentType = "application/json",
+                    Content = jsonContent
+                };
+
+                logger.LogInformation($"Created new card: {jsonContent}");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"addNewCard error: {ex}");
+                response.StatusCode = 500;
+            }
 
             return response;
         }
@@ -58,16 +81,26 @@ namespace Flash.Api.Controllers
         [HttpPut("/editCard/{cardId}")]
         public ContentResult EditCard([FromBody] Flashcard updatedCard, int cardId)
         {
-            Database dbConn = new Database();
-            int status = dbConn.EditCard(updatedCard, cardId);
+            ContentResult response = new ContentResult();
 
-            string jsonContent = JsonSerializer.Serialize($"Card {updatedCard.Word} has been updated: {status}");
-            ContentResult response = new ContentResult()
+            try
             {
-                StatusCode = 200,
-                ContentType = "application/json",
-                Content = jsonContent
-            };
+                Database dbConn = new Database();
+                int status = dbConn.EditCard(updatedCard, cardId);
+
+                string jsonContent = JsonSerializer.Serialize($"Card {updatedCard.Word} has been updated: {status}");
+                response = new ContentResult()
+                {
+                    StatusCode = 200,
+                    ContentType = "application/json",
+                    Content = jsonContent
+                };
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"editCard error: {ex}");
+                response.StatusCode = 500;
+            }
 
             return response;
         }
@@ -76,16 +109,26 @@ namespace Flash.Api.Controllers
         [HttpDelete("/deleteCard/{cardId}")]
         public ContentResult DeleteCard(int cardId)
         {
-            Database dbConn = new Database();
-            int status = dbConn.DeleteCard(cardId);
+            ContentResult response = new ContentResult();
 
-            string jsonContent = JsonSerializer.Serialize($"Card {cardId} has been deleted: {status}");
-            ContentResult response = new ContentResult()
+            try
             {
-                StatusCode = 200,
-                ContentType = "application/json",
-                Content = jsonContent
-            };
+                Database dbConn = new Database();
+                int status = dbConn.DeleteCard(cardId);
+
+                string jsonContent = JsonSerializer.Serialize($"Card {cardId} has been deleted: {status}");
+                response = new ContentResult()
+                {
+                    StatusCode = 200,
+                    ContentType = "application/json",
+                    Content = jsonContent
+                };
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"deleteCard error: {ex}");
+                response.StatusCode = 500;
+            }
 
             return response;
         }
@@ -94,16 +137,26 @@ namespace Flash.Api.Controllers
         [HttpDelete("/deleteAllCards")]
         public ContentResult DeleteAllCards()
         {
-            Database dbConn = new Database();
-            int status = dbConn.DeleteAllCards();
+            ContentResult response = new ContentResult();
 
-            string jsonContent = JsonSerializer.Serialize($"All cards have been successfully deleted: {status}");
-            ContentResult response = new ContentResult()
+            try
             {
-                StatusCode = 200,
-                ContentType = "application/json",
-                Content = jsonContent
-            };
+                Database dbConn = new Database();
+                int status = dbConn.DeleteAllCards();
+
+                string jsonContent = JsonSerializer.Serialize($"All cards have been successfully deleted: {status}");
+                response = new ContentResult()
+                {
+                    StatusCode = 200,
+                    ContentType = "application/json",
+                    Content = jsonContent
+                };
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"deleteAllCards error: {ex}");
+                response.StatusCode = 500;
+            }
 
             return response;
         }

@@ -8,6 +8,7 @@
 
 
 
-8. Publish API so that I do not need to run the API myself
+
+6. Publish API so that I do not need to run the API myself
     -- Heroku, netlify?
 
