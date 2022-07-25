@@ -9,7 +9,6 @@ namespace Flash.Console
         static void Main()
         {
             System.Console.WriteLine("\n Welcome to Flash. Please choose from the following options: \n");
-
             userInput.HandleUserInput();
         }
     }

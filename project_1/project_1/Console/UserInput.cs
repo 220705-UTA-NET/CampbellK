@@ -8,9 +8,8 @@ namespace Flash.Console.UserInterface
     public class UserInput
     {
         private readonly string uri = "https://localhost:7106";
-        bool exit = false;
-
-        public static void DisplayMenu()
+            
+        private static void DisplayMenu()
         {
             System.Console.WriteLine("\n[1] Review Session");
             System.Console.WriteLine("[2] View all cards");
@@ -25,15 +24,13 @@ namespace Flash.Console.UserInterface
         {
             CreateLineBreak();
 
-            if (!exit)
-            {
-                HttpClient client = new HttpClient();
+            HttpClient client = new HttpClient();
 
-                DisplayMenu();
+            DisplayMenu();
 
-                string userRequest = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userRequest));
-                FireUserRequest(client, userRequest);
-            }
+            string userRequest = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userRequest));
+            FireUserRequest(client, userRequest);
+            
         }
 
         private void FireUserRequest(HttpClient client, string userRequest)
@@ -41,22 +38,22 @@ namespace Flash.Console.UserInterface
             switch(userRequest)
             {
                 case "1":
-                    ReviewCards(client).Wait();
+                    ReviewCardsAsync(client).Wait();
                     break;
                 case "2":
-                    ViewAllCards(client).Wait();
+                    ViewAllCardsAsync(client).Wait();
                     break;
                 case "3":
-                    CreateNewCard(client).Wait();
+                    CreateNewCardAsync(client).Wait();
                     break;
                 case "4":
-                    EditCard(client).Wait();
+                    EditCardAsync(client).Wait();
                     break;
                 case "5":
-                    DeleteCard(client).Wait();
+                    DeleteCardAsync(client).Wait();
                     break;
                 case "6":
-                    DeleteAllCards(client).Wait();
+                    DeleteAllCardsAsync(client).Wait();
                     break;
                 case "0":
                     System.Console.WriteLine("\n Terminating program...");
@@ -68,7 +65,7 @@ namespace Flash.Console.UserInterface
             }
         }
 
-        async private Task ReviewCards(HttpClient client)
+        async private Task ReviewCardsAsync(HttpClient client)
         {
             var response = await client.GetAsync($"{uri}/reviewAll");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -80,13 +77,13 @@ namespace Flash.Console.UserInterface
             // CreateReviewSession loops through all vocabulary, testing for definition
             List<Flashcard> reviewResults = CreateReviewSession(contents);
 
-            System.Console.WriteLine($"\n Number of incorrect responses: {reviewResults.Count}");
+            System.Console.WriteLine($"\n Number of incorrect responses: {reviewResults.Count} \n");
             if (reviewResults.Count != 0)
             {
-                System.Console.WriteLine("Incorrect responses:");
+                System.Console.WriteLine("\n Incorrect responses:");
                 foreach (Flashcard card in reviewResults)
                 {
-                    System.Console.Write($"{card.Word}\t");
+                    System.Console.Write($"{card.Word}\t\t");
                 };
             }
 
@@ -98,7 +95,7 @@ namespace Flash.Console.UserInterface
                 
                 while (toReview.Count > 0)
                 {
-                    System.Console.WriteLine("\n Would you like to re-try your failed words? Y/N");
+                    System.Console.WriteLine("\n Would you like to re-try your failed words? Y/N \n");
 
                     string retryResponse = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(retryResponse));
 
@@ -116,38 +113,38 @@ namespace Flash.Console.UserInterface
             HandleUserInput();
         }
 
-        async private Task ViewAllCards(HttpClient client)
+        async private Task ViewAllCardsAsync(HttpClient client)
         {
             var response = await client.GetAsync($"{uri}/reviewAll");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             List<Flashcard> contents = JsonSerializer.Deserialize<List<Flashcard>>(responseContent) ?? throw new NullReferenceException(nameof(contents));
-            System.Console.WriteLine($"\n {"Id", 0} {"Word", 20} {"Definition", 20} {"Example", 20} {"Notes", 20} {"Difficulty", 20} \n");
+            System.Console.WriteLine($"\n {"Id", 0} {"|", 10} {"Word", 10} {"|",10} {"Definition", 10} {"|",10} {"Example", 10} {"|",10} {"Notes", 10} {"|",10} {"Difficulty", 10} \n");
 
             CreateLineBreak();
 
             foreach (Flashcard card in contents)
             {
-                System.Console.WriteLine($"\n {card.Id, 0} {card.Word, 20} {card.Definition, 20} {card.Example, 20} {card.Notes, 20} {card.Difficulty, 20} \n");
+                System.Console.WriteLine($"\n {card.Id, 0} {"|",10} {card.Word, 10} {"|",10} {card.Definition, 10} {"|",10} {card.Example, 10} {"|",10} {card.Notes, 10} {"|",10} {card.Difficulty, 10} \n");
             }
 
             HandleUserInput();
         }
 
-        async private Task CreateNewCard(HttpClient client)
+        async private Task CreateNewCardAsync(HttpClient client)
         {
             Flashcard newCard = new Flashcard();
 
             System.Console.WriteLine("\n Creating a new flashcard... \n");
 
-            System.Console.WriteLine("\n Would you like to auto-fill a card? Y/N");
+            System.Console.WriteLine("\n Would you like to auto-fill a card? Y/N \n");
             string autoFillCard = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(autoFillCard));
 
             if (autoFillCard.ToLower() == "y")
             {
                 try
                 {
-                    newCard = await AutoFillCard();
+                    newCard = await AutoFillCardAsync();
                 }
                 catch (Exception ex)
                 {
@@ -165,13 +162,13 @@ namespace Flash.Console.UserInterface
             StringContent stringContent = new StringContent(serializedContent, Encoding.UTF8, "application/json");
 
             var response = await client.PostAsync($"{uri}/addNewCard", stringContent);
-            await ParseResponse(response);
+            await ParseResponseAsync(response);
         }
 
-        async private Task EditCard(HttpClient client)
+        async private Task EditCardAsync(HttpClient client)
         {
             System.Console.WriteLine("\n Editing card... \n");
-            System.Console.WriteLine("Type the Id of the card you would like to edit:");
+            System.Console.WriteLine("Type the Id of the card you would like to edit:\n");
 
             string cardId = GetCardId();
             
@@ -180,21 +177,21 @@ namespace Flash.Console.UserInterface
             StringContent stringContent = new StringContent(serializedContent, Encoding.UTF8, "application/json");
 
             var response = await client.PutAsync($"{uri}/editCard/{cardId}", stringContent);
-            await ParseResponse(response);
+            await ParseResponseAsync(response);
         }
 
-        async private Task DeleteCard(HttpClient client)
+        async private Task DeleteCardAsync(HttpClient client)
         {
             System.Console.WriteLine("\n Deleting card... \n");
-            System.Console.WriteLine("Type the Id of the card you would like to delete:");
+            System.Console.WriteLine("Type the Id of the card you would like to delete:\n");
 
             string cardId = GetCardId();
 
             HttpResponseMessage response = await client.DeleteAsync($"{uri}/deleteCard/{cardId}");
-            await ParseResponse(response);
+            await ParseResponseAsync(response);
         }
 
-        async private Task DeleteAllCards(HttpClient client)
+        async private Task DeleteAllCardsAsync(HttpClient client)
         {
             bool validInput = false;
 
@@ -208,7 +205,7 @@ namespace Flash.Console.UserInterface
                     validInput = true;
 
                     var response = await client.DeleteAsync($"{uri}/deleteAllCards");
-                    await ParseResponse(response);
+                    await ParseResponseAsync(response);
                 }
                 else if (userDeleteResponse.ToLower() == "n")
                 {
@@ -219,16 +216,9 @@ namespace Flash.Console.UserInterface
                 }
                 else
                 {
-                    System.Console.WriteLine("\n Command not recognized, please try again.");
+                    System.Console.WriteLine("\n Command not recognized, please try again.\n");
                 }
             }
-        }
-
-        private class ReviewSession
-        {
-            public List<string> failedWords { get; set; }
-            public List<string> failedDefinitions { get; set; }
-            public int numberIncorrect { get; set; }
         }
 
         private List<Flashcard> CreateReviewSession(List<Flashcard> contents)
@@ -242,19 +232,19 @@ namespace Flash.Console.UserInterface
 
                 if (userAnswer.ToLower() == card.Definition?.ToLower())
                 {
-                    System.Console.WriteLine("\n Correct! \n");
+                    System.Console.WriteLine("\n CORRECT \n");
                 }
                 else
                 {
-                    System.Console.WriteLine("\n Incorrect... \n");
+                    System.Console.WriteLine("\n INCORRECT... \n");
                     failedWords.Add(card);
                 }
 
-                System.Console.WriteLine($"\n {"Id",0}{"Word",20} {"Definition",20} {"Example",20} {"Notes",20} {"Difficulty",20} \n");
+                System.Console.WriteLine($"\n {"Id",0} {"|",10} {"Word",10} {"|",10} {"Definition",10} {"|",10} {"Example",10} {"|",10} {"Notes",10} {"|",10} {"Difficulty",10} \n");
 
                 CreateLineBreak();
 
-                System.Console.WriteLine($"\n {card.Id,0} {card.Word,20} {card.Definition,20} {card.Example,20} {card.Notes,20} {card.Difficulty,20} \n");
+                System.Console.WriteLine($"\n {card.Id,0} {"|",10} {card.Word,10} {"|",10} {card.Definition,10} {"|",10} {card.Example,10} {"|",10} {card.Notes,10} {"|",10} {card.Difficulty,10} \n");
 
                 CreateLineBreak();
             };
@@ -266,25 +256,51 @@ namespace Flash.Console.UserInterface
         {
             Flashcard card = new Flashcard();
 
-            System.Console.WriteLine("Word:");
-            card.Word = System.Console.ReadLine();
+            bool gotWord = false;
+            while (!gotWord)
+            {
+                System.Console.WriteLine("\nWord:");
+                card.Word = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(card.Word));
 
-            System.Console.WriteLine("Definition:");
-            card.Definition = System.Console.ReadLine();
+                if (card.Word.Length != 0)
+                {
+                    gotWord = true;
+                }
+                else
+                {
+                    System.Console.WriteLine("\nPlease enter a word\n");
+                }
+            }
 
-            System.Console.WriteLine("Example:");
+            bool gotDefinition = false;
+            while (!gotDefinition)
+            {
+                System.Console.WriteLine("\nDefinition:");
+                card.Definition = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(card.Definition));
+
+                if (card.Definition.Length != 0)
+                {
+                    gotDefinition = true;
+                }
+                else
+                {
+                    System.Console.WriteLine("\nPlease enter a definition\n");
+                }
+            }
+
+            System.Console.WriteLine("\nExample:");
             card.Example = System.Console.ReadLine();
 
-            System.Console.WriteLine("Notes:");
+            System.Console.WriteLine("\nNotes:");
             card.Notes = System.Console.ReadLine();
 
-            System.Console.WriteLine("Difficulty:");
+            System.Console.WriteLine("\nDifficulty:");
             card.Difficulty = System.Console.ReadLine();
 
             return card;
         }
 
-        async private Task<Flashcard> AutoFillCard()
+        async private Task<Flashcard> AutoFillCardAsync()
         {
             Flashcard newCard = new Flashcard();
 
@@ -299,8 +315,8 @@ namespace Flash.Console.UserInterface
 
             AutoFillFlashcard autoFilledData = JsonSerializer.Deserialize<AutoFillFlashcard>(autofillResponse) ?? throw new NullReferenceException(nameof(autoFilledData));
 
-            newCard.Word = autoFilledData.data[0].slug;
-            newCard.Definition = autoFilledData.data[0].senses[0].english_definitions[0];
+            newCard.Word = autoFilledData.data[0].slug ?? throw new NullReferenceException(nameof(newCard.Word));
+            newCard.Definition = autoFilledData.data[0].senses[0].english_definitions[0] ?? throw new NullReferenceException(nameof(newCard.Definition));
             newCard.Example = "";
             newCard.Notes = autoFilledData.data[0].japanese[0].reading;
             newCard.Difficulty = autoFilledData.data[0].jlpt[0];
@@ -308,12 +324,12 @@ namespace Flash.Console.UserInterface
             return newCard;    
         }
 
-        async private Task ParseResponse(HttpResponseMessage response)
+        async private Task ParseResponseAsync(HttpResponseMessage response)
         {
             var responseContent = await response.Content.ReadAsStringAsync();
             string contents = JsonSerializer.Deserialize<string>(responseContent) ?? throw new NullReferenceException(nameof(contents));
 
-            System.Console.WriteLine(contents);
+            System.Console.WriteLine($"\n{contents}\n");
             HandleUserInput();
         }
 
@@ -332,7 +348,7 @@ namespace Flash.Console.UserInterface
                 }
                 catch (Exception)
                 {
-                    System.Console.WriteLine("Please type a valid number");
+                    System.Console.WriteLine("\n Please type a valid number \n");
                 }
             }
 
