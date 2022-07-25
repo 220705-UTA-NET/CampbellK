@@ -237,7 +237,6 @@ namespace Flash.Console.UserInterface
             newCard.Word = autoFilledData.data[0].slug;
             newCard.Definition = autoFilledData.data[0].senses[0].english_definitions[0];
             newCard.Example = "";
-            // notes returns ?? for some reason
             newCard.Notes = autoFilledData.data[0].japanese[0].reading;
             newCard.Difficulty = autoFilledData.data[0].jlpt[0];
 

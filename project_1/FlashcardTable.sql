@@ -4,11 +4,11 @@
 --     Id int IDENTITY PRIMARY KEY,
 --     Word nvarchar(50) NOT NULL,
 --     Definition nvarchar(100) NOT NULL,
---     Example text,
---     Notes text,
+--     Example ntext,
+--     Notes ntext,
 --     Difficulty nvarchar(10)
 -- );
 
-INSERT INTO flashcards (Word, Definition, Example, Notes, Difficulty) VALUES ('hello', 'world', 'example', 'notes example', 'easy');
+-- INSERT INTO flashcards (Word, Definition, Example, Notes, Difficulty) VALUES ('hello', N'世界', N'せかい', 'notes example', 'easy');
 
 SELECT * FROM flashcards;

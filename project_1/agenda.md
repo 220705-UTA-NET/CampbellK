@@ -1,8 +1,8 @@
 # Project 1
 
 **Tasks**
-
-Finish autofill
+add below url to Example
+https://jisho.org/search/%E6%97%A5%E6%9B%9C%E6%97%A5%20%23sentences%20
 
 5. Add input validation everywhere that I take user input
 6. Add try/catch & error handling

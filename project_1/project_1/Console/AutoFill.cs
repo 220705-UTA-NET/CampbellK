@@ -34,7 +34,7 @@ namespace Flash.Console.UserInterface
         public List<string> restrictions { get; set; }
         public List<string> see_also { get; set; }
         public List<string> antonyms { get; set; }
-        public List<string> source { get; set; }
+        public List<dynamic> source { get; set; }
         public List<string> info { get; set; }
     }
 

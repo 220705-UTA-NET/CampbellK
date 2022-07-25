@@ -102,10 +102,12 @@ namespace Flash.Data
 
         private void SetQueryParameters(SqlCommand command, Flashcard flashcard)
         {
-            command.Parameters.AddWithValue("@Word", flashcard.Word);
+            // currently appears to be accepting Japanese characters
+            // if it returns ??, add N in front of the value
+            command.Parameters.AddWithValue("@Word", $"{flashcard.Word}");
             command.Parameters.AddWithValue("@Definition", flashcard.Definition);
-            command.Parameters.AddWithValue("@Example", flashcard.Example);
-            command.Parameters.AddWithValue("@Notes", flashcard.Notes);
+            command.Parameters.AddWithValue("@Example", $"{flashcard.Example}");
+            command.Parameters.AddWithValue("@Notes", $"{flashcard.Notes}");
             command.Parameters.AddWithValue("@Difficulty", flashcard.Difficulty);
         }
     }
