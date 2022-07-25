@@ -321,6 +321,9 @@ namespace Flash.Console.UserInterface
             newCard.Notes = autoFilledData.data[0].japanese[0].reading;
             newCard.Difficulty = autoFilledData.data[0].jlpt[0];
 
+            newCard.lastReviewed = DateTime.Now;
+            newCard.nextReview = DateTime.Today.AddDays(1);
+
             return newCard;    
         }
 
