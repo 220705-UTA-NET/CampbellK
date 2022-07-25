@@ -3,7 +3,6 @@
 **Tasks**
 
 3. Create UserInput interface in Console Application
-    -- test addNew endpoint
 
 
 4. Update API
@@ -12,6 +11,13 @@
             -+- Will I be adding users?
 
     - clean up program.cs in API
+
+
+5. Add input validation everywhere that I take user input
+6. Add try/catch & error handling
+7. Clear warnings
+8. Add color to console messages
+9. Add dividing lines between card info console displays
 
 --------------------------------------------------------------------------------
 
