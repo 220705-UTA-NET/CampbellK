@@ -12,17 +12,19 @@ namespace Flash.Console.UserInterface
 
         public static void DisplayMenu()
         {
-            System.Console.WriteLine("\n [1] Review Session");
+            System.Console.WriteLine("\n[1] Review Session");
             System.Console.WriteLine("[2] View all cards");
             System.Console.WriteLine("[3] Create a new card");
             System.Console.WriteLine("[4] Edit a card");
             System.Console.WriteLine("[5] Delete a card");
             System.Console.WriteLine("[6] Delete all cards");
-            System.Console.WriteLine("\n [0] Exit");
+            System.Console.WriteLine("[0] Exit\n");
         }
 
        public void HandleUserInput()
         {
+            CreateLineBreak();
+
             if (!exit)
             {
                 HttpClient client = new HttpClient();
@@ -74,24 +76,62 @@ namespace Flash.Console.UserInterface
             List<Flashcard> contents = JsonSerializer.Deserialize<List<Flashcard>>(responseContent) ?? throw new NullReferenceException(nameof(contents));
 
             System.Console.WriteLine("\n For each word shown, type the defintion. \n");
-            // foreach through each word in contents, ask for user input, then give definition, example, notes
-            foreach(Flashcard card in contents)
+
+            //foreach(Flashcard card in contents)
+            //{
+            //    System.Console.WriteLine($"\n{card.Word}\n");
+            //    string userAnswer = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userAnswer));
+
+            //    if (userAnswer.ToLower() == card.Definition?.ToLower())
+            //    {
+            //        System.Console.WriteLine("\n Correct! \n");
+            //    }
+            //    else
+            //    {
+            //        System.Console.WriteLine("\n Incorrect... \n");
+            //        numberIncorrect++;
+            //        failedWords.Add(card.Word);
+            //    }
+
+            //    System.Console.WriteLine($"\n {"Id", 0 }{"Word", 20} {"Definition", 20} {"Example", 20} {"Notes", 20} {"Difficulty", 20} \n");
+
+            //    CreateLineBreak();
+
+            //    System.Console.WriteLine($"\n {card.Id, 0} {card.Word, 20} {card.Definition, 20} {card.Example, 20} {card.Notes, 20} {card.Difficulty, 20} \n");
+
+            //    CreateLineBreak();
+            //};
+
+            List<Flashcard> reviewResults = CreateReviewSession(contents);
+
+            System.Console.WriteLine($"\n Number of incorrect responses: {reviewResults.Count}");
+            System.Console.WriteLine("Incorrect responses:");
+            foreach(Flashcard card in reviewResults)
             {
-                System.Console.WriteLine($"\n{card.Word}\n");
-                string userAnswer = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userAnswer));
-
-                if (userAnswer.ToLower() == card.Definition.ToLower())
-                {
-                    System.Console.WriteLine("\n Correct! \n");
-                }
-                else
-                {
-                    System.Console.WriteLine("\n Incorrect... \n");
-                }
-
-                System.Console.WriteLine($"\n {"Id", 0 }{"Word", 20} {"Definition", 20} {"Example", 20} {"Notes", 20} {"Difficulty", 20} \n");
-                System.Console.WriteLine($"\n {card.Id, 0} {card.Word, 20} {card.Definition, 20} {card.Example, 20} {card.Notes, 20} {card.Difficulty, 20} \n");
+                System.Console.Write($"{card.Word}\t");
             };
+
+            if (reviewResults.Count > 0)
+            {
+                bool continuedStudy = true;
+                
+                while (continuedStudy)
+                {
+                    System.Console.WriteLine("\n Would you like to re-try your failed words? Y/N");
+
+                    string retryResponse = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(retryResponse));
+
+                    if (retryResponse.ToLower() == "y")
+                    {
+                        // not actually updating the List to be reviewed
+                        List<Flashcard> toReview = CreateReviewSession(reviewResults);
+                    }
+                    else
+                    {
+                        continuedStudy = false;
+                    }
+                }
+            }
 
             HandleUserInput();
         }
@@ -103,6 +143,9 @@ namespace Flash.Console.UserInterface
 
             List<Flashcard> contents = JsonSerializer.Deserialize<List<Flashcard>>(responseContent) ?? throw new NullReferenceException(nameof(contents));
             System.Console.WriteLine($"\n {"Id", 0} {"Word", 20} {"Definition", 20} {"Example", 20} {"Notes", 20} {"Difficulty", 20} \n");
+
+            CreateLineBreak();
+
             foreach (Flashcard card in contents)
             {
                 System.Console.WriteLine($"\n {card.Id, 0} {card.Word, 20} {card.Definition, 20} {card.Example, 20} {card.Notes, 20} {card.Difficulty, 20} \n");
@@ -120,12 +163,16 @@ namespace Flash.Console.UserInterface
             System.Console.WriteLine("\n Would you like to auto-fill a card? Y/N");
             string autoFillCard = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(autoFillCard));
 
-
-
-
             if (autoFillCard.ToLower() == "y")
             {
-                newCard = await AutoFillCard();
+                try
+                {
+                    newCard = await AutoFillCard();
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine($"Autocomplete failed, please enter your new card manually: {ex}");
+                }
             }
             else
             {
@@ -197,6 +244,44 @@ namespace Flash.Console.UserInterface
             }
         }
 
+        private class ReviewSession
+        {
+            public List<string> failedWords { get; set; }
+            public List<string> failedDefinitions { get; set; }
+            public int numberIncorrect { get; set; }
+        }
+
+        private List<Flashcard> CreateReviewSession(List<Flashcard> contents)
+        {
+            List<Flashcard> failedWords = new List<Flashcard> { };
+
+            foreach (Flashcard card in contents)
+            {
+                System.Console.WriteLine($"\n{card.Word}\n");
+                string userAnswer = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userAnswer));
+
+                if (userAnswer.ToLower() == card.Definition?.ToLower())
+                {
+                    System.Console.WriteLine("\n Correct! \n");
+                }
+                else
+                {
+                    System.Console.WriteLine("\n Incorrect... \n");
+                    failedWords.Add(card);
+                }
+
+                System.Console.WriteLine($"\n {"Id",0}{"Word",20} {"Definition",20} {"Example",20} {"Notes",20} {"Difficulty",20} \n");
+
+                CreateLineBreak();
+
+                System.Console.WriteLine($"\n {card.Id,0} {card.Word,20} {card.Definition,20} {card.Example,20} {card.Notes,20} {card.Difficulty,20} \n");
+
+                CreateLineBreak();
+            };
+
+            return failedWords;
+        }
+
         private Flashcard FillOutFlashcard()
         {
             Flashcard card = new Flashcard();
@@ -240,7 +325,7 @@ namespace Flash.Console.UserInterface
             newCard.Notes = autoFilledData.data[0].japanese[0].reading;
             newCard.Difficulty = autoFilledData.data[0].jlpt[0];
 
-            return newCard;
+            return newCard;    
         }
 
         async private Task ParseResponse(HttpResponseMessage response)
@@ -272,6 +357,11 @@ namespace Flash.Console.UserInterface
             }
 
             return cardId;
+        }
+
+        private static void CreateLineBreak()
+        {
+            System.Console.WriteLine("\n ------------------------------------------------------------------------------------------------------------------------------------- \n");
         }
     }
 }
