@@ -1,11 +1,7 @@
 # Project 1 August 2nd (Tuesday)
 
 
-3. During review, save incorrect words to a list & track how many total you got
-wrong.
-    -- give an option to re-review those
-        ++ struggling to continuously update the list of missed items during
-        while loop
+3. Continue testing review session
 
 
 

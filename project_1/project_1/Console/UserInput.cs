@@ -77,45 +77,26 @@ namespace Flash.Console.UserInterface
 
             System.Console.WriteLine("\n For each word shown, type the defintion. \n");
 
-            //foreach(Flashcard card in contents)
-            //{
-            //    System.Console.WriteLine($"\n{card.Word}\n");
-            //    string userAnswer = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userAnswer));
-
-            //    if (userAnswer.ToLower() == card.Definition?.ToLower())
-            //    {
-            //        System.Console.WriteLine("\n Correct! \n");
-            //    }
-            //    else
-            //    {
-            //        System.Console.WriteLine("\n Incorrect... \n");
-            //        numberIncorrect++;
-            //        failedWords.Add(card.Word);
-            //    }
-
-            //    System.Console.WriteLine($"\n {"Id", 0 }{"Word", 20} {"Definition", 20} {"Example", 20} {"Notes", 20} {"Difficulty", 20} \n");
-
-            //    CreateLineBreak();
-
-            //    System.Console.WriteLine($"\n {card.Id, 0} {card.Word, 20} {card.Definition, 20} {card.Example, 20} {card.Notes, 20} {card.Difficulty, 20} \n");
-
-            //    CreateLineBreak();
-            //};
-
+            // CreateReviewSession loops through all vocabulary, testing for definition
             List<Flashcard> reviewResults = CreateReviewSession(contents);
 
             System.Console.WriteLine($"\n Number of incorrect responses: {reviewResults.Count}");
-            System.Console.WriteLine("Incorrect responses:");
-            foreach(Flashcard card in reviewResults)
+            if (reviewResults.Count != 0)
             {
-                System.Console.Write($"{card.Word}\t");
-            };
+                System.Console.WriteLine("Incorrect responses:");
+                foreach (Flashcard card in reviewResults)
+                {
+                    System.Console.Write($"{card.Word}\t");
+                };
+            }
 
+            // give opportunity to re-try missed vocabulary
             if (reviewResults.Count > 0)
             {
-                bool continuedStudy = true;
+                // as the user gets more correct, toReview should shrink until user is ready to quit or no more words are missed
+                List<Flashcard> toReview = reviewResults;
                 
-                while (continuedStudy)
+                while (toReview.Count > 0)
                 {
                     System.Console.WriteLine("\n Would you like to re-try your failed words? Y/N");
 
@@ -123,12 +104,11 @@ namespace Flash.Console.UserInterface
 
                     if (retryResponse.ToLower() == "y")
                     {
-                        // not actually updating the List to be reviewed
-                        List<Flashcard> toReview = CreateReviewSession(reviewResults);
+                        toReview = CreateReviewSession(reviewResults);
                     }
                     else
                     {
-                        continuedStudy = false;
+                        toReview = new List<Flashcard> { };
                     }
                 }
             }
