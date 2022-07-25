@@ -3,13 +3,7 @@
 **Tasks**
 
 3. Create UserInput interface in Console Application
-    - Display word, have user type the definition, then display correct 
-    definition, sentence. allow for early exit
-        ++ For a Review all option. will receive the same list as ledger,
-        just handle it differently
-
-    -- Move each case into its own function
-
+    -- test addNew endpoint
 
 
 4. Update API

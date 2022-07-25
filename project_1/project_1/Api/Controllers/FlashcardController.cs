@@ -40,6 +40,7 @@ namespace Flash.Api.Controllers
         {
             Database dbConn = new Database();
             // parse out data from body
+
             int status = dbConn.CreateNewCard(newFlashcard);
 
             string jsonContent = JsonSerializer.Serialize($"New card successfully created: {status}");
