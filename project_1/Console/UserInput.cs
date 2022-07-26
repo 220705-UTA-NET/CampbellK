@@ -119,13 +119,13 @@ namespace Flash.Console.UserInterface
             string responseContent = await response.Content.ReadAsStringAsync();
 
             List<Flashcard> contents = JsonSerializer.Deserialize<List<Flashcard>>(responseContent) ?? throw new NullReferenceException(nameof(contents));
-            System.Console.WriteLine($"\n {"Id", 0} {"|", 10} {"Word", 10} {"|",10} {"Definition", 10} {"|",10} {"Example", 10} {"|",10} {"Notes", 10} {"|",10} {"Difficulty", 10} \n");
+            System.Console.WriteLine($"\n {"Id", 3} {"|", 10} {"Word", 10} {"|",10} {"Definition", 50} {"|",10} {"Example", 10} {"|",10} {"Notes", 10} {"|",10} {"Difficulty", 10} \n");
 
             CreateLineBreak();
 
             foreach (Flashcard card in contents)
             {
-                System.Console.WriteLine($"\n {card.Id, 0} {"|",10} {card.Word, 10} {"|",10} {card.Definition, 10} {"|",10} {card.Example, 10} {"|",10} {card.Notes, 10} {"|",10} {card.Difficulty, 10} \n");
+                System.Console.WriteLine($"\n {card.Id, 3} {"|",10} {card.Word, 10} {"|",10} {card.Definition, 50} {"|",10} {card.Example, 10} {"|",10} {card.Notes, 10} {"|",10} {card.Difficulty, 10} \n");
             }
 
             HandleUserInput();
@@ -240,11 +240,11 @@ namespace Flash.Console.UserInterface
                     failedWords.Add(card);
                 }
 
-                System.Console.WriteLine($"\n {"Id",0} {"|",10} {"Word",10} {"|",10} {"Definition",10} {"|",10} {"Example",10} {"|",10} {"Notes",10} {"|",10} {"Difficulty",10} \n");
+                System.Console.WriteLine($"\n {"Id",0} {"|",10} {"Word",10} {"|",10} {"Definition",50} {"|",10} {"Example",10} {"|",10} {"Notes",10} {"|",10} {"Difficulty",10} \n");
 
                 CreateLineBreak();
 
-                System.Console.WriteLine($"\n {card.Id,0} {"|",10} {card.Word,10} {"|",10} {card.Definition,10} {"|",10} {card.Example,10} {"|",10} {card.Notes,10} {"|",10} {card.Difficulty,10} \n");
+                System.Console.WriteLine($"\n {card.Id,0} {"|",10} {card.Word,10} {"|",10} {card.Definition,50} {"|",10} {card.Example,10} {"|",10} {card.Notes,10} {"|",10} {card.Difficulty,10} \n");
 
                 CreateLineBreak();
             };
@@ -360,7 +360,7 @@ namespace Flash.Console.UserInterface
 
         private static void CreateLineBreak()
         {
-            System.Console.WriteLine("\n ------------------------------------------------------------------------------------------------------------------------------------- \n");
+            System.Console.WriteLine("\n ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ \n");
         }
     }
 }
