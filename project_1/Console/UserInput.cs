@@ -8,6 +8,7 @@ namespace Flash.Console.UserInterface
     public class UserInput
     {
         private readonly string uri = "https://localhost:7106";
+        SentenceScrapper scrapper = new SentenceScrapper();
             
         private static void DisplayMenu()
         {
@@ -154,7 +155,7 @@ namespace Flash.Console.UserInterface
             else
             {
                 System.Console.WriteLine("\n Continuing to manual card creation. \n");
-                newCard = FillOutFlashcard();
+                newCard = await FillOutFlashcard();
             }
 
             string serializedContent = JsonSerializer.Serialize(newCard);
@@ -172,7 +173,7 @@ namespace Flash.Console.UserInterface
 
             string cardId = GetCardId();
             
-            Flashcard updatedCard = FillOutFlashcard();
+            Flashcard updatedCard = await FillOutFlashcard();
             string serializedContent = JsonSerializer.Serialize(updatedCard);
             StringContent stringContent = new StringContent(serializedContent, Encoding.UTF8, "application/json");
 
@@ -252,7 +253,7 @@ namespace Flash.Console.UserInterface
             return failedWords;
         }
 
-        private Flashcard FillOutFlashcard()
+        async private Task<Flashcard> FillOutFlashcard()
         {
             Flashcard card = new Flashcard();
 
@@ -289,8 +290,18 @@ namespace Flash.Console.UserInterface
             }
 
             System.Console.WriteLine("\nExample:");
-            card.Example = System.Console.ReadLine();
-
+            System.Console.WriteLine("Would you like to auto-generate your example sentence? Y/N");
+            string autoGenSentenceResponse = System.Console.ReadLine();
+            if (autoGenSentenceResponse.ToLower() == "y")
+            {
+                card.Example = await scrapper.ScrapSentencesAsync(card.Word);
+            }
+            else
+            {
+                System.Console.WriteLine("Please type your example sentence, or leave blank");
+                card.Example = System.Console.ReadLine();
+            }
+            
             System.Console.WriteLine("\nNotes:");
             card.Notes = System.Console.ReadLine();
 
@@ -317,7 +328,9 @@ namespace Flash.Console.UserInterface
 
             newCard.Word = autoFilledData.data[0].slug ?? throw new NullReferenceException(nameof(newCard.Word));
             newCard.Definition = autoFilledData.data[0].senses[0].english_definitions[0] ?? throw new NullReferenceException(nameof(newCard.Definition));
-            newCard.Example = "";
+
+            newCard.Example = await scrapper.ScrapSentencesAsync(newCard.Definition);
+
             newCard.Notes = autoFilledData.data[0].japanese[0].reading;
             newCard.Difficulty = autoFilledData.data[0].jlpt[0];
 
