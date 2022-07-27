@@ -96,7 +96,7 @@ namespace Flash.Console.UserInterface
                 
                 while (toReview.Count > 0)
                 {
-                    System.Console.WriteLine("\n Would you like to re-try your failed words? Y/N \n");
+                    System.Console.WriteLine("\nWould you like to re-try your failed words? Y/N \n");
 
                     string retryResponse = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(retryResponse));
 
@@ -120,7 +120,7 @@ namespace Flash.Console.UserInterface
             string responseContent = await response.Content.ReadAsStringAsync();
 
             List<Flashcard> contents = JsonSerializer.Deserialize<List<Flashcard>>(responseContent) ?? throw new NullReferenceException(nameof(contents));
-            System.Console.WriteLine($"\n {"Id", 3} {"|", 10} {"Word", 10} {"|",10} {"Definition", 50} {"|",10} {"Example", 10} {"|",10} {"Notes", 10} {"|",10} {"Difficulty", 10} \n");
+            System.Console.WriteLine($"\n {"Id", 3} {"|", 10} {"Word", 10} {"|",10} {"Definition", 50} {"|",10} {"Example", 10} {"|",10} {"Reading", 10} {"|",10} {"Difficulty", 10} \n");
 
             CreateLineBreak();
 
@@ -241,7 +241,7 @@ namespace Flash.Console.UserInterface
                     failedWords.Add(card);
                 }
 
-                System.Console.WriteLine($"\n {"Id",0} {"|",10} {"Word",10} {"|",10} {"Definition",50} {"|",10} {"Example",10} {"|",10} {"Notes",10} {"|",10} {"Difficulty",10} \n");
+                System.Console.WriteLine($"\n {"Id",0} {"|",10} {"Word",10} {"|",10} {"Definition",50} {"|",10} {"Example",10} {"|",10} {"Reading",10} {"|",10} {"Difficulty",10} \n");
 
                 CreateLineBreak();
 
@@ -290,7 +290,7 @@ namespace Flash.Console.UserInterface
             }
 
             System.Console.WriteLine("\nExample:");
-            System.Console.WriteLine("Would you like to auto-generate your example sentence? Y/N");
+            System.Console.WriteLine("\nWould you like to auto-generate your example sentence? Y/N");
             string autoGenSentenceResponse = System.Console.ReadLine();
             if (autoGenSentenceResponse.ToLower() == "y")
             {
@@ -298,11 +298,11 @@ namespace Flash.Console.UserInterface
             }
             else
             {
-                System.Console.WriteLine("Please type your example sentence, or leave blank");
+                System.Console.WriteLine("\nPlease type your example sentence, or leave blank");
                 card.Example = System.Console.ReadLine();
             }
             
-            System.Console.WriteLine("\nNotes:");
+            System.Console.WriteLine("\nReading:");
             card.Notes = System.Console.ReadLine();
 
             System.Console.WriteLine("\nDifficulty:");
