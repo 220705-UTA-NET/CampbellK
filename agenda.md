@@ -1,10 +1,16 @@
 # Project 1 August 2nd (Tuesday)
 
-7. Deploy API as a Docker image 
+7. Deploy API as a Docker image - will need to set connection string env
 
     Docker image fails @ end
 
     Azure App Service (https://portal.azure.com/#create/Microsoft.WebSite)
+
+        -- try with deploying code too (will need to set env in azure)
+
+            -+- it may be currently working?
+
+                ++ Throws 500 due to not getting connection string
 
 
 8. Refactor

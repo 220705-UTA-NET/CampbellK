@@ -7,7 +7,7 @@ namespace Flash.Console.UserInterface
 {
     public class UserInput
     {
-        private readonly string uri = "https://localhost:7106";
+        private readonly string uri = "https://projectonektc.azurewebsites.net";
         SentenceScrapper scrapper = new SentenceScrapper();
             
         private static void DisplayMenu()
