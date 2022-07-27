@@ -1,26 +1,16 @@
-﻿using Flash.Data;
-using System;
+﻿using System;
 using System.Text;
 using System.Text.Json;
+using Flash.Data;
 
 namespace Flash.Console.UserInterface
 {
     public class UserInput
     {
         private readonly string uri = "https://projectonektc.azurewebsites.net";
+        // for auto-generating example sentences
         SentenceScrapper scrapper = new SentenceScrapper();
             
-        private static void DisplayMenu()
-        {
-            System.Console.WriteLine("\n[1] Review Session");
-            System.Console.WriteLine("[2] View all cards");
-            System.Console.WriteLine("[3] Create a new card");
-            System.Console.WriteLine("[4] Edit a card");
-            System.Console.WriteLine("[5] Delete a card");
-            System.Console.WriteLine("[6] Delete all cards");
-            System.Console.WriteLine("[0] Exit\n");
-        }
-
        public void HandleUserInput()
         {
             CreateLineBreak();
@@ -91,7 +81,7 @@ namespace Flash.Console.UserInterface
             // give opportunity to re-try missed vocabulary
             if (reviewResults.Count > 0)
             {
-                // as the user gets more correct, toReview should shrink until user is ready to quit or no more words are missed
+                // as the user gets more correct, toReview shrinks until user  quits or no more words are missed
                 List<Flashcard> toReview = reviewResults;
                 
                 while (toReview.Count > 0)
@@ -120,6 +110,7 @@ namespace Flash.Console.UserInterface
             string responseContent = await response.Content.ReadAsStringAsync();
 
             List<Flashcard> contents = JsonSerializer.Deserialize<List<Flashcard>>(responseContent) ?? throw new NullReferenceException(nameof(contents));
+
             System.Console.WriteLine($"\n {"Id", 3} {"|", 10} {"Word", 10} {"|",10} {"Definition", 50} {"|",10} {"Example", 10} {"|",10} {"Reading", 10} {"|",10} {"Difficulty", 10} \n");
 
             CreateLineBreak();
@@ -159,7 +150,7 @@ namespace Flash.Console.UserInterface
             }
 
             string serializedContent = JsonSerializer.Serialize(newCard);
-            // Required to include the data type in StringContent, or else get a 415 error
+            // Required to include the data type in StringContent, or else 415 error
             StringContent stringContent = new StringContent(serializedContent, Encoding.UTF8, "application/json");
 
             var response = await client.PostAsync($"{uri}/addNewCard", stringContent);
@@ -175,6 +166,7 @@ namespace Flash.Console.UserInterface
             
             Flashcard updatedCard = await FillOutFlashcard();
             string serializedContent = JsonSerializer.Serialize(updatedCard);
+
             StringContent stringContent = new StringContent(serializedContent, Encoding.UTF8, "application/json");
 
             var response = await client.PutAsync($"{uri}/editCard/{cardId}", stringContent);
@@ -222,6 +214,17 @@ namespace Flash.Console.UserInterface
             }
         }
 
+        private static void DisplayMenu()
+        {
+            System.Console.WriteLine("\n[1] Review Session");
+            System.Console.WriteLine("[2] View all cards");
+            System.Console.WriteLine("[3] Create a new card");
+            System.Console.WriteLine("[4] Edit a card");
+            System.Console.WriteLine("[5] Delete a card");
+            System.Console.WriteLine("[6] Delete all cards");
+            System.Console.WriteLine("[0] Exit\n");
+        }
+
         private List<Flashcard> CreateReviewSession(List<Flashcard> contents)
         {
             List<Flashcard> failedWords = new List<Flashcard> { };
@@ -260,7 +263,7 @@ namespace Flash.Console.UserInterface
             bool gotWord = false;
             while (!gotWord)
             {
-                System.Console.WriteLine("\nWord:");
+                System.Console.WriteLine("\nWord in Japanese:");
                 card.Word = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(card.Word));
 
                 if (card.Word.Length != 0)
@@ -291,8 +294,8 @@ namespace Flash.Console.UserInterface
 
             System.Console.WriteLine("\nExample:");
             System.Console.WriteLine("\nWould you like to auto-generate your example sentence? Y/N");
-            string autoGenSentenceResponse = System.Console.ReadLine();
-            if (autoGenSentenceResponse.ToLower() == "y")
+            string? autoGenSentenceResponse = System.Console.ReadLine();
+            if (autoGenSentenceResponse?.ToLower() == "y")
             {
                 card.Example = await scrapper.ScrapSentencesAsync(card.Word);
             }
@@ -316,26 +319,36 @@ namespace Flash.Console.UserInterface
             Flashcard newCard = new Flashcard();
 
             System.Console.WriteLine("\n Which word would you like to autofill? \n");
+            
             string desiredWord = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(desiredWord));
 
             HttpClient jishoClient = new HttpClient();
 
-            HttpResponseMessage wordData = await jishoClient.GetAsync($"https://jisho.org/api/v1/search/words?keyword={desiredWord}");
+            HttpResponseMessage rawWordData = await jishoClient.GetAsync($"https://jisho.org/api/v1/search/words?keyword={desiredWord}");
 
-            string autofillResponse = await wordData.Content.ReadAsStringAsync();
+            string autofillResponse = await rawWordData.Content.ReadAsStringAsync();
 
             AutoFillFlashcard autoFilledData = JsonSerializer.Deserialize<AutoFillFlashcard>(autofillResponse) ?? throw new NullReferenceException(nameof(autoFilledData));
 
-            newCard.Word = autoFilledData.data[0].slug ?? throw new NullReferenceException(nameof(newCard.Word));
-            newCard.Definition = autoFilledData.data[0].senses[0].english_definitions[0] ?? throw new NullReferenceException(nameof(newCard.Definition));
+            try
+            {
+                newCard.Word = autoFilledData?.data?[0].slug ?? throw new NullReferenceException(nameof(newCard.Word));
 
-            newCard.Example = await scrapper.ScrapSentencesAsync(newCard.Definition);
+                newCard.Definition = autoFilledData?.data?[0]?.senses?[0]?.english_definitions?[0] ?? throw new NullReferenceException(nameof(newCard.Definition));
 
-            newCard.Notes = autoFilledData.data[0].japanese[0].reading;
-            newCard.Difficulty = autoFilledData.data[0].jlpt[0];
+                newCard.Example = await scrapper.ScrapSentencesAsync(newCard.Definition);
 
-            newCard.lastReviewed = DateTime.Now;
-            newCard.nextReview = DateTime.Today.AddDays(1);
+                newCard.Notes = autoFilledData?.data?[0]?.japanese?[0].reading;
+                newCard.Difficulty = autoFilledData?.data[0].jlpt?[0];
+
+                newCard.lastReviewed = DateTime.Now;
+                newCard.nextReview = DateTime.Today.AddDays(1);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"Autocomplete failed, please enter your new card manually: {ex}");
+                newCard = await FillOutFlashcard();
+            }
 
             return newCard;    
         }
@@ -344,7 +357,7 @@ namespace Flash.Console.UserInterface
         {
             var responseContent = await response.Content.ReadAsStringAsync();
             string contents = JsonSerializer.Deserialize<string>(responseContent) ?? throw new NullReferenceException(nameof(contents));
-
+            
             System.Console.WriteLine($"\n{contents}\n");
             HandleUserInput();
         }
@@ -353,6 +366,7 @@ namespace Flash.Console.UserInterface
         {
             string cardId = "";
             bool retrievedCardId = false;
+            
             while (!retrievedCardId)
             {
                 try

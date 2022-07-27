@@ -1,7 +1,7 @@
 # https://stackoverflow.com/questions/47103570/asp-net-core-2-0-multiple-projects-solution-docker-file
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /app
+WORKDIR /out
 
 # copy csproj and restore as distinct layers
 # COPY *.sln .
@@ -19,7 +19,7 @@ RUN dotnet publish -c release -o /out
 # final stage/image
 FROM mcr.microsoft.com/dotnet/runtime:6.0
 WORKDIR /Api
-COPY --from=build /app/out .
+COPY --from=build /out .
 
 EXPOSE 7106
 

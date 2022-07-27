@@ -6,7 +6,7 @@ namespace Flash.Console.UserInterface
     {
         string baseUri = "https://jisho.org/search/";
 
-        async public Task<string> ScrapSentencesAsync(string word)
+        async public Task<string> ScrapSentencesAsync(string? word)
         {
             HttpClient client = new HttpClient();
 
@@ -27,20 +27,29 @@ namespace Flash.Console.UserInterface
 
             // can search each part, is there content between the start index & the next <
             string sentence = "";
-            for (int i = 0; i < splitContent.Length; i++)
-            {
-                //System.Console.WriteLine(splitContent[i]);
-                // if part contains "unlinked", then grab beginning of NEXT part (up until the next <) which contains the kanji/kana
-                // avoid grabbing the furigana
-                if (splitContent[i].Contains("unlinked"))
-                {
-                    sentence += splitContent[i + 1];
-                }
-            }
+            string finishedExampleSentence = "";
 
-            // substring has difficulties with parsing through kana/kanji, so removing the unecessary content like this instead
-            string finishedExampleSentence = sentence.Replace("</span", "");
-            System.Console.WriteLine(finishedExampleSentence);
+            try
+            {
+                for (int i = 0; i < splitContent.Length; i++)
+                {
+                    //System.Console.WriteLine(splitContent[i]);
+                    // if part contains "unlinked", then grab beginning of NEXT part (up until the next <) which contains the kanji/kana
+                    // avoid grabbing the furigana
+                    if (splitContent[i].Contains("unlinked"))
+                    {
+                        sentence += splitContent[i + 1];
+                    }
+                }
+
+                // substring has difficulties with parsing through kana/kanji, so removing the unecessary content like this instead
+                finishedExampleSentence = sentence.Replace("</span", "");
+                System.Console.WriteLine(finishedExampleSentence);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"Failed to parse auto-generated sentence, setting empty default: {ex}");
+            }
 
             return finishedExampleSentence;
         }
