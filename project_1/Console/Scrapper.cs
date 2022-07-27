@@ -5,8 +5,8 @@ namespace Flash.Console.UserInterface
     public class SentenceScrapper
     {
         string baseUri = "https://jisho.org/search/";
-        // https://jisho.org/search/%E3%81%82%E3%81%97%E3%81%9F%20%23sentences
-        async public void ScrapSentencesAsync(string word)
+
+        async public Task<string> ScrapSentencesAsync(string word)
         {
             HttpClient client = new HttpClient();
 
@@ -20,23 +20,29 @@ namespace Flash.Console.UserInterface
             int length = firstEnglishSentence - firstJapaneseSentence;
 
             string subStringContent = pageContent.Substring(firstJapaneseSentence, length);
-            System.Console.WriteLine(subStringContent);
 
             // substring again to extrapolate each sentence. avoid the furigana by looking only for <span class="unlinked">, where the kanji/kana appears right after
-
             // split substring on closing tag
             string[] splitContent = subStringContent.Split(">");
 
             // can search each part, is there content between the start index & the next <
             string sentence = "";
-            foreach(string part in splitContent)
+            for (int i = 0; i < splitContent.Length; i++)
             {
-                System.Console.WriteLine(part);
-
-                // string += part (IF IT CONTAINS WHAT I WANT, needs to be parsed)
+                //System.Console.WriteLine(splitContent[i]);
+                // if part contains "unlinked", then grab beginning of NEXT part (up until the next <) which contains the kanji/kana
+                // avoid grabbing the furigana
+                if (splitContent[i].Contains("unlinked"))
+                {
+                    sentence += splitContent[i + 1];
+                }
             }
 
+            // substring has difficulties with parsing through kana/kanji, so removing the unecessary content like this instead
+            string finishedExampleSentence = sentence.Replace("</span", "");
+            System.Console.WriteLine(finishedExampleSentence);
 
+            return finishedExampleSentence;
         }
     }
 }

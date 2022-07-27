@@ -9,9 +9,14 @@ both during autoFill & on-command from create menu once you get to example
 auto-generated too**
 
 
+6. Enable search by kanji for autofill rather than just English
+    -- will need to url encode the kanji
 
 
-6. Deploy API as a Docker image 
+7. Rename notes to reading
+
+
+7. Deploy API as a Docker image 
 
     Docker image fails @ end
 
