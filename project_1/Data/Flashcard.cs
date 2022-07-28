@@ -7,8 +7,6 @@ namespace Flash.Data
         public string? Definition { get; set; }
         public string? Example { get; set; }
         public string? Difficulty { get; set; }
-        public string? Notes { get; set; }
-        public DateTime lastReviewed { get; set; }
-        public DateTime nextReview { get; set; }
+        public string? Reading { get; set; }
     }
 }

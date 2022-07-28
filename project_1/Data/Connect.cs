@@ -37,10 +37,8 @@ namespace Flash.Data
                 flashcard.Word = reader.GetString(1);
                 flashcard.Definition = reader.GetString(2);
                 flashcard.Example = reader.GetString(3);
-                flashcard.Notes = reader.GetString(4);
+                flashcard.Reading = reader.GetString(4);
                 flashcard.Difficulty = reader.GetString(5);
-                flashcard.lastReviewed = reader.GetDateTime(6);
-                flashcard.nextReview = reader.GetDateTime(7);
 
                 allFlashcards.Add(flashcard);
             }
@@ -52,7 +50,13 @@ namespace Flash.Data
         {
             SqlConnection dbConn = DbConnect();
 
-            using SqlCommand command = new SqlCommand("INSERT INTO flashcards (Word, Definition, Example, Notes, Difficulty, lastReviewed, nextReview) VALUES (@Word, @Definition, @Example, @Notes, @Difficulty, @lastReviewed, @nextReview)", dbConn);
+            using SqlCommand reviewCommand = new SqlCommand("INSERT INTO review (Word, SuccessfulReviews, FailedReviews) VALUES (@Word, 0, 0)", dbConn);
+            reviewCommand.Parameters.AddWithValue("@Word", newFlashcard.Word);
+
+            reviewCommand.ExecuteNonQuery();
+
+            // insert into flashcards AFTER it is in review due to FK
+            using SqlCommand command = new SqlCommand("INSERT INTO flashcards (Word, Definition, Example, Reading, Difficulty) VALUES (@Word, @Definition, @Example, @Reading, @Difficulty)", dbConn);
 
             SetQueryParameters(command, newFlashcard);
 
@@ -66,7 +70,13 @@ namespace Flash.Data
         {
             SqlConnection dbConn = DbConnect();
 
-            using SqlCommand command = new SqlCommand("UPDATE flashcards SET Word = @Word, Definition = @Definition, Example = @Example, Notes = @Notes, Difficulty = @Difficulty, lastReviewed = @lastReviewed, nextReview = @nextReview WHERE Id = @Id", dbConn);
+            using SqlCommand reviewCommand = new SqlCommand("UPDATE review SET Word = @Word WHERE Id = @Id", dbConn);
+            reviewCommand.Parameters.AddWithValue("@Word", updatedFlashcard.Word);
+            reviewCommand.Parameters.AddWithValue("@Id", cardId);
+
+            reviewCommand.ExecuteNonQuery();
+
+            using SqlCommand command = new SqlCommand("UPDATE flashcards SET Word = @Word, Definition = @Definition, Example = @Example, Reading = @Reading, Difficulty = @Difficulty WHERE Id = @Id", dbConn);
 
             SetQueryParameters(command, updatedFlashcard);
             command.Parameters.AddWithValue("@Id", cardId);
@@ -81,6 +91,11 @@ namespace Flash.Data
         {
             SqlConnection dbConn = DbConnect();
 
+            using SqlCommand reviewCommand = new SqlCommand("DELETE FROM review WHERE Id = @Id", dbConn);
+            reviewCommand.Parameters.AddWithValue("@Id", cardId);
+
+            reviewCommand.ExecuteNonQuery();
+
             using SqlCommand command = new SqlCommand("DELETE FROM flashcards WHERE Id = @Id", dbConn);
             command.Parameters.AddWithValue("@Id", cardId);
 
@@ -93,6 +108,9 @@ namespace Flash.Data
         public int DeleteAllCards()
         {
             SqlConnection dbConn = DbConnect();
+
+            using SqlCommand reviewCommand = new SqlCommand("DELETE FROM review", dbConn);
+            reviewCommand.ExecuteNonQuery();
 
             using SqlCommand command = new SqlCommand("DELETE FROM flashcards", dbConn);
 
@@ -109,11 +127,8 @@ namespace Flash.Data
             command.Parameters.AddWithValue("@Word", $"{flashcard.Word}");
             command.Parameters.AddWithValue("@Definition", flashcard.Definition);
             command.Parameters.AddWithValue("@Example", $"{flashcard.Example}");
-            command.Parameters.AddWithValue("@Notes", $"{flashcard.Notes}");
+            command.Parameters.AddWithValue("@Reading", $"{flashcard.Reading}");
             command.Parameters.AddWithValue("@Difficulty", flashcard.Difficulty);
-            
-            command.Parameters.AddWithValue("@lastReviewed", DateTime.Now);
-            command.Parameters.AddWithValue("@nextReview", DateTime.Today.AddDays(1));
         }
     }
 }

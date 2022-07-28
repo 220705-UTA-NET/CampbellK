@@ -7,7 +7,9 @@ namespace Flash.Console.UserInterface
 {
     public class UserInput
     {
-        private readonly string uri = "https://projectonektc.azurewebsites.net";
+        // private readonly string uri = "https://projectonektc.azurewebsites.net";
+        private readonly string uri = "https://localhost:7106";
+        
         // for auto-generating example sentences
         SentenceScrapper scrapper = new SentenceScrapper();
             
@@ -21,7 +23,6 @@ namespace Flash.Console.UserInterface
 
             string userRequest = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userRequest));
             FireUserRequest(client, userRequest);
-            
         }
 
         private void FireUserRequest(HttpClient client, string userRequest)
@@ -117,7 +118,7 @@ namespace Flash.Console.UserInterface
 
             foreach (Flashcard card in contents)
             {
-                System.Console.WriteLine($"\n {card.Id, 3} {"|",10} {card.Word, 10} {"|",10} {card.Definition, 50} {"|",10} {card.Example, 10} {"|",10} {card.Notes, 10} {"|",10} {card.Difficulty, 10} \n");
+                System.Console.WriteLine($"\n {card.Id, 3} {"|",10} {card.Word, 10} {"|",10} {card.Definition, 50} {"|",10} {card.Example, 10} {"|",10} {card.Reading, 10} {"|",10} {card.Difficulty, 10} \n");
             }
 
             HandleUserInput();
@@ -151,6 +152,9 @@ namespace Flash.Console.UserInterface
 
             string serializedContent = JsonSerializer.Serialize(newCard);
             // Required to include the data type in StringContent, or else 415 error
+
+            System.Console.WriteLine(serializedContent);
+
             StringContent stringContent = new StringContent(serializedContent, Encoding.UTF8, "application/json");
 
             var response = await client.PostAsync($"{uri}/addNewCard", stringContent);
@@ -248,7 +252,7 @@ namespace Flash.Console.UserInterface
 
                 CreateLineBreak();
 
-                System.Console.WriteLine($"\n {card.Id,0} {"|",10} {card.Word,10} {"|",10} {card.Definition,50} {"|",10} {card.Example,10} {"|",10} {card.Notes,10} {"|",10} {card.Difficulty,10} \n");
+                System.Console.WriteLine($"\n {card.Id,0} {"|",10} {card.Word,10} {"|",10} {card.Definition,50} {"|",10} {card.Example,10} {"|",10} {card.Reading,10} {"|",10} {card.Difficulty,10} \n");
 
                 CreateLineBreak();
             };
@@ -306,7 +310,7 @@ namespace Flash.Console.UserInterface
             }
             
             System.Console.WriteLine("\nReading:");
-            card.Notes = System.Console.ReadLine();
+            card.Reading = System.Console.ReadLine();
 
             System.Console.WriteLine("\nDifficulty:");
             card.Difficulty = System.Console.ReadLine();
@@ -338,11 +342,8 @@ namespace Flash.Console.UserInterface
 
                 newCard.Example = await scrapper.ScrapSentencesAsync(newCard.Definition);
 
-                newCard.Notes = autoFilledData?.data?[0]?.japanese?[0].reading;
+                newCard.Reading = autoFilledData?.data?[0]?.japanese?[0].reading;
                 newCard.Difficulty = autoFilledData?.data[0].jlpt?[0];
-
-                newCard.lastReviewed = DateTime.Now;
-                newCard.nextReview = DateTime.Today.AddDays(1);
             }
             catch (Exception ex)
             {
@@ -356,6 +357,7 @@ namespace Flash.Console.UserInterface
         async private Task ParseResponseAsync(HttpResponseMessage response)
         {
             var responseContent = await response.Content.ReadAsStringAsync();
+
             string contents = JsonSerializer.Deserialize<string>(responseContent) ?? throw new NullReferenceException(nameof(contents));
             
             System.Console.WriteLine($"\n{contents}\n");

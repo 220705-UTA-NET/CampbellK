@@ -1,9 +1,22 @@
 # Project 1 August 2nd (Tuesday)
 
 
+1. Update to include review table
 
-What else can I add?
 
+    - in reviewCards, add an object that tracks the word & number of
+    correct/incorrect guesses & submits them to proper endpoint
+
+    - add endpoint to update review table after a review
+
+    - add endpoint to see breakdown of your vocab score
+
+
+
+2. When reviewing a word, open a window to the jisho page?
+
+
+3. beautify the console interaction
 
 
 ** if major server changes are made, be sure to update Azure Web
