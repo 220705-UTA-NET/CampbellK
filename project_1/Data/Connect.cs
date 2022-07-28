@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data.SqlClient;
-
 namespace Flash.Data
 {
     public class Database
@@ -64,6 +63,38 @@ namespace Flash.Data
 
             dbConn.Close();
             return commandStatus;
+        }
+
+        public void UpdateReview(List<WordTracker> reviewUpdates)
+        {
+            SqlConnection dbConn = DbConnect();
+
+            foreach(WordTracker update in reviewUpdates)
+            {
+                using SqlCommand previousCountCommand = new SqlCommand("SELECT * FROM review WHERE Word = @Word", dbConn);
+                previousCountCommand.Parameters.AddWithValue("@Word", update.Word);
+                using SqlDataReader reader = previousCountCommand.ExecuteReader();
+
+                int newSuccess = 0;
+                int newFailure = 0;
+
+                while (reader.Read())
+                {
+                    newSuccess = reader.GetInt32(2) + update.Correct;
+                    newFailure = reader.GetInt32(3) + update.Incorrect;
+                }
+
+                reader.Close();
+
+                using SqlCommand updateCommand = new SqlCommand("UPDATE review SET SuccessfulReviews = @SuccessfulReviews, FailedReviews = @FailedReviews WHERE word = @Word", dbConn);
+
+                updateCommand.Parameters.AddWithValue("@Word", update.Word);
+
+                updateCommand.Parameters.AddWithValue("@SuccessfulReviews", newSuccess);
+                updateCommand.Parameters.AddWithValue("@FailedReviews", newFailure);
+
+                updateCommand.ExecuteNonQuery();
+            }  
         }
 
         public int EditCard(Flashcard updatedFlashcard, int cardId)

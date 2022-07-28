@@ -1,19 +1,18 @@
+To create & push to a new remote branch
+git push --set-upstream origin {name}
+
 # Project 1 August 2nd (Tuesday)
 
 
 1. Update to include review table
 
-
-    - in reviewCards, add an object that tracks the word & number of
-    correct/incorrect guesses & submits them to proper endpoint
-
-    - add endpoint to update review table after a review
-
     - add endpoint to see breakdown of your vocab score
 
 
 
-2. When reviewing a word, open a window to the jisho page?
+2. Update Azure build for site
+    - Can probably do it from VS publish
+    - return baseUri to the azure site url
 
 
 3. beautify the console interaction

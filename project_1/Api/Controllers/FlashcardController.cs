@@ -77,6 +77,26 @@ namespace Flash.Api.Controllers
             return response;
         }
 
+        [HttpPost("/updateReview")]
+        public ContentResult UpdateReview([FromBody] List<WordTracker> reviewUpdates)
+        {
+            ContentResult response = new ContentResult();
+
+            Database dbConn = new Database();
+
+            dbConn.UpdateReview(reviewUpdates);
+
+            string jsonContent = JsonSerializer.Serialize("Reviews have been updated");
+            response = new ContentResult()
+            {
+                StatusCode = 200,
+                ContentType = "application/json",
+                Content = jsonContent
+            };
+
+            return response;
+        }
+
         // Editing an existing card
         [HttpPut("/editCard/{cardId}")]
         public ContentResult EditCard([FromBody] Flashcard updatedCard, int cardId)

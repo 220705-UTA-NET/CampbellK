@@ -9,4 +9,12 @@ namespace Flash.Data
         public string? Difficulty { get; set; }
         public string? Reading { get; set; }
     }
+
+    // for reviews
+    public class WordTracker
+    {
+        public string? Word {get; set;}
+        public int Correct {get; set;}
+        public int Incorrect {get; set;}
+    }
 }

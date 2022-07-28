@@ -67,7 +67,7 @@ namespace Flash.Console.UserInterface
             System.Console.WriteLine("\n For each word shown, type the defintion. \n");
 
             // CreateReviewSession loops through all vocabulary, testing for definition
-            List<Flashcard> reviewResults = CreateReviewSession(contents);
+            List<Flashcard> reviewResults = await CreateReviewSession(contents);
 
             System.Console.WriteLine($"\n Number of incorrect responses: {reviewResults.Count} \n");
             if (reviewResults.Count != 0)
@@ -93,7 +93,7 @@ namespace Flash.Console.UserInterface
 
                     if (retryResponse.ToLower() == "y")
                     {
-                        toReview = CreateReviewSession(reviewResults);
+                        toReview = await CreateReviewSession(reviewResults);
                     }
                     else
                     {
@@ -229,9 +229,12 @@ namespace Flash.Console.UserInterface
             System.Console.WriteLine("[0] Exit\n");
         }
 
-        private List<Flashcard> CreateReviewSession(List<Flashcard> contents)
+        async private Task<List<Flashcard>> CreateReviewSession(List<Flashcard> contents)
         {
+            // for tracking which words are wrong & being used to re-review
             List<Flashcard> failedWords = new List<Flashcard> { };
+            // for updating the review table
+            List<WordTracker> reviewedWords = new List<WordTracker> {};
 
             foreach (Flashcard card in contents)
             {
@@ -241,11 +244,21 @@ namespace Flash.Console.UserInterface
                 if (userAnswer.ToLower() == card.Definition?.ToLower())
                 {
                     System.Console.WriteLine("\n CORRECT \n");
+
+                    WordTracker wordTrack = new WordTracker();
+                    wordTrack.Word = card.Word;
+                    wordTrack.Correct = 1;
+                    reviewedWords.Add(wordTrack);
                 }
                 else
                 {
                     System.Console.WriteLine("\n INCORRECT... \n");
                     failedWords.Add(card);
+
+                    WordTracker wordTrack = new WordTracker();
+                    wordTrack.Word = card.Word;
+                    wordTrack.Incorrect = 1;
+                    reviewedWords.Add(wordTrack);
                 }
 
                 System.Console.WriteLine($"\n {"Id",0} {"|",10} {"Word",10} {"|",10} {"Definition",50} {"|",10} {"Example",10} {"|",10} {"Reading",10} {"|",10} {"Difficulty",10} \n");
@@ -256,6 +269,16 @@ namespace Flash.Console.UserInterface
 
                 CreateLineBreak();
             };
+
+            // send request update review table endpoint
+            HttpClient reviewUpdateClient = new HttpClient();
+
+            // not serializing things correctly?
+            string updatedReviews = JsonSerializer.Serialize<List<WordTracker>>(reviewedWords);
+
+            StringContent reviewContent = new StringContent(updatedReviews, Encoding.UTF8, "application/json");
+
+            await reviewUpdateClient.PostAsync($"{uri}/updateReview", reviewContent);
 
             return failedWords;
         }
