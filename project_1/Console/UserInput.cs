@@ -7,8 +7,7 @@ namespace Flash.Console.UserInterface
 {
     public class UserInput
     {
-        // private readonly string uri = "https://projectonektc.azurewebsites.net";
-        private readonly string uri = "https://localhost:7106";
+        private readonly string uri = "https://projectonektc.azurewebsites.net";
         
         // for auto-generating example sentences
         SentenceScrapper scrapper = new SentenceScrapper();
@@ -51,10 +50,10 @@ namespace Flash.Console.UserInterface
                     DeleteAllCardsAsync(client).Wait();
                     break;
                 case "0":
-                    System.Console.WriteLine("\n Terminating program...");
+                    System.Console.WriteLine("\n\t Terminating program...");
                     break;
                 default:
-                    System.Console.WriteLine("\n Unrecognized input, please try again. \n");
+                    System.Console.WriteLine("\n\t Unrecognized input, please try again. \n");
                     HandleUserInput();
                     break;
             }
@@ -67,15 +66,17 @@ namespace Flash.Console.UserInterface
 
             List<Flashcard> contents = JsonSerializer.Deserialize<List<Flashcard>>(responseContent) ?? throw new NullReferenceException(nameof(contents));
 
-            System.Console.WriteLine("\n For each word shown, type the defintion. \n");
+            System.Console.WriteLine("\n\t For each word shown, type the defintion. \n");
 
             // CreateReviewSession loops through all vocabulary, testing for definition
             List<Flashcard> reviewResults = await CreateReviewSession(contents);
 
-            System.Console.WriteLine($"\n Number of incorrect responses: {reviewResults.Count} \n");
+            System.Console.WriteLine($"\n\t Number of incorrect responses: {reviewResults.Count} \n");
+
             if (reviewResults.Count != 0)
             {
-                System.Console.WriteLine("\n Incorrect responses:");
+                System.Console.WriteLine("\n\t Incorrect responses:");
+
                 foreach (Flashcard card in reviewResults)
                 {
                     System.Console.Write($"{card.Word}\t\t");
@@ -90,7 +91,7 @@ namespace Flash.Console.UserInterface
                 
                 while (toReview.Count > 0)
                 {
-                    System.Console.WriteLine("\nWould you like to re-try your failed words? Y/N \n");
+                    System.Console.WriteLine("\n\n\t Would you like to re-try your failed words? Y/N \n");
 
                     string retryResponse = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(retryResponse));
 
@@ -150,9 +151,9 @@ namespace Flash.Console.UserInterface
         {
             Flashcard newCard = new Flashcard();
 
-            System.Console.WriteLine("\n Creating a new flashcard... \n");
+            System.Console.WriteLine("\n\t Creating a new flashcard... \n");
 
-            System.Console.WriteLine("\n Would you like to auto-fill a card? Y/N \n");
+            System.Console.WriteLine("\n\t Would you like to auto-fill a card? Y/N \n");
             string autoFillCard = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(autoFillCard));
 
             if (autoFillCard.ToLower() == "y")
@@ -163,12 +164,13 @@ namespace Flash.Console.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    System.Console.WriteLine($"Autocomplete failed, please enter your new card manually: {ex}");
+                    System.Console.WriteLine($"\n\t Autocomplete failed, please enter your new card manually: {ex}");
                 }
             }
             else
             {
-                System.Console.WriteLine("\n Continuing to manual card creation. \n");
+                System.Console.WriteLine("\n\t Continuing to manual card creation. \n");
+
                 newCard = await FillOutFlashcard();
             }
 
@@ -180,33 +182,38 @@ namespace Flash.Console.UserInterface
             StringContent stringContent = new StringContent(serializedContent, Encoding.UTF8, "application/json");
 
             var response = await client.PostAsync($"{uri}/addNewCard", stringContent);
+
             await ParseResponseAsync(response);
         }
 
         async private Task EditCardAsync(HttpClient client)
         {
-            System.Console.WriteLine("\n Editing card... \n");
-            System.Console.WriteLine("Type the Id of the card you would like to edit:\n");
+            System.Console.WriteLine("\n\t Editing card... \n");
+            System.Console.WriteLine("\t Type the Id of the card you would like to edit:\n");
 
             string cardId = GetCardId();
             
             Flashcard updatedCard = await FillOutFlashcard();
+
             string serializedContent = JsonSerializer.Serialize(updatedCard);
 
             StringContent stringContent = new StringContent(serializedContent, Encoding.UTF8, "application/json");
 
             var response = await client.PutAsync($"{uri}/editCard/{cardId}", stringContent);
+
             await ParseResponseAsync(response);
         }
 
         async private Task DeleteCardAsync(HttpClient client)
         {
-            System.Console.WriteLine("\n Deleting card... \n");
-            System.Console.WriteLine("Type the Id of the card you would like to delete:\n");
+            System.Console.WriteLine("\n\t Deleting card... \n");
+
+            System.Console.WriteLine("\t Type the Id of the card you would like to delete:\n");
 
             string cardId = GetCardId();
 
             HttpResponseMessage response = await client.DeleteAsync($"{uri}/deleteCard/{cardId}");
+
             await ParseResponseAsync(response);
         }
 
@@ -216,7 +223,8 @@ namespace Flash.Console.UserInterface
 
             while (!validInput)
             {
-                System.Console.WriteLine("\n Deleting all cards. Would you like to continue? Y/N \n");
+                System.Console.WriteLine("\n\t Deleting all cards. Would you like to continue? Y/N \n");
+
                 string userDeleteResponse = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userDeleteResponse));
 
                 if (userDeleteResponse.ToLower() == "y")
@@ -224,18 +232,19 @@ namespace Flash.Console.UserInterface
                     validInput = true;
 
                     var response = await client.DeleteAsync($"{uri}/deleteAllCards");
+
                     await ParseResponseAsync(response);
                 }
                 else if (userDeleteResponse.ToLower() == "n")
                 {
                     validInput = true;
 
-                    System.Console.WriteLine("\n Returning to main menu... \n");
+                    System.Console.WriteLine("\n\t Returning to main menu... \n");
                     HandleUserInput();
                 }
                 else
                 {
-                    System.Console.WriteLine("\n Command not recognized, please try again.\n");
+                    System.Console.WriteLine("\n\t Command not recognized, please try again.\n");
                 }
             }
         }
@@ -266,21 +275,25 @@ namespace Flash.Console.UserInterface
 
                 if (userAnswer.ToLower() == card.Definition?.ToLower())
                 {
-                    System.Console.WriteLine("\n CORRECT \n");
+                    System.Console.WriteLine("\n\t CORRECT \n");
 
                     WordTracker wordTrack = new WordTracker();
+
                     wordTrack.Word = card.Word;
                     wordTrack.Correct = 1;
+
                     reviewedWords.Add(wordTrack);
                 }
                 else
                 {
-                    System.Console.WriteLine("\n INCORRECT... \n");
+                    System.Console.WriteLine("\n\t INCORRECT... \n");
                     failedWords.Add(card);
 
                     WordTracker wordTrack = new WordTracker();
+
                     wordTrack.Word = card.Word;
                     wordTrack.Incorrect = 1;
+
                     reviewedWords.Add(wordTrack);
                 }
 
@@ -311,9 +324,10 @@ namespace Flash.Console.UserInterface
             Flashcard card = new Flashcard();
 
             bool gotWord = false;
+
             while (!gotWord)
             {
-                System.Console.WriteLine("\nWord in Japanese:");
+                System.Console.WriteLine("\n\t Word in Japanese:");
                 card.Word = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(card.Word));
 
                 if (card.Word.Length != 0)
@@ -322,14 +336,15 @@ namespace Flash.Console.UserInterface
                 }
                 else
                 {
-                    System.Console.WriteLine("\nPlease enter a word\n");
+                    System.Console.WriteLine("\n\t Please enter a word\n");
                 }
             }
 
             bool gotDefinition = false;
             while (!gotDefinition)
             {
-                System.Console.WriteLine("\nDefinition:");
+                System.Console.WriteLine("\n\t Definition:");
+
                 card.Definition = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(card.Definition));
 
                 if (card.Definition.Length != 0)
@@ -338,27 +353,31 @@ namespace Flash.Console.UserInterface
                 }
                 else
                 {
-                    System.Console.WriteLine("\nPlease enter a definition\n");
+                    System.Console.WriteLine("\n\t Please enter a definition\n");
                 }
             }
 
-            System.Console.WriteLine("\nExample:");
-            System.Console.WriteLine("\nWould you like to auto-generate your example sentence? Y/N");
+            System.Console.WriteLine("\n\t Example:");
+
+            System.Console.WriteLine("\n\t Would you like to auto-generate your example sentence? Y/N");
+
             string? autoGenSentenceResponse = System.Console.ReadLine();
+
             if (autoGenSentenceResponse?.ToLower() == "y")
             {
                 card.Example = await scrapper.ScrapSentencesAsync(card.Word);
             }
             else
             {
-                System.Console.WriteLine("\nPlease type your example sentence, or leave blank");
+                System.Console.WriteLine("\n\t Please type your example sentence, or leave blank");
+
                 card.Example = System.Console.ReadLine();
             }
             
-            System.Console.WriteLine("\nReading:");
+            System.Console.WriteLine("\n\t Reading:");
             card.Reading = System.Console.ReadLine();
 
-            System.Console.WriteLine("\nDifficulty:");
+            System.Console.WriteLine("\n\t Difficulty:");
             card.Difficulty = System.Console.ReadLine();
 
             return card;
@@ -368,7 +387,7 @@ namespace Flash.Console.UserInterface
         {
             Flashcard newCard = new Flashcard();
 
-            System.Console.WriteLine("\n Which word would you like to autofill? \n");
+            System.Console.WriteLine("\n\t Which word would you like to autofill? \n");
             
             string desiredWord = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(desiredWord));
 
@@ -389,11 +408,13 @@ namespace Flash.Console.UserInterface
                 newCard.Example = await scrapper.ScrapSentencesAsync(newCard.Definition);
 
                 newCard.Reading = autoFilledData?.data?[0]?.japanese?[0].reading;
+
                 newCard.Difficulty = autoFilledData?.data[0].jlpt?[0];
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine($"Autocomplete failed, please enter your new card manually: {ex}");
+                System.Console.WriteLine($"\n\t Autocomplete failed, please enter your new card manually: {ex}");
+
                 newCard = await FillOutFlashcard();
             }
 
@@ -420,13 +441,16 @@ namespace Flash.Console.UserInterface
                 try
                 {
                     string userInput = System.Console.ReadLine() ?? throw new NullReferenceException(nameof(userInput));
+
                     int userInputCardId = Int32.Parse(userInput);
+
                     cardId = userInputCardId.ToString();
+                    
                     retrievedCardId = true;
                 }
                 catch (Exception)
                 {
-                    System.Console.WriteLine("\n Please type a valid number \n");
+                    System.Console.WriteLine("\n\t Please type a valid number \n");
                 }
             }
 

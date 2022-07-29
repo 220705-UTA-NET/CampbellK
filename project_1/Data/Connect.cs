@@ -46,6 +46,7 @@ namespace Flash.Data
             return allFlashcards;
         }
 
+        // show user stats for each word
         public List<WordTracker> ViewReviewStats()
         {
             SqlConnection dbConn = DbConnect();
