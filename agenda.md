@@ -7,7 +7,7 @@ Presentation Points:
     - Jisho API + Web scrapping for generating example sentences
 
 3. Show off Review session & how it allows review of missed words
-
+    - Tracks how many times you have gotten a word right/wrong
 
 
 Shortcut to swap languages
