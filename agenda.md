@@ -4,10 +4,8 @@ git push --set-upstream origin {name}
 # Project 1 August 2nd (Tuesday)
 
 
-1. Update to include review table
 
-    - add endpoint to see breakdown of your vocab score
-
+1. Refactor (especially UserInput, FlashCardController, Connect)
 
 
 2. Update Azure build for site
@@ -17,9 +15,6 @@ git push --set-upstream origin {name}
 
 3. beautify the console interaction
 
-
-** if major server changes are made, be sure to update Azure Web
-    -- current changes are only to Console
 
 
 

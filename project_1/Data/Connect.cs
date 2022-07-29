@@ -45,6 +45,31 @@ namespace Flash.Data
             dbConn.Close();
             return allFlashcards;
         }
+
+        public List<WordTracker> ViewReviewStats()
+        {
+            SqlConnection dbConn = DbConnect();
+
+            List<WordTracker> wordStats = new List<WordTracker>();
+
+            SqlCommand command = new SqlCommand("SELECT * FROM review", dbConn);
+
+            using SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                WordTracker wordStat = new WordTracker();
+                wordStat.Word = reader.GetString(1);
+                wordStat.Correct = reader.GetInt32(2);
+                wordStat.Incorrect = reader.GetInt32(3);
+
+                wordStats.Add(wordStat);
+            }
+
+            dbConn.Close();
+            return wordStats;
+        }
+
         public int CreateNewCard(Flashcard newFlashcard)
         {
             SqlConnection dbConn = DbConnect();

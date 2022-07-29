@@ -46,6 +46,27 @@ namespace Flash.Api.Controllers
             return response;
         }
 
+        [HttpGet("/viewReviewStats")]
+        public ContentResult ViewReviewStats()
+        {
+            ContentResult response = new ContentResult();
+
+            Database dbConn = new Database();
+
+            List<WordTracker> wordStats = dbConn.ViewReviewStats();
+
+            string jsonContent = JsonSerializer.Serialize<List<WordTracker>>(wordStats);
+
+            response = new ContentResult()
+            {
+                StatusCode = 200,
+                ContentType = "application/json",
+                Content = jsonContent
+            };
+
+            return response;
+        }
+
         // Creating a new card
         [HttpPost("/addNewCard")]
         public ContentResult CreateNewCard([FromBody] Flashcard newFlashcard)

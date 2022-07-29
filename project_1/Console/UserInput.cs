@@ -33,18 +33,21 @@ namespace Flash.Console.UserInterface
                     ReviewCardsAsync(client).Wait();
                     break;
                 case "2":
-                    ViewAllCardsAsync(client).Wait();
+                    ViewReviewStatsAsync(client).Wait();
                     break;
                 case "3":
-                    CreateNewCardAsync(client).Wait();
+                    ViewAllCardsAsync(client).Wait();
                     break;
                 case "4":
-                    EditCardAsync(client).Wait();
+                    CreateNewCardAsync(client).Wait();
                     break;
                 case "5":
-                    DeleteCardAsync(client).Wait();
+                    EditCardAsync(client).Wait();
                     break;
                 case "6":
+                    DeleteCardAsync(client).Wait();
+                    break;
+                case "7":
                     DeleteAllCardsAsync(client).Wait();
                     break;
                 case "0":
@@ -100,6 +103,25 @@ namespace Flash.Console.UserInterface
                         toReview = new List<Flashcard> { };
                     }
                 }
+            }
+
+            HandleUserInput();
+        }
+
+        async private Task ViewReviewStatsAsync(HttpClient client)
+        {
+            var response = await client.GetAsync($"{uri}/viewReviewStats");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            List<WordTracker> contents = JsonSerializer.Deserialize<List<WordTracker>>(responseContent) ?? throw new NullReferenceException(nameof(contents));
+
+            System.Console.WriteLine($"\n {"Word", 3} {"|", 10} {"Correct Reviews", 20} {"|",10} {"Failed Reviews", 30}");
+
+            CreateLineBreak();
+
+            foreach(WordTracker reviewStat in contents)
+            {
+                System.Console.WriteLine($"\n {reviewStat.Word, 3} {"|", 10} {reviewStat.Correct, 20} {"|",10} {reviewStat.Incorrect, 30}");  
             }
 
             HandleUserInput();
@@ -221,11 +243,12 @@ namespace Flash.Console.UserInterface
         private static void DisplayMenu()
         {
             System.Console.WriteLine("\n[1] Review Session");
-            System.Console.WriteLine("[2] View all cards");
-            System.Console.WriteLine("[3] Create a new card");
-            System.Console.WriteLine("[4] Edit a card");
-            System.Console.WriteLine("[5] Delete a card");
-            System.Console.WriteLine("[6] Delete all cards");
+            System.Console.WriteLine("[2] View review stats");
+            System.Console.WriteLine("[3] View all cards");
+            System.Console.WriteLine("[4] Create a new card");
+            System.Console.WriteLine("[5] Edit a card");
+            System.Console.WriteLine("[6] Delete a card");
+            System.Console.WriteLine("[7] Delete all cards");
             System.Console.WriteLine("[0] Exit\n");
         }
 
