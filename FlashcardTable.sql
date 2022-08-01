@@ -1,21 +1,21 @@
--- DROP TABLE flashcards;
--- DROP TABLE review;
+DROP TABLE flashcards;
+DROP TABLE review;
 
--- CREATE TABLE flashcards (
---     Id int IDENTITY PRIMARY KEY,
---     Word nvarchar(50) NOT NULL UNIQUE,
---     Definition nvarchar(100) NOT NULL,
---     Example ntext,
---     Reading ntext,
---     Difficulty nvarchar(10)
--- );
+CREATE TABLE flashcards (
+    Id int IDENTITY PRIMARY KEY,
+    Word nvarchar(50) NOT NULL,
+    Definition nvarchar(100) NOT NULL,
+    Example ntext,
+    Reading ntext,
+    Difficulty nvarchar(10)
+);
 
--- CREATE TABLE review (
---     Id int IDENTITY PRIMARY Key,
---     Word nvarchar(50),
---     SuccessfulReviews int,
---     FailedReviews int,
--- );
+CREATE TABLE review (
+    Id int IDENTITY PRIMARY Key,
+    Word nvarchar(50),
+    SuccessfulReviews int,
+    FailedReviews int,
+);
 
 -- ALTER TABLE flashcards
 -- ADD FOREIGN KEY (Word) REFERENCES review(Word)

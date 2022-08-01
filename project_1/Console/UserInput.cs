@@ -337,6 +337,7 @@ namespace Flash.Console.UserInterface
                 else
                 {
                     System.Console.WriteLine("\n\t Please enter a word\n");
+                    HandleUserInput();
                 }
             }
 
@@ -423,12 +424,20 @@ namespace Flash.Console.UserInterface
 
         async private Task ParseResponseAsync(HttpResponseMessage response)
         {
-            var responseContent = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
 
-            string contents = JsonSerializer.Deserialize<string>(responseContent) ?? throw new NullReferenceException(nameof(contents));
-            
-            System.Console.WriteLine($"\n{contents}\n");
-            HandleUserInput();
+                string contents = JsonSerializer.Deserialize<string>(responseContent) ?? throw new NullReferenceException(nameof(contents));
+                
+                System.Console.WriteLine($"\n{contents}\n");
+                HandleUserInput();
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"Failed to parse the http response, please try again: {ex}");
+                HandleUserInput();
+            }
         }
 
         private static string GetCardId()
